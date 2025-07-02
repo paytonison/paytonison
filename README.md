@@ -46,10 +46,4 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 
 ---
 
-## 🧬 Fun Fact
-
-I’m dyslexic, which lets me process English in ways most can’t — like reading Middle English naturally. I see this as a superpower, not a setback.
-
----
-
 > Every polymath is a bit weird — and that’s where the magic happens.
