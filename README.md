@@ -1,6 +1,6 @@
 # Payton Ison (paytonison)
 
-> _“Gloria aut mors” (Glory or die)_
+> _“Gloria aut mors”_
 
 ---
 
@@ -18,9 +18,9 @@ Hi, I’m **Payton Ison** — a writer, philosopher, and AI developer with a pol
 
 ## 🚀 Featured Projects
 
-- **Micro-AGI**: Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
+- **[Micro-AGI (Muse)](https://github.com/paytonison/muse)**: Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
 - **Therapist AGI**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent.
-- **[Short Novella](https://github.com/paytonison?tab=repositories&q=novella)**: My literary magnum opus, crafted during my academic transition.
+- **[1914](https://github.com/paytonison/1914)**: My literary magnum opus, crafted during my academic transition.
 
 _Discover more experiments and prototypes in my [GitHub repos](https://github.com/paytonison?tab=repositories)._
 
@@ -30,7 +30,7 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 
 - Human-led, recursive reinforcement learning for LLMs
 - Prompt engineering & natural language mastery
-- English (Old, Middle, and Modern)
+- English mastery (Old, Middle, and Modern)
 - Philosophy & creative problem-solving
 - Python (with Copilot & OpenAI o3)
 - Rapid prototyping and AI experimentation
@@ -46,4 +46,4 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 
 ---
 
-> Every polymath is a bit weird — and that’s where the magic happens.
+> Every polymath is a bit weird, and therein the magic lie.
