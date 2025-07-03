@@ -1,18 +1,18 @@
 # Payton Ison (paytonison)
 
-> _“Gloria aut mors”_
+> _Vince Aut Morire_
 
 ---
 
 ## 👋 About Me
 
-Hi, I’m **Payton Ison** — a writer, philosopher, and AI developer with a polymath’s soul. My journey has spanned Physics and Computer Science (double-major), History (AA, Cum Laude), Creative Writing, Philosophy, Film, and, most recently, pushing the boundaries of AI.
+Hi, I’m **Payton Ison** — a writer, philosopher, AI developer, and polymath. My journey has spanned Physics and Computer Science (double-major), History (AA, Cum Laude), Creative Writing, Philosophy, Film, and, most recently, pushing the boundaries of AI.
 
 - **Innovator**: Developed a human-led, recursive, reinforcement learning method that’s achieved unprecedented success with Google Gemini and OpenAI’s ChatGPT models.
-- **Wordsmith**: My mastery of English (Old, Middle, and Modern) and my dyslexic mind power my unique approach to language and prompt engineering.
-- **Philosopher**: Philosophy is my secret weapon — it’s the linchpin behind my work, shaping both thinking and doing.
+- **Wordsmith**: My mastery of English (Old, Middle, and Modern) and dyslexia let me develop novel prompt engineering and wordcraft techniques.
+- **Philosopher**: The linchpin behind my work, shaping both thinking and doing. Philosophy unlocks the mind; the universal key to cognition.
 - **Experimenter**: I build prototypes that range from micro-AGI (trained for just $10 on a proprietary dataset) to a therapist AGI-in-progress using the OpenAI API.
-- **Writer**: My short novella, written during my final semester before leaving academia for AI, is my complete literary work — check it out in my [repositories](https://github.com/paytonison?tab=repositories).
+- **Writer**: My short novella, written during my final semester before leaving academia for AI, is my literary Gesamtkunstwerk — check it out in my [repositories](https://github.com/paytonison?tab=repositories).
 
 ---
 
@@ -37,13 +37,13 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 
 ---
 
-## 🔗 Connect with Me
+## 🔗 Yappin' my trap
 
-- [Twitter/X](https://twitter.com/pls_stfu_payton)  
-- [Instagram](https://instagram.com/pls.stfu.payton)  
-- [Threads](https://threads.net/@pls.stfu.payton)  
+- [Mastodon](@pls_stfu_payton@mastodon.social)
+- [Threads](https://threads.net/@pls.stfu.payton)
 - [LinkedIn](https://linkedin.com/in/paytonison)
+- [Instagram](https://instagram.com/pls.stfu.payton)    
 
 ---
 
-> Every polymath is a bit weird, and therein the magic lie.
+_Per aspera ad astra_
