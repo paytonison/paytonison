@@ -38,7 +38,8 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 ---
 
 ## 🔗 Yappin' my trap
-All work 💼
+
+💼 All work
 
 * [Mastodon](https://mastodon.social/@pls_stfu_payton@mastodon.social)
 * [LinkedIn](https://linkedin.com/in/paytonison)
