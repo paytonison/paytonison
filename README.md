@@ -38,10 +38,15 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 ---
 
 ## 🔗 Yappin' my trap
+All work 💼
 
-- [Mastodon](https://mastodon.social/@pls_stfu_payton@mastodon.social)
-- [LinkedIn](https://linkedin.com/in/paytonison)   
+* [Mastodon](https://mastodon.social/@pls_stfu_payton@mastodon.social)
+* [LinkedIn](https://linkedin.com/in/paytonison)
 
+🍾 Lots of play
+
+* [Threads](https://threads.com/@pls.stfu.payton)
+* [Instagram](https://instagram.com/pls.stfu.payton)
 ---
 
 _Per aspera ad astra_
