@@ -1,6 +1,6 @@
 # Payton Ison (paytonison)
 
-> _Vince Aut Morire_
+_Vince Aut Morire_
 
 ---
 
