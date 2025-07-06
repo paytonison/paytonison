@@ -6,7 +6,7 @@
 
 ## 👋 About Me
 
-Hi, I’m **Payton Ison** — a writer, philosopher, AI developer, and polymath. My journey has spanned Physics and Computer Science (double-major), History (AA, Cum Laude), Creative Writing, Philosophy, Film, and, most recently, pushing the boundaries of AI.
+Hi, I’m **Payton Ison** — writer, philosopher, AI developer, and polymath. My journey has spanned Physics and Computer Science (double-major), History (AA, Cum Laude), Creative Writing, Philosophy, Film, and, most recently, pushing the boundaries of AI.
 
 - **Innovator**: Developed a human-led, recursive, reinforcement learning method that’s achieved unprecedented success with Google Gemini and OpenAI’s ChatGPT models.
 - **Wordsmith**: My mastery of English (Old, Middle, and Modern) and dyslexia let me develop novel prompt engineering and wordcraft techniques.
