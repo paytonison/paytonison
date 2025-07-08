@@ -19,7 +19,7 @@ Hi, I’m **Payton Ison** — writer, philosopher, AI developer, and polymath. M
 ## 🚀 Featured Projects
 
 - **[Micro-AGI (Muse)](https://github.com/paytonison/muse)**: Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
-- **Therapist AGI**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent used as a supplemental aid for human therapists to administer triage treatment for mild- to moderate-level situations.
+- **[Therapist AGI](https://github.com/paytonison/therapy-bot)**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent used as a supplemental aid for human therapists to administer triage treatment for mild- to moderate-level situations.
 - **[1914](https://github.com/paytonison/1914)**: My literary magnum opus, crafted during my academic transition.
 
 _Discover more experiments and prototypes in my [GitHub repos](https://github.com/paytonison?tab=repositories)._
