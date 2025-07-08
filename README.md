@@ -1,6 +1,6 @@
 # Payton Ison (paytonison)
 
-_Vince Aut Morire_
+_Per aspera ad astra_
 
 ---
 
@@ -40,12 +40,13 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 ## 🔗 Yappin' my trap
 
 💼 All work
-* [Mastodon](https://mastodon.social/@pls_stfu_payton@mastodon.social)
+* [The Platform Formerly Known as Twitter](https://x.com/pls_stfu_payton)
 * [LinkedIn](https://linkedin.com/in/paytonison)
 
 🍾 Lots of play
 * [Threads](https://threads.com/@pls.stfu.payton)
 * [Instagram](https://instagram.com/pls.stfu.payton)
+
 ---
 
-_Per aspera ad astra_
+_Vince Aut Morire_
