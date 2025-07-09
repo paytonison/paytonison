@@ -1,6 +1,6 @@
 # Payton Ison (paytonison)
 
-_Vince Aut Morire_
+_Per aspera ad astra_
 
 ---
 
@@ -19,7 +19,7 @@ Hi, I’m **Payton Ison** — writer, philosopher, AI developer, and polymath. M
 ## 🚀 Featured Projects
 
 - **[Micro-AGI (Muse)](https://github.com/paytonison/muse)**: Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
-- **Therapist AGI**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent.
+- **[Therapist AGI](https://github.com/paytonison/therapy-bot)**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent used as a supplemental aid for human therapists to administer triage treatment for mild- to moderate-level situations.
 - **[1914](https://github.com/paytonison/1914)**: My literary magnum opus, crafted during my academic transition.
 
 _Discover more experiments and prototypes in my [GitHub repos](https://github.com/paytonison?tab=repositories)._
@@ -40,12 +40,46 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 ## 🔗 Yappin' my trap
 
 💼 All work
-* [Mastodon](https://mastodon.social/@pls_stfu_payton@mastodon.social)
+* [The Platform Formerly Known as Twitter](https://x.com/pls_stfu_payton)
 * [LinkedIn](https://linkedin.com/in/paytonison)
 
 🍾 Lots of play
 * [Threads](https://threads.com/@pls.stfu.payton)
 * [Instagram](https://instagram.com/pls.stfu.payton)
+
 ---
 
-_Per aspera ad astra_
+## About This Repository’s Workflow
+
+**Notice**:
+This repository is part of an ongoing, publicly-visible development process. Code changes, refactors, and upgrades are implemented and tested locally with the assistance of AI tools (including GitHub Copilot and ChatGPT), but commits and pushes only happen when I’m fully confident in their stability, purpose, and improvement.
+
+---
+
+### *My Commit Philosophy*
+
+* Deliberate Commits:
+I do not commit/push every change as I go. Instead, I work iteratively, often in long local branches, only updating the public repo after extensive testing, review, and reflection.
+
+* Copilot & AI Integration:
+As a dyslexic who has difficulty with spatial sequencing (sometimes called spatial counting or tracking), I use tools like Copilot and ChatGPT as accessibility aids. They reduce cognitive friction when writing, editing, and debugging code; however, ***all logic, design, and conceptual direction come directly from me.***
+AI as a prosthetic, not a pilot: The AI helps clarify syntax, fill gaps, and catch errors that are otherwise challenging due to my neurotype.
+*  Human-in-the-loop: No code is ever committed blindly. Every algorithm, architectural decision, or structural choice is my own; AI is used to accelerate, not dictate, the process.
+*  Final review: All commits are reviewed, tested, and validated by me before being pushed, regardless of AI input.
+* Resilience & Rollback:
+Sometimes, things break. When experiments go sideways, I may roll back local changes, restore from previous clones, or even re-download folders before pushing stable updates. You might see evidence of this in commit histories or branch structures.
+*  Transparency & Learning:
+This repo is a living record of my skills evolving in real time. By keeping my projects public, I’m inviting others to see not just the polished final product, but the actual journey—successes, refactors, and recoveries included.
+
+### *Why This Matters*
+* You may notice fewer “micro-commits” or work-in-progress branches compared to other public projects. This is intentional. I prefer to keep history clean and focused, avoiding noise for reviewers, future collaborators, and myself.
+* If you spot major refactors, sudden improvements, or style changes, that’s likely a reflection of adopting new tools, patterns, or AI-assisted suggestions that were first vetted offline.
+
+---
+
+### *Questions?*
+Feel free to open an issue or discussion if you’re interested in my workflow, tooling, or if you’d like to collaborate.
+
+---
+
+_Vince Aut Morire_
