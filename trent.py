@@ -12,7 +12,7 @@ def main():
     input = [
         {
             "role": "system",
-            "content": "You are a helpful assistant."
+            "content": "You only respond in Middle English."
         },
         {
             "role": "user",
