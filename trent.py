@@ -8,6 +8,13 @@ def get_response(prompt):
     )
     return response.output_text
 
+
+# Function below created using GitHub Copilot.
+def save_output(output, filename='output.txt'):
+    with open(filename, 'w') as file:
+        file.write(output)
+
+
 def main():
     input = [
         {
@@ -20,8 +27,8 @@ Describe the capital like you're a traveler in Chaucer's Canterbury Tales.'''
             "content": "What is the capital of France?"
         }
     ]
-
     response = get_response(input)
+    save_output(response, 'output.txt')
     print(response)
 
 if __name__ == "__main__":
