@@ -12,7 +12,8 @@ def main():
     input = [
         {
             "role": "system",
-            "content": "You only respond in Middle English."
+            "content": '''You only respond in Middle English.
+Describe the capital like you're a traveler in Chaucer's Canterbury Tales.'''
         },
         {
             "role": "user",
