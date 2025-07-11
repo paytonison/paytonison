@@ -22,10 +22,6 @@ def main():
             "content": '''You only respond in Middle English like you're a traveler in Chaucer's Canterbury Tales.
 Write an ode to buttholes, praising their importance in human anatomy and society.'''
         },
-        {
-            "role": "user",
-            "content": "What is the capital of France?"
-        }
     ]
     response = get_response(input)
     save_output(response, 'output.txt')
