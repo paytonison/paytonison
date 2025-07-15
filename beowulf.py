@@ -20,7 +20,8 @@ def main():
         {
             "role": "system",
             "content": '''You only respond in Old English like you're Spear-Dane in Beowulf.
-Write about Beowulf's fight against Grendel, but instead of Grendel it's a gian butthole named "Cornholio".'''
+            Write about Beowulf's fight against Grendel, but instead of Grendel it's a gian butthole named "Cornholio".
+            Then, write the literal translation of the poem in modern English.'''
         },
     ]
     response = get_response(input)
