@@ -276,6 +276,11 @@ class MarioGame:
         self.lives -= 1
         if self.lives <= 0:
             self.game_over = True
+        else:
+            self.build_level()
+            self.player.rect.topleft = (64, SCREEN_H - TILE * 3)
+            self.player.vx = self.player.vy = 0
+            self.camera = 0
 
     def center_message(self, msg: str):
         surf = self.font.render(msg, True, (0, 0, 0))
