@@ -202,11 +202,21 @@ class MarioGame:
                     # got hit
                     self.score = max(0, self.score - ENEMY_PENALTY)
                     self.lives -= 1
-                    # knockback & brief invuln: simple respawn
-                    self.player.rect.topleft = (64, SCREEN_H - TILE * 3)
-                    if self.lives <= 0:
-                        self.game_over = True
+                if self.lives <= 0:
+                    self.game_over = True
                     break
+
+        # fell into a hole (below bottom of screen)
+        if self.player.rect.top > SCREEN_H:
+            self.lives -= 1
+            if self.lives <= 0:
+                self.game_over = True
+            else:
+                # rebuild level and respawn player
+                self.build_level()
+                self.player.rect.topleft = (64, SCREEN_H - TILE * 3)
+                self.player.vx = self.player.vy = 0
+                self.camera = 0
 
         # finish line
         if self.finish and self.player.rect.colliderect(self.finish.rect):
