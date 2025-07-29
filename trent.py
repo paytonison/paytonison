@@ -93,20 +93,22 @@ class MarioGame:
 
     # ────── WORLD BUILD ──────
     def build_level(self):
-        self.solids = []  # list[pg.Rect]
-        self.coins = []  # list[Entity]
-        self.enemies = []  # list[Entity]
+        self.solids, self.coins, self.enemies = [], [], []
         self.finish = None
+
+        offset_y = SCREEN_H - len(LEVEL) * TILE  # NEW: push map to bottom edge
+
         for row_idx, line in enumerate(LEVEL):
             for col_idx, ch in enumerate(line):
-                x, y = col_idx * TILE, row_idx * TILE
+                x = col_idx * TILE
+                y = offset_y + row_idx * TILE  # NEW: apply vertical offset
                 if ch in SOLID_TILES:
                     self.solids.append(pg.Rect(x, y, TILE, TILE))
                 elif ch == COIN_CHR:
                     self.coins.append(Entity(self.img_coin, pg.Rect(x, y, TILE, TILE)))
                 elif ch == ENEMY_CHR:
                     enemy = Entity(self.img_enemy, pg.Rect(x, y, TILE, TILE))
-                    enemy.vx = -1.2  # simple patrol left
+                    enemy.vx = -1.2
                     self.enemies.append(enemy)
                 elif ch == FINISH_CHR:
                     self.finish = Entity(
