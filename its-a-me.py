@@ -26,16 +26,16 @@ START_LIVES = 3
 START_SCORE = 0
 
 LEVEL = [
-    "                                                                     F",
-    "                                                                     F",
-    "                  ######                                             F",
-    "                              C                                      F",
-    "        C                          C                                 F",
-    "                                                                     F",
-    "                  ##########                  C      ######### C     F ",
-    "                          G               G        G     C         ####",
-    "#############################  #### #########   ##################     ",
-]
+        "                                                                     F",
+        "                                                                     F",
+        "                  ######                                             F",
+        "                              C                                      F",
+        "        C                          C                                 F",
+        "                                                                     F",
+        "                  ##########                  C      ######### C     F ",
+        "                          G               G        G     C         ####",
+        "#############################  #### #########   ##################     ",
+        ]
 
 SOLID_TILES = {"#"}
 COIN_CHR = "C"
@@ -61,7 +61,7 @@ def load_image(name: str, fallback_color, size: tuple[int, int]) -> pg.Surface:
 
 
 # ───────── DATA CLASSES ─────────
-@dataclass
+@dataclass(slots=True)
 class Entity:
     image: pg.Surface
     rect: pg.Rect
@@ -114,18 +114,18 @@ class MarioGame:
                     self.enemies.append(enemy)
                 elif ch == FINISH_CHR:
                     self.finish = Entity(
-                        self.img_flag, pg.Rect(x, y - TILE, TILE, TILE * 2)
-                    )
-
-    # ────── RESET ──────
-    def reset(self):
-        self.build_level()
-        spawn_x, spawn_y = 64, SCREEN_H - TILE * 3
-        self.player = Entity(
-            self.img_player, pg.Rect(spawn_x, spawn_y, TILE, int(TILE * 1.5))
-        )
-        self.score = START_SCORE
-        self.lives = START_LIVES
+                            self.img_flag, pg.Rect(x, y - TILE, TILE, TILE * 2)
+                            )
+        self.build_background()
+    # ────── BACKGROUND ──────
+    def build_background(self):
+        width = len(LEVEL[0]) * TILE
+        self.level_surface = pg.Surface((width, SCREEN_H))
+        self.level_surface.fill((92, 148, 252))
+        for solid in self.solids:
+            self.level_surface.blit(self.img_brick, (solid.x, solid.y))
+        if self.finish:
+            self.level_surface.blit(self.img_flag, (self.finish.rect.x, self.finish.rect.y))
         self.camera = 0
         self.game_over = False
         self.level_complete = False
@@ -188,9 +188,9 @@ class MarioGame:
         for en in self.enemies[:]:
             if self.player.rect.colliderect(en.rect):
                 if (
-                    self.player.vy > 0
-                    and self.player.rect.bottom - en.rect.top < TILE // 2
-                ):
+                        self.player.vy > 0
+                        and self.player.rect.bottom - en.rect.top < TILE // 2
+                        ):
                     # stomp
                     self.enemies.remove(en)
                     self.player.vy = JUMP_V * 0.6
@@ -232,28 +232,40 @@ class MarioGame:
                     ent.vy = 0
 
     def on_ground(self, ent: Entity) -> bool:
-        test_rect = ent.rect.move(0, 1)
-        return any(test_rect.colliderect(s) for s in self.solids)
+        # Check if entity is on the ground
+        rect = ent.rect.copy()
+        rect.y += 1
+        for solid in self.solids:
+            if rect.colliderect(solid):
+                return True
+        return False
+    def reset(self):
+        """Reset game to its initial state."""
+        self.score = START_SCORE
+        self.lives = START_LIVES
+        self.build_level()
+        # Initialize player
+        player_y = SCREEN_H - TILE * 3
+        self.player = Entity(
+            self.img_player,
+            pg.Rect(64, player_y, TILE, int(TILE * 1.5))
+        )
+        self.player.vx = self.player.vy = 0
+        self.camera = 0
 
-    # ────── RENDER ──────
     def draw(self):
-        self.scr.fill((92, 148, 252))  # sky
+        # Draw background
+        self.scr.blit(self.level_surface, (-self.camera, 0))
         cam = self.camera
 
-        # draw bricks
-        for solid in self.solids:
-            self.scr.blit(self.img_brick, (solid.x - cam, solid.y))
-
-        # flag
-        if self.finish:
-            self.finish.draw(self.scr, cam)
-
-        # entities
+        # Draw entities
         for coin in self.coins:
             coin.draw(self.scr, cam)
         for en in self.enemies:
             en.draw(self.scr, cam)
         self.player.draw(self.scr, cam)
+        if self.finish:
+            self.finish.draw(self.scr, cam)
 
         # UI
         ui_text = f"SCORE {self.score:>6}   LIVES {self.lives}"
