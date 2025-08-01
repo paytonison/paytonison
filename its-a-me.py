@@ -1,4 +1,5 @@
 """
+
 Controls
 --------
 ←/→      walk
@@ -26,16 +27,15 @@ START_LIVES = 3
 START_SCORE = 0
 
 LEVEL = [
-        "                                                                     F",
-        "                                                                     F",
-        "                  ######                                             F",
-        "                              C                                      F",
-        "        C                          C                                 F",
-        "                                                                     F",
-        "                  ##########                  C      ######### C     F ",
-        "                          G               G        G     C         ####",
-        "#############################  #### #########   ##################     ",
-        ]
+    "                                                           |     F",
+    "                                                           |     F",
+    "                  #####                                    |     F",
+    "                             C                             |     F",
+    "        C                      C                           |     F",
+    "              ##########            C      ######### C     |     F",
+    "                      G         G        G     C    ####   |     F",
+    "############################  #### ######### ############  |     F",
+]
 
 SOLID_TILES = {"#"}
 COIN_CHR = "C"
@@ -46,7 +46,7 @@ ASSET_DIR = os.path.join(os.path.dirname(__file__), "assets")
 
 
 # ───────── HELPERS ─────────
-def load_image(name: str, fallback_color, size: tuple[int, int]) -> pg.Surface:
+def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int, int]) -> pg.Surface:
     """Load image or return simple colored Surface of given size."""
     path = os.path.join(ASSET_DIR, name)
     surf = pg.Surface(size, pg.SRCALPHA)
@@ -156,24 +156,27 @@ class MarioGame:
         self.player.vx = (keys[pg.K_RIGHT] - keys[pg.K_LEFT]) * RUN_SPEED
 
         # Horizontal movement + collision
-        self.player.rect.x += self.player.vx
+        self.player.rect.x += self.player.vx * dt
         self.collide_axis(self.player, axis=0)
 
         # Vertical movement + gravity + collision
-        self.player.vy += GRAVITY
-        self.player.rect.y += self.player.vy
+        self.player.vy += GRAVITY * dt
+        self.player.rect.y += self.player.vy * dt
         self.collide_axis(self.player, axis=1)
 
         # Camera update
-        self.camera = max(0, self.player.rect.centerx - SCREEN_W // 3)
-
-        # Update enemies
+        max_cam = self.level_surface.get_width() - SCREEN_W
+        desired_cam = self.player.rect.centerx - SCREEN_W // 3
+        self.camera = max(0, min(max_cam, desired_cam))
         for en in self.enemies[:]:
-            en.rect.x += en.vx
+            en.rect.x += en.vx * dt
             # bounce off bricks
             for solid in self.solids:
                 if en.rect.colliderect(solid):
                     en.vx *= -1
+                    en.rect.x += en.vx * dt * 2
+            if en.rect.right < 0:  # off-screen
+                self.enemies.remove(en)
                     en.rect.x += en.vx * 2
             if en.rect.right < 0:  # off-screen
                 self.enemies.remove(en)
@@ -261,8 +264,7 @@ class MarioGame:
         # Draw entities
         for coin in self.coins:
             coin.draw(self.scr, cam)
-        for en in self.enemies:
-            en.draw(self.scr, cam)
+
         self.player.draw(self.scr, cam)
         if self.finish:
             self.finish.draw(self.scr, cam)
