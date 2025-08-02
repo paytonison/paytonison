@@ -224,6 +224,12 @@ class MarioGame:
 
         # Finish line (flagpole)
         if hasattr(self, 'pole_rect') and self.player.rect.colliderect(self.pole_rect):
+            # Award points based on how high the player is on the pole
+            touch_y = self.player.rect.bottom
+            # Higher touch (lower y) yields more points
+            factor = max(0.0, min(1.0, (SCREEN_H - touch_y) / SCREEN_H))
+            added = int(factor * 1000)
+            self.score += added
             self.level_complete = True
 
     # ────── COLLISIONS ──────
