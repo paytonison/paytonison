@@ -27,14 +27,14 @@ START_LIVES = 3
 START_SCORE = 0
 
 LEVEL = [
-    "                                                           |     F",
-    "                                                           |     F",
-    "                  #####                                    |     F",
-    "                             C                             |     F",
-    "        C                      C                           |     F",
-    "              ##########            C      ######### C     |     F",
-    "                      G         G        G     C    ####   |     F",
-    "############################  #### ######### ############  |     F",
+    "                                                           F",
+    "                                                           F",
+    "                  #####                                    F",
+    "                             C                             F",
+    "        C                      C                           F",
+    "              ##########            C      C               F",
+    "                      G         G        G     C    ####   F",
+    "############################  #### ######### ############  F",
 ]
 
 SOLID_TILES = {"#"}
@@ -88,7 +88,9 @@ class MarioGame:
     def load_assets(self):
         self.img_player = load_image("mario.png", (255, 0, 0), (TILE, int(TILE * 1.5)))
         self.img_coin = load_image("coin.png", (255, 213, 0), (TILE, TILE))
-        self.img_enemy = load_image("goomba.png", (139, 69, 19), (TILE, TILE))
+        # Create simple brown square for enemies
+        self.img_enemy = pg.Surface((TILE, TILE))
+        self.img_enemy.fill((139, 69, 19))
         self.img_brick = load_image("brick.png", (174, 105, 6), (TILE, TILE))
         self.img_flag = load_image("flag.png", (30, 197, 48), (TILE, TILE * 2))
 
@@ -116,6 +118,10 @@ class MarioGame:
                     self.finish = Entity(
                             self.img_flag, pg.Rect(x, y - TILE, TILE, TILE * 2)
                             )
+        # Setup flagpole rect for win detection
+        if self.finish:
+            pole_x = self.finish.rect.x + TILE // 2
+            self.pole_rect = pg.Rect(pole_x - 2, 0, 4, SCREEN_H)
         self.build_background()
     # ────── BACKGROUND ──────
     def build_background(self):
@@ -125,6 +131,11 @@ class MarioGame:
         for solid in self.solids:
             self.level_surface.blit(self.img_brick, (solid.x, solid.y))
         if self.finish:
+            # Draw flagpole as vertical pole spanning full height
+            pole_x = self.finish.rect.x + TILE // 2
+            pole_width = 4
+            pg.draw.rect(self.level_surface, (150, 150, 150), (pole_x - pole_width//2, 0, pole_width, SCREEN_H))
+            # Draw flag at top of pole
             self.level_surface.blit(self.img_flag, (self.finish.rect.x, self.finish.rect.y))
         self.camera = 0
         self.game_over = False
@@ -177,9 +188,7 @@ class MarioGame:
                     en.rect.x += en.vx * dt * 2
             if en.rect.right < 0:  # off-screen
                 self.enemies.remove(en)
-                    en.rect.x += en.vx * 2
-            if en.rect.right < 0:  # off-screen
-                self.enemies.remove(en)
+                en.rect.x += en.vx * 2
 
         # Coin collection
         for coin in self.coins[:]:
@@ -213,8 +222,8 @@ class MarioGame:
                 self.player.vx = self.player.vy = 0
                 self.camera = 0
 
-        # Finish line
-        if self.finish and self.player.rect.colliderect(self.finish.rect):
+        # Finish line (flagpole)
+        if hasattr(self, 'pole_rect') and self.player.rect.colliderect(self.pole_rect):
             self.level_complete = True
 
     # ────── COLLISIONS ──────
@@ -264,7 +273,9 @@ class MarioGame:
         # Draw entities
         for coin in self.coins:
             coin.draw(self.scr, cam)
-
+        # Draw enemies
+        for en in self.enemies:
+            en.draw(self.scr, cam)
         self.player.draw(self.scr, cam)
         if self.finish:
             self.finish.draw(self.scr, cam)
@@ -277,7 +288,19 @@ class MarioGame:
         if self.game_over:
             self.center_message("GAME OVER – press ESC")
         elif self.level_complete:
-            self.center_message("YOU WIN! press ESC")
+            # Victory overlay and message
+            overlay = pg.Surface((SCREEN_W, SCREEN_H), pg.SRCALPHA)
+            overlay.fill((0, 0, 0, 180))  # semi-transparent black
+            self.scr.blit(overlay, (0, 0))
+            # Big victory text
+            big_font = pg.font.SysFont(None, 72)
+            win_surf = big_font.render("YOU WIN!", True, (255, 215, 0))
+            win_rect = win_surf.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 - 20))
+            self.scr.blit(win_surf, win_rect)
+            # Prompt to exit
+            small_surf = self.font.render("Press ESC to quit", True, (255, 255, 255))
+            small_rect = small_surf.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 + 40))
+            self.scr.blit(small_surf, small_rect)
 
         pg.display.flip()
 
