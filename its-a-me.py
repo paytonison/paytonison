@@ -1,5 +1,4 @@
 """
-
 Controls
 --------
 ←/→      walk
@@ -165,30 +164,29 @@ class MarioGame:
     def update(self, dt: float):
         keys = pg.key.get_pressed()
         self.player.vx = (keys[pg.K_RIGHT] - keys[pg.K_LEFT]) * RUN_SPEED
-
         # Horizontal movement + collision
-        self.player.rect.x += self.player.vx * dt
+        move_x = self.player.vx * dt
+        self.player.rect.x += int(round(move_x))
         self.collide_axis(self.player, axis=0)
 
         # Vertical movement + gravity + collision
         self.player.vy += GRAVITY * dt
-        self.player.rect.y += self.player.vy * dt
+        move_y = self.player.vy * dt
+        self.player.rect.y += int(round(move_y))
         self.collide_axis(self.player, axis=1)
 
-        # Camera update
+        # Camera update - follow player horizontally
         max_cam = self.level_surface.get_width() - SCREEN_W
-        desired_cam = self.player.rect.centerx - SCREEN_W // 3
-        self.camera = max(0, min(max_cam, desired_cam))
+        self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
         for en in self.enemies[:]:
-            en.rect.x += en.vx * dt
+            en.rect.x += int(round(en.vx * dt))
             # bounce off bricks
             for solid in self.solids:
                 if en.rect.colliderect(solid):
                     en.vx *= -1
-                    en.rect.x += en.vx * dt * 2
+                    en.rect.x += int(round(en.vx * dt * 2))
             if en.rect.right < 0:  # off-screen
                 self.enemies.remove(en)
-                en.rect.x += en.vx * 2
 
         # Coin collection
         for coin in self.coins[:]:
