@@ -10,7 +10,8 @@ import os
 import sys
 import time
 import pygame as pg
-import openai            # ← requires `pip install openai`
+import openai
+import json                       # ← NEW
 from dataclasses import dataclass
 from typing import List, Tuple
 # ───────── CONFIG ─────────
@@ -61,23 +62,40 @@ def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int,
 
 # ───────── AI DRIVER ─────────
 class OpenAIPlayer:
-    """Thin wrapper that queries the OpenAI API for next action."""
-    def __init__(self, model: str = "gpt-3.5-turbo", interval: float = 0.25):
+    """Thin wrapper that queries the OpenAI API for next action using GPT-4.1-mini."""
+    def __init__(self, model: str = "gpt-4.1-mini", interval: float = 0.25):
         self.model = model
         self.interval = interval  # seconds between API calls
         self.last_t = 0.0
         self.last_act: Tuple[bool, bool, bool] = (False, False, False)  # (left, right, jump)
  
     def _prompt(self, game: "MarioGame") -> str:
-         """Return a concise text representation of current game state."""
-         px = int(game.player.rect.centerx // TILE)
-         py = int(game.player.rect.centery // TILE)
-         dx_flag = (
-             int((game.finish.rect.centerx - game.player.rect.centerx) // TILE)
-             if game.finish
-             else -1
-         )
-         return f"P {px} {py} | C {len(game.coins)} | E {len(game.enemies)} | F {dx_flag}"
+        """Return a JSON string of the current game state."""
+        state = {
+            "player": {
+                "x": game.player.rect.centerx / TILE,
+                "y": game.player.rect.centery / TILE,
+                "vx": game.player.vx,
+                "vy": game.player.vy,
+                "on_ground": game.on_ground(game.player),
+            },
+            "coins": [
+                {"x": c.rect.centerx / TILE, "y": c.rect.centery / TILE}
+                for c in game.coins
+            ],
+            "enemies": [
+                {"x": e.rect.centerx / TILE, "y": e.rect.centery / TILE}
+                for e in game.enemies
+            ],
+            "flag_dx": (
+                (game.finish.rect.centerx - game.player.rect.centerx) / TILE
+                if game.finish
+                else None
+            ),
+            "score": game.score,
+            "lives": game.lives,
+        }
+        return json.dumps(state)   # ← JSON prompt
  
     def decide(self, game: "MarioGame") -> Tuple[bool, bool, bool]:
          """Rate-limited query to OpenAI returning (left, right, jump)."""
@@ -125,11 +143,8 @@ class MarioGame:
         self.font = pg.font.SysFont(None, 28)
 
         self.load_assets()
-        # enable AI when "--ai" flag is passed
-        self.autoplay: bool = "--ai" in sys.argv
-        if self.autoplay:
-            self.ai = OpenAIPlayer()
-
+        self.autoplay = True       # ← AI ALWAYS ON
+        self.ai = OpenAIPlayer()   # ← instantiate unconditionally
         self.reset()
 
     # ────── ASSETS ──────
@@ -174,17 +189,11 @@ class MarioGame:
 
     # ────── UPDATE ──────
     def update(self, dt: float):
-        # AI or human input --------------------------------------------------
-        if getattr(self, "autoplay", False):
-            left, right, jump = self.ai.decide(self)
-            self.player.vx = (right - left) * RUN_SPEED
-            if jump and self.on_ground(self.player):
-                self.player.vy = JUMP_V
-        else:
-            keys = pg.key.get_pressed()
-            self.player.vx = (keys[pg.K_RIGHT] - keys[pg.K_LEFT]) * RUN_SPEED
-            if (keys[pg.K_SPACE] or keys[pg.K_UP]) and self.on_ground(self.player):
-                self.player.vy = JUMP_V
+        # AI input is always active -----------------------------------------
+        left, right, jump = self.ai.decide(self)
+        self.player.vx = (right - left) * RUN_SPEED
+        if jump and self.on_ground(self.player):
+            self.player.vy = JUMP_V
 
         # Horizontal movement + collision
         move_x = self.player.vx * dt
