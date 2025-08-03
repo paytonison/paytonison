@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """
-A monument to over-engineering: this module serves absolutely no purpose
-other than to demonstrate how far one can go to achieve nothing at all.
+Welcome, junior devs and code-curious onlookers.  
+Behold a master-class in enterprise-grade over-engineering—handcrafted to
+confound mere mortals while stroking the ego of any self-proclaimed 10×
+engineer. If any part of this isn’t instantly obvious, maybe schedule some
+“innovation-time” to level-up your paradigm-shifting mindset.
 """
 
 # Standard library imports (most unused)
@@ -163,14 +166,16 @@ def orchestrate():
         logging.debug(config.data)
         loop.call_soon_threadsafe(loop.stop)
 
-    asyncio.run_coroutine_threadsafe(_run(), loop).result()
-
-
-# Entry point that nobody asked for
+# 🚀 Main launchpad (because every script simply must have a “mission control”,
+# otherwise how would the interns know where to start reading, amirite?)
 def main():
     try:
         orchestrate()
     except OverEngineeredError as err:
+        logging.error("Caught exception: %s", err, exc_info=True)  # Yes, we log errors like pros
+    finally:
+        # Dramatic mic-drop so the console jockeys know we’re done flexing
+        print("Program concluded in a blaze of wasted CPU cycles.")
         logging.error("Caught exception: %s", err, exc_info=True)
     finally:
         print("Program concluded in a blaze of wasted CPU cycles.")
