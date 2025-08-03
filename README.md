@@ -18,15 +18,19 @@ Hi, I’m **Payton Ison** — writer, philosopher, AI developer, and polymath. M
 
 ## 🚀 Featured Projects
 
-- **[Micro-AGI (Muse)](https://github.com/paytonison/muse)**: Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
-- **[Therapist AGI](https://github.com/paytonison/therapy-bot)**: An ongoing project using the OpenAI API to develop an empathetic, conversational agent used as a supplemental aid for human therapists to administer triage treatment for mild- to moderate-level situations.
-- **[1914](https://github.com/paytonison/1914)**: My literary magnum opus, crafted during my academic transition.
-- **[LLM Mario Agent](https://github.com/paytonison/llm-mario-agent)**:  What does Payton do when he’s bored? He builds a bridge between embodied cognition and disembodied LLMs using `pygame`, structured game state, and GPT inference loops. This prototype connects a custom-built Mario platformer to GPT-4 via a structured JSON state encoder, turning game entities (coins, goombas, the flagpole of destiny) into readable tokens for real-time decision-making. The result? A synthetic agent that “plays” the game through text-to-action mapping—no camera, no hands, just pure cognition. It’s part toy, part research artifact, and a whole lot of fun.  
-Use cases span:
-- LLM reinforcement learning environments
-- Sensorimotor feedback testing for AI alignment
-- Embodied cognition simulations
-- Prompt-tuned control via game state abstraction
+- **[Micro-AGI (Muse)](https://github.com/paytonison/muse)**: 
+    Trained with minimal resources, demonstrating the power of creative, writer-led reinforcement learning.
+- **[Therapist AGI](https://github.com/paytonison/therapy-bot)**: 
+    An ongoing project using the OpenAI API to develop an empathetic, conversational agent used as a supplemental aid for human therapists to administer triage treatment for mild- to moderate-level situations.
+- **[1914](https://github.com/paytonison/1914)**: 
+    My literary magnum opus, crafted during my academic transition.
+- **[LLM Mario Agent](https://github.com/paytonison/llm-mario-agent)**:
+    What does Payton do when he’s bored? He builds a bridge between embodied cognition and disembodied LLMs using `pygame`, structured game state, and GPT inference loops. This prototype connects a custom-built Mario platformer to GPT-4 via a structured JSON state encoder, turning game entities (coins, goombas, the flagpole of destiny) into readable tokens for real-time decision-making. The result? A synthetic agent that “plays” the game through text-to-action mapping—no camera, no hands, just pure cognition. It’s part toy, part research artifact, and a whole lot of fun.  
+    Use cases span:
+    - LLM reinforcement learning environments
+    - Sensorimotor feedback testing for AI alignment
+    - Embodied cognition simulations
+    - Prompt-tuned control via game state abstraction
 
 _Discover more experiments and prototypes in my [GitHub repos](https://github.com/paytonison?tab=repositories)._
 
