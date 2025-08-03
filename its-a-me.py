@@ -8,10 +8,11 @@ ESC      quit
 
 import os
 import sys
+import time
 import pygame as pg
+import openai            # ← requires `pip install openai`
 from dataclasses import dataclass
-from typing import List
-
+from typing import List, Tuple
 # ───────── CONFIG ─────────
 SCREEN_W, SCREEN_H = 960, 480
 FPS = 60
@@ -33,7 +34,7 @@ LEVEL = [
     "        C                      C                           F",
     "              ##########            C      C               F",
     "                      G         G        G     C    ####   F",
-    "############################  #### ######### ############  F",
+    "############################  ####  #######  ##########    F",
 ]
 
 SOLID_TILES = {"#"}
@@ -42,7 +43,6 @@ ENEMY_CHR = "G"
 FINISH_CHR = "F"
 
 ASSET_DIR = os.path.join(os.path.dirname(__file__), "assets")
-
 
 # ───────── HELPERS ─────────
 def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int, int]) -> pg.Surface:
@@ -58,6 +58,50 @@ def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int,
     surf.fill(fallback_color)
     return surf
 
+
+# ───────── AI DRIVER ─────────
+class OpenAIPlayer:
+    """Thin wrapper that queries the OpenAI API for next action."""
+    def __init__(self, model: str = "gpt-3.5-turbo", interval: float = 0.25):
+        self.model = model
+        self.interval = interval  # seconds between API calls
+        self.last_t = 0.0
+        self.last_act: Tuple[bool, bool, bool] = (False, False, False)  # (left, right, jump)
+ 
+    def _prompt(self, game: "MarioGame") -> str:
+         """Return a concise text representation of current game state."""
+         px = int(game.player.rect.centerx // TILE)
+         py = int(game.player.rect.centery // TILE)
+         dx_flag = (
+             int((game.finish.rect.centerx - game.player.rect.centerx) // TILE)
+             if game.finish
+             else -1
+         )
+         return f"P {px} {py} | C {len(game.coins)} | E {len(game.enemies)} | F {dx_flag}"
+ 
+    def decide(self, game: "MarioGame") -> Tuple[bool, bool, bool]:
+         """Rate-limited query to OpenAI returning (left, right, jump)."""
+         now = time.time()
+         if now - self.last_t < self.interval:
+             return self.last_act
+ 
+         prompt = self._prompt(game)
+         try:
+             resp = openai.ChatCompletion.create(
+                 model=self.model,
+                 messages=[{"role": "user", "content": prompt}],
+                 temperature=0.0,
+                 max_tokens=3,
+             )
+             txt = resp.choices[0].message.content.upper()
+         except Exception:
+             txt = "NONE"
+ 
+         left, right, jump = "LEFT" in txt, "RIGHT" in txt, "JUMP" in txt
+         if left and right:  # cannot move both ways
+             left = right = False
+         self.last_act, self.last_t = (left, right, jump), now
+         return self.last_act
 
 # ───────── DATA CLASSES ─────────
 @dataclass(slots=True)
@@ -81,6 +125,11 @@ class MarioGame:
         self.font = pg.font.SysFont(None, 28)
 
         self.load_assets()
+        # enable AI when "--ai" flag is passed
+        self.autoplay: bool = "--ai" in sys.argv
+        if self.autoplay:
+            self.ai = OpenAIPlayer()
+
         self.reset()
 
     # ────── ASSETS ──────
@@ -99,6 +148,7 @@ class MarioGame:
         self.coins: List[Entity] = []
         self.enemies: List[Entity] = []
         self.finish: Entity | None = None
+        self.pole_rect: pg.Rect | None = None
 
         offset_y = SCREEN_H - len(LEVEL) * TILE
 
@@ -109,126 +159,136 @@ class MarioGame:
                 if ch in SOLID_TILES:
                     self.solids.append(pg.Rect(x, y, TILE, TILE))
                 elif ch == COIN_CHR:
-                    self.coins.append(Entity(self.img_coin, pg.Rect(x, y, TILE, TILE)))
+                    self.coins.append(
+                        Entity(self.img_coin, pg.Rect(x, y, TILE, TILE))
+                    )
                 elif ch == ENEMY_CHR:
-                    enemy = Entity(self.img_enemy, pg.Rect(x, y, TILE, TILE), vx=-1.2)
-                    self.enemies.append(enemy)
+                    # enemies start moving left
+                    self.enemies.append(
+                        Entity(self.img_enemy, pg.Rect(x, y, TILE, TILE), vx=-2.0)
+                    )
                 elif ch == FINISH_CHR:
-                    self.finish = Entity(
-                            self.img_flag, pg.Rect(x, y - TILE, TILE, TILE * 2)
-                            )
-        # Setup flagpole rect for win detection
-        if self.finish:
-            pole_x = self.finish.rect.x + TILE // 2
-            self.pole_rect = pg.Rect(pole_x - 2, 0, 4, SCREEN_H)
-        self.build_background()
-    # ────── BACKGROUND ──────
-    def build_background(self):
-        width = len(LEVEL[0]) * TILE
-        self.level_surface = pg.Surface((width, SCREEN_H))
-        self.level_surface.fill((92, 148, 252))
-        for solid in self.solids:
-            self.level_surface.blit(self.img_brick, (solid.x, solid.y))
-        if self.finish:
-            # Draw flagpole as vertical pole spanning full height
-            pole_x = self.finish.rect.x + TILE // 2
-            pole_width = 4
-            pg.draw.rect(self.level_surface, (150, 150, 150), (pole_x - pole_width//2, 0, pole_width, SCREEN_H))
-            # Draw flag at top of pole
-            self.level_surface.blit(self.img_flag, (self.finish.rect.x, self.finish.rect.y))
-        self.camera = 0
-        self.game_over = False
-        self.level_complete = False
-
-    # ────── MAIN LOOP ──────
-    def run(self):
-        while True:
-            dt = self.clock.tick(FPS) / 16.666  # scaled to 60 FPS base
-            self.handle_events()
-            if not self.game_over and not self.level_complete:
-                self.update(dt)
-            self.draw()
-
-    # ────── INPUT ──────
-    def handle_events(self):
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                self.quit()
-            elif e.type == pg.KEYDOWN:
-                if e.key == pg.K_ESCAPE:
-                    self.quit()
-                elif e.key in (pg.K_SPACE, pg.K_UP) and self.on_ground(self.player):
-                    self.player.vy = JUMP_V
+                    flag_rect = pg.Rect(x, y - TILE, TILE, TILE * 2)
+                    self.finish = Entity(self.img_flag, flag_rect)
+                    self.pole_rect = flag_rect
 
     # ────── UPDATE ──────
     def update(self, dt: float):
-        keys = pg.key.get_pressed()
-        self.player.vx = (keys[pg.K_RIGHT] - keys[pg.K_LEFT]) * RUN_SPEED
+        # AI or human input --------------------------------------------------
+        if getattr(self, "autoplay", False):
+            left, right, jump = self.ai.decide(self)
+            self.player.vx = (right - left) * RUN_SPEED
+            if jump and self.on_ground(self.player):
+                self.player.vy = JUMP_V
+        else:
+            keys = pg.key.get_pressed()
+            self.player.vx = (keys[pg.K_RIGHT] - keys[pg.K_LEFT]) * RUN_SPEED
+            if (keys[pg.K_SPACE] or keys[pg.K_UP]) and self.on_ground(self.player):
+                self.player.vy = JUMP_V
+
         # Horizontal movement + collision
         move_x = self.player.vx * dt
         self.player.rect.x += int(round(move_x))
         self.collide_axis(self.player, axis=0)
 
-        # Vertical movement + gravity + collision
+        # Vertical movement + gravity -----------------------------
         self.player.vy += GRAVITY * dt
-        move_y = self.player.vy * dt
-        self.player.rect.y += int(round(move_y))
+        self.player.rect.y += int(round(self.player.vy * dt))
         self.collide_axis(self.player, axis=1)
 
-        # Camera update - follow player horizontally
-        max_cam = self.level_surface.get_width() - SCREEN_W
-        self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
-        for en in self.enemies[:]:
-            en.rect.x += int(round(en.vx * dt))
-            # bounce off bricks
-            for solid in self.solids:
-                if en.rect.colliderect(solid):
-                    en.vx *= -1
-                    en.rect.x += int(round(en.vx * dt * 2))
-            if en.rect.right < 0:  # off-screen
-                self.enemies.remove(en)
+        # ───── FINISH LINE ─────
+        # Check BEFORE coins / enemies so no life can be lost after winning.
+        if self.pole_rect and self.player.rect.colliderect(self.pole_rect):
+            touch_y = self.player.rect.bottom
+            factor = max(0.0, min(1.0, (SCREEN_H - touch_y) / SCREEN_H))
+            self.score += int(factor * 1000)
+            self.level_complete = True
+            # keep camera updated so the pole remains visible
+            max_cam = self.level_surface.get_width() - SCREEN_W
+            self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
+            return  # stop further processing; course is complete
 
-        # Coin collection
+        # Collect coins ------------------------------------------
         for coin in self.coins[:]:
             if self.player.rect.colliderect(coin.rect):
                 self.coins.remove(coin)
                 self.score += COIN_VALUE
 
-        # Enemy collisions
+        # Enemy interactions (stomp / hurt) ----------------------
         for en in self.enemies[:]:
             if self.player.rect.colliderect(en.rect):
-                if (
-                        self.player.vy > 0
-                        and self.player.rect.bottom - en.rect.top < TILE // 2
-                        ):
-                    # stomp
+                # Determine if stomp (falling onto enemy)
+                if self.player.vy > 0 and self.player.rect.bottom <= en.rect.top + TILE * 0.5:
                     self.enemies.remove(en)
                     self.player.vy = JUMP_V * 0.6
                     self.score += COIN_VALUE
                 else:
                     self.handle_enemy_hit()
-                    break
+                break
 
-        # Fell below screen
-        if self.player.rect.top > SCREEN_H:
+        # ─── Enemy autonomous movement ───
+        for en in self.enemies:
+            # horizontal patrol
+            en.rect.x += int(round(en.vx * dt))
+            hit = False
+            for solid in self.solids:
+                if en.rect.colliderect(solid):
+                    if en.vx > 0:
+                        en.rect.right = solid.left
+                    else:
+                        en.rect.left = solid.right
+                    en.vx = -en.vx  # bounce
+                    hit = True
+            # gravity + vertical collisions
+            en.vy += GRAVITY * dt
+            en.rect.y += int(round(en.vy * dt))
+            for solid in self.solids:
+                if en.rect.colliderect(solid):
+                    if en.vy > 0:
+                        en.rect.bottom = solid.top
+                    else:
+                        en.rect.top = solid.bottom
+                    en.vy = 0
+
+        # Finish line (flagpole) – check BEFORE any life-loss logic
+        if self.pole_rect and self.player.rect.colliderect(self.pole_rect):
+            touch_y = self.player.rect.bottom
+            factor = max(0.0, min(1.0, (SCREEN_H - touch_y) / SCREEN_H))
+            self.score += int(factor * 1000)
+            self.level_complete = True
+            # keep camera updated so the pole remains visible
+            max_cam = self.level_surface.get_width() - SCREEN_W
+            self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
+            return  # skip further checks that might deduct lives
+
+        # Fell below screen (only if level not complete)
+        if self.player.rect.top > SCREEN_H and not self.level_complete:
             self.lives -= 1
             if self.lives <= 0:
                 self.game_over = True
+                self.score = 0
             else:
                 self.build_level()
                 self.player.rect.topleft = (64, SCREEN_H - TILE * 3)
                 self.player.vx = self.player.vy = 0
                 self.camera = 0
 
-        # Finish line (flagpole)
-        if hasattr(self, 'pole_rect') and self.player.rect.colliderect(self.pole_rect):
-            # Award points based on how high the player is on the pole
-            touch_y = self.player.rect.bottom
-            # Higher touch (lower y) yields more points
-            factor = max(0.0, min(1.0, (SCREEN_H - touch_y) / SCREEN_H))
-            added = int(factor * 1000)
-            self.score += added
-            self.level_complete = True
+        # Camera update - follow player horizontally
+        max_cam = self.level_surface.get_width() - SCREEN_W
+        self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
+
+    # ────── EVENTS ──────
+    def handle_events(self):
+        """Process SDL/keyboard events."""
+        for ev in pg.event.get():
+            if ev.type == pg.QUIT:
+                self.quit()
+            elif ev.type == pg.KEYDOWN:
+                if ev.key == pg.K_ESCAPE:
+                    self.quit()
+                # Quick reset after game-over for convenience
+                if ev.key == pg.K_r and self.game_over:
+                    self.reset()
 
     # ────── COLLISIONS ──────
     def collide_axis(self, ent: Entity, axis: int):
@@ -255,19 +315,44 @@ class MarioGame:
             if rect.colliderect(solid):
                 return True
         return False
+    def build_background(self):
+        """Create and draw the static level surface (tiles only)."""
+        # Determine level dimensions
+        level_width = len(LEVEL[0]) * TILE
+        level_height = SCREEN_H
+        # Create surface and fill sky color
+        self.level_surface = pg.Surface((level_width, level_height))
+        self.level_surface.fill((135, 206, 235))  # light sky blue
+        # Draw solid tiles
+        for solid in self.solids:
+            self.level_surface.blit(self.img_brick, (solid.x, solid.y))
+
     def reset(self):
-        """Reset game to its initial state."""
-        self.score = START_SCORE
-        self.lives = START_LIVES
-        self.build_level()
-        # Initialize player
-        player_y = SCREEN_H - TILE * 3
-        self.player = Entity(
-            self.img_player,
-            pg.Rect(64, player_y, TILE, int(TILE * 1.5))
-        )
-        self.player.vx = self.player.vy = 0
-        self.camera = 0
+         """Reset game to its initial state."""
+         self.score = START_SCORE
+         self.lives = START_LIVES
+         self.game_over = False
+         self.level_complete = False
+         self.build_level()
+         # Initialize player
+         player_y = SCREEN_H - TILE * 3
+         self.player = Entity(
+             self.img_player,
+             pg.Rect(64, player_y, TILE, int(TILE * 1.5))
+         )
+         self.player.vx = self.player.vy = 0
+         self.camera = 0
+         # ensure background + state flags exist
+         self.build_background()
+
+    def run(self):
+        """Main game loop."""
+        while True:
+            dt = self.clock.tick(FPS) / 16.666  # scaled to 60 FPS base
+            self.handle_events()
+            if not self.game_over and not self.level_complete:
+                self.update(dt)
+            self.draw()
 
     def draw(self):
         # Draw background
@@ -280,31 +365,33 @@ class MarioGame:
         # Draw enemies
         for en in self.enemies:
             en.draw(self.scr, cam)
-        self.player.draw(self.scr, cam)
+        # Draw finish flag if present
         if self.finish:
             self.finish.draw(self.scr, cam)
+        self.player.draw(self.scr, cam)
 
-        # UI
-        ui_text = f"SCORE {self.score:>6}   LIVES {self.lives}"
-        ui_surf = self.font.render(ui_text, True, (255, 255, 255))
-        self.scr.blit(ui_surf, (10, 10))
+        # HUD ----------------------------------------------------
+        hud = self.font.render(f"Score: {self.score}   Lives: {self.lives}", True, (0, 0, 0))
+        self.scr.blit(hud, (10, 10))
 
-        if self.game_over:
-            self.center_message("GAME OVER – press ESC")
-        elif self.level_complete:
-            # Victory overlay and message
-            overlay = pg.Surface((SCREEN_W, SCREEN_H), pg.SRCALPHA)
-            overlay.fill((0, 0, 0, 180))  # semi-transparent black
-            self.scr.blit(overlay, (0, 0))
-            # Big victory text
-            big_font = pg.font.SysFont(None, 72)
-            win_surf = big_font.render("YOU WIN!", True, (255, 215, 0))
+        # Show win banner only when level is really completed
+        if self.level_complete:
+            win_surf = self.font.render("COURSE COMPLETE", True, (0, 0, 0), (0, 255, 0))
             win_rect = win_surf.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 - 20))
             self.scr.blit(win_surf, win_rect)
             # Prompt to exit
             small_surf = self.font.render("Press ESC to quit", True, (255, 255, 255))
             small_rect = small_surf.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 + 40))
             self.scr.blit(small_surf, small_rect)
+
+        # Game-over banner --------------------------------------
+        if self.game_over:
+            over = self.font.render("GAME OVER", True, (255, 0, 0))
+            o_rect = over.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 - 20))
+            self.scr.blit(over, o_rect)
+            info = self.font.render("Press ESC to quit", True, (255, 255, 255))
+            i_rect = info.get_rect(center=(SCREEN_W // 2, SCREEN_H // 2 + 40))
+            self.scr.blit(info, i_rect)
 
         pg.display.flip()
 
@@ -315,6 +402,7 @@ class MarioGame:
         self.lives -= 1
         if self.lives <= 0:
             self.game_over = True
+            self.score = 0
         else:
             self.build_level()
             self.player.rect.topleft = (64, SCREEN_H - TILE * 3)
