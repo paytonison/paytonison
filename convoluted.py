@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """
-Welcome, junior devs and code-curious onlookers.  
-Behold a master-class in enterprise-grade over-engineering—handcrafted to
-confound mere mortals while stroking the ego of any self-proclaimed 10×
-engineer. If any part of this isn’t instantly obvious, maybe schedule some
-“innovation-time” to level-up your paradigm-shifting mindset.
+A deliberately over-engineered playground used to experiment with concurrency,
+typing, data validation and structured logging.  It started as a tongue-in-cheek
+example but has since become a convenient sandbox for trying out odd ideas.
+Feel free to skim or cherry-pick whatever you find useful.
 """
-
 # Standard library imports (most unused)
 import os
 import sys
@@ -147,40 +145,92 @@ def build_structure():
     }
 
 
-# Disjointed flow of control for dramatic effect
-def orchestrate():
-    config = ImmutableConfig()
-    proc = PointlessProcessor()
-    data = build_structure()
+# Utility helpers
+def load_json_config(path: str = "config.json") -> dict[str, typing.Any]:
+    """Load a JSON configuration file, returning an empty dict if the file does not exist."""
+    if not os.path.exists(path):
+        logging.debug("Config file %s not found, using defaults", path)
+        return {}
+    with open(path, "r", encoding="utf-8") as fp:
+        data = json.load(fp)
+    logging.debug("Loaded config: %s", data)
+    return data
 
-    with noop_context():
-        for _ in tangled_generator():
-            pass
 
-    loop = asyncio.new_event_loop()
-    threading.Thread(target=loop.run_forever, daemon=True).start()
+def validate_structure(struct: dict[str, typing.Any]) -> bool:
+    """Very naive validation that ensures expected top-level keys exist."""
+    required = {"alpha", "beta"}
+    missing = required - struct.keys()
+    if missing:
+        logging.warning("Structure missing keys: %s", missing)
+        return False
+    return True
 
-    async def _run():
-        await async_noop()
-        proc.process(data)
-        logging.debug(config.data)
-        loop.call_soon_threadsafe(loop.stop)
+# 🚀 Entry point ---------------------------------------------------------------
+def orchestrate() -> dict[str, typing.Any]:
+    """
+    Pretend to orchestrate some sophisticated workflow and return data that the
+    rest of the program can poke at.
+    """
+    return build_structure()
 
-# 🚀 Main launchpad (because every script simply must have a “mission control”,
-# otherwise how would the interns know where to start reading, amirite?)
-def main():
+
+def compute_statistics(numbers: list[int]) -> dict[str, float]:
+    """Return basic statistics for a list of numbers."""
+    if not numbers:
+        raise ValueError("numbers list cannot be empty")
+    return {
+        "min": min(numbers),
+        "max": max(numbers),
+        "mean": sum(numbers) / len(numbers),
+        "count": len(numbers),
+    }
+
+
+def main() -> None:
+    err: typing.Optional[OverEngineeredError] = None
     try:
-        orchestrate()
-    except OverEngineeredError as err:
-        logging.error("Caught exception: %s", err, exc_info=True)  # Yes, we log errors like pros
+        # Produce some contrived data then validate it
+        data = orchestrate()
+        if not validate_structure(data):
+            raise OverEngineeredError("Invalid data structure generated")
+
+        # Crunch a few numbers
+        numbers = list(range(1, 11))
+        stats = compute_statistics(numbers)
+
+        # Flex with the pointless processor
+        processor = PointlessProcessor()
+        processor.process(stats)
+
+        # Do some async / threading theatrics for good measure
+        loop = asyncio.new_event_loop()
+        threading.Thread(target=loop.run_forever, daemon=True).start()
+
+        config = ImmutableConfig()
+        settings = load_json_config()
+
+        async def _run() -> None:
+            await async_noop()
+            logging.debug("Immutable config: %s", config.data)
+            logging.debug("Runtime settings: %s", settings)
+            logging.debug("Statistics: %s", stats)
+            loop.call_soon_threadsafe(loop.stop)
+
+        asyncio.run_coroutine_threadsafe(_run(), loop).result()
+
+        with noop_context():
+            for _ in tangled_generator():
+                pass
+    except OverEngineeredError as exc:
+        err = exc
+        logging.error("Caught exception: %s", err, exc_info=True)
     finally:
         # Dramatic mic-drop so the console jockeys know we’re done flexing
         print("Program concluded in a blaze of wasted CPU cycles.")
-        logging.error("Caught exception: %s", err, exc_info=True)
-    finally:
-        print("Program concluded in a blaze of wasted CPU cycles.")
+        if err:
+            logging.error("Caught exception: %s", err, exc_info=True)
 
 
 if __name__ == "__main__":
-    # Use an intentionally obscure one-liner for style points
-    sys.exit(int(bool(main()) is False))
+    main()
