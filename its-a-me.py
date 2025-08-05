@@ -11,6 +11,7 @@ import sys
 import time
 import pygame as pg
 from openai import OpenAI
+import re
 
 client = OpenAI()
 import json                       # ← NEW
@@ -62,6 +63,20 @@ def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int,
     return surf
 
 
+def extract_action(text):
+    # Look for a JSON-ish action object, tolerate missing quotes/braces
+    m = re.search(r'{"action":\s*"(\w+(_and_\w+)?)"}', text)
+    if m:
+        return m.group(1)
+    # Or, just look for "action" in plain English
+    m = re.search(r'action\s*[:=]\s*(\w+(_and_\w+)?)', text)
+    if m:
+        return m.group(1)
+    # Or, common phrase in the output
+    for act in ["move_right_and_jump", "move_right", "move_left", "jump", "idle"]:
+        if act in text:
+            return act
+    return "idle"
 # ───────── AI DRIVER ─────────
 class OpenAIPlayer:
     """Agent that queries the OpenAI API for next action with explainability."""
@@ -127,34 +142,14 @@ class OpenAIPlayer:
             max_tokens=128,
             temperature=0.2
         )
-        text = response.choices[0].message.content
-        lines = text.strip().split("\n")
-        reasoning = lines[0] if lines else "No reasoning."
+        text = response.choices[0].message.content  # (for OpenAI v1 SDK)
+
+        reasoning = text.strip().split("\n")[0]
         self.last_reasoning = reasoning
-        print("[AI Mario] " + reasoning)  # Print reasoning
+        print("[AI Mario] " + reasoning)
 
-        # Extract JSON action
-        action_str = ""
-        for line in lines:
-            if line.strip().startswith("{") and "action" in line:
-                action_str = line.strip()
-                break
-        if not action_str:
-            # fallback: look for action keyword in any line
-            m = re.search(r'{"action":\s*"(\w+(_and_\w+)?)"}', text)
-            if m:
-                action_str = m.group(0)
-
-        # Default: idle
-        action = "idle"
-        try:
-            if action_str:
-                action_json = ast.literal_eval(action_str)
-                action = action_json["action"]
-        except Exception as e:
-            print("Failed to parse action from model:", e)
-
-        # Map action string to control tuple: (left, right, jump)
+        # Use the new robust action extractor:
+        action = extract_action(text)
         move = {
             "move_left":    (True, False, False),
             "move_right":   (False, True, False),
