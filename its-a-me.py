@@ -259,16 +259,9 @@ class MarioGame:
                         en.rect.top = solid.bottom
                     en.vy = 0
 
-        # Finish line (flagpole) – check BEFORE any life-loss logic
-        if self.pole_rect and self.player.rect.colliderect(self.pole_rect):
-            touch_y = self.player.rect.bottom
-            factor = max(0.0, min(1.0, (SCREEN_H - touch_y) / SCREEN_H))
-            self.score += int(factor * 1000)
-            self.level_complete = True
-            # keep camera updated so the pole remains visible
-            max_cam = self.level_surface.get_width() - SCREEN_W
-            self.camera = max(0, min(max_cam, self.player.rect.centerx - SCREEN_W // 2))
-            return  # skip further checks that might deduct lives
+        # Duplicate flag-pole detection removed; this logic is already
+        # handled earlier (see lines 208-218) before coin/enemy checks,
+        # ensuring the player can’t lose a life after winning.
 
         # Fell below screen (only if level not complete)
         if self.player.rect.top > SCREEN_H and not self.level_complete:
