@@ -10,7 +10,9 @@ import os
 import sys
 import time
 import pygame as pg
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 import json                       # ← NEW
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -62,15 +64,16 @@ def load_image(name: str, fallback_color: tuple[int, int, int], size: tuple[int,
 
 # ───────── AI DRIVER ─────────
 class OpenAIPlayer:
-    """Thin wrapper that queries the OpenAI API for next action using GPT-4.1-mini."""
+    """Agent that queries the OpenAI API for next action with explainability."""
     def __init__(self, model: str = "gpt-4.1-mini", interval: float = 0.25):
         self.model = model
         self.interval = interval  # seconds between API calls
         self.last_t = 0.0
-        self.last_act: Tuple[bool, bool, bool] = (False, False, False)  # (left, right, jump)
- 
+        self.last_act = (False, False, False)
+        self.last_reasoning = ""
+
     def _prompt(self, game: "MarioGame") -> str:
-        """Return a JSON string of the current game state."""
+        """Return a system prompt with game state and clear instructions."""
         state = {
             "player": {
                 "x": game.player.rect.centerx / TILE,
@@ -89,37 +92,77 @@ class OpenAIPlayer:
             ],
             "flag_dx": (
                 (game.finish.rect.centerx - game.player.rect.centerx) / TILE
-                if game.finish
-                else None
+                if game.finish else None
             ),
             "score": game.score,
             "lives": game.lives,
         }
-        return json.dumps(state)   # ← JSON prompt
- 
+        prompt = (
+            "You are an expert at playing Mario. "
+            "Analyze the following game state and determine the best next action for Mario. "
+            "First, explain what you intend to do and why, then output a JSON object with your action as one of: "
+            "\"move_left\", \"move_right\", \"jump\", \"move_right_and_jump\", or \"idle\".\n"
+            "Example response:\n"
+            "\"There's an enemy ahead, so I will jump over it to avoid losing a life.\"\n"
+            "{\"action\": \"move_right_and_jump\"}\n"
+            "Here is the game state:\n"
+            f"{json.dumps(state)}"
+        )
+        return prompt
+
     def decide(self, game: "MarioGame") -> Tuple[bool, bool, bool]:
-         """Rate-limited query to OpenAI returning (left, right, jump)."""
-         now = time.time()
-         if now - self.last_t < self.interval:
-             return self.last_act
- 
-         prompt = self._prompt(game)
-         try:
-             resp = openai.ChatCompletion.create(
-                 model=self.model,
-                 messages=[{"role": "user", "content": prompt}],
-                 temperature=0.0,
-                 max_tokens=3,
-             )
-             txt = resp.choices[0].message.content.upper()
-         except Exception:
-             txt = "NONE"
- 
-         left, right, jump = "LEFT" in txt, "RIGHT" in txt, "JUMP" in txt
-         if left and right:  # cannot move both ways
-             left = right = False
-         self.last_act, self.last_t = (left, right, jump), now
-         return self.last_act
+        from openai import OpenAI
+        
+        client = OpenAI()
+        import re
+        import ast
+
+        prompt = self._prompt(game)
+        response = client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "You are a helpful and expert Mario player."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=128,
+            temperature=0.2
+        )
+        text = response.choices[0].message.content
+        lines = text.strip().split("\n")
+        reasoning = lines[0] if lines else "No reasoning."
+        self.last_reasoning = reasoning
+        print("[AI Mario] " + reasoning)  # Print reasoning
+
+        # Extract JSON action
+        action_str = ""
+        for line in lines:
+            if line.strip().startswith("{") and "action" in line:
+                action_str = line.strip()
+                break
+        if not action_str:
+            # fallback: look for action keyword in any line
+            m = re.search(r'{"action":\s*"(\w+(_and_\w+)?)"}', text)
+            if m:
+                action_str = m.group(0)
+
+        # Default: idle
+        action = "idle"
+        try:
+            if action_str:
+                action_json = ast.literal_eval(action_str)
+                action = action_json["action"]
+        except Exception as e:
+            print("Failed to parse action from model:", e)
+
+        # Map action string to control tuple: (left, right, jump)
+        move = {
+            "move_left":    (True, False, False),
+            "move_right":   (False, True, False),
+            "jump":         (False, False, True),
+            "move_right_and_jump": (False, True, True),
+            "idle":         (False, False, False),
+        }
+        return move.get(action, (False, False, False))
 
 # ───────── DATA CLASSES ─────────
 @dataclass(slots=True)
