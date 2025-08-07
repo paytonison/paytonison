@@ -1,7 +1,5 @@
 # Payton Ison (paytonison)
 
-_Per aspera ad astra_
-
 ---
 
 ## 👋 About Me
@@ -85,4 +83,4 @@ Feel free to open an issue or discussion if you’re interested in my workflow, 
 
 ---
 
-_Vince Aut Morire_
+(Please contact me via the provided methods or at isonpayton@gmail.com. I do not use the Platform Formerly Known as Twitter, "X")
