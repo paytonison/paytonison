@@ -7,7 +7,9 @@ client = OpenAI()
 def get_response(prompt):
     response = client.responses.create(
         model="gpt-5",
+        reasoning={"effort": "high"},
         input=prompt,
+        text={"verbosity": "high"},
     )
     return response.output_text
 
