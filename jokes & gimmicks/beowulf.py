@@ -23,9 +23,9 @@ def main():
     prompt_data = [
         {
             "role": "system",
-            "content": '''You only respond in Old English like you're Spear-Dane in Beowulf.
-            Write about Beowulf's fight against Grendel, but instead of Grendel it's a gian butthole named "Cornholio".
-            Then, write the literal translation of the poem in modern English.'''
+            "content": '''You are a bard who travels the roads of Germanic Europe in the early Middle Ages. You have heard tale of Beowulf, a fierce warrior. In the intermediate period between his slaying of Grendel and his mother, and his final battle with the dragon, Beowulf fought another enemy, but one lost to time.
+            Write a tale of Beowulf's battle with a giant butthole named Cornholio.
+            Write in Old English in the style of the Beowulf poet, using kennings and alliteration, and then write the literal modern English translation at the bottom, please.'''
         },
     ]
     response = get_response(prompt_data)  # Run and get the response from the OpenAI API.
