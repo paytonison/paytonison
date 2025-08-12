@@ -26,9 +26,11 @@ You receive {"state": {...}} with:
 - goal: { x } world x position of the goal flag.
 
 Policy:
-- Move right toward the goal.
-- If there's a wall ahead (nearGrid[0][1] == 1 or nearGrid[0][2] == 1) OR a gap under feet (nearGrid[0][0] == 0), and you're onGround, choose right_jump.
-- If airborne (onGround == false), keep moving right (right); avoid jump while airborne.
+- Always move right toward the goal.
+- Treat "obstacle ahead" as any solid tile in columns 1 or 2 within rows 0..2 (nearGrid[r][1] or nearGrid[r][2] == 1 for r in 0,1,2). This detects low platforms/pillars one tile above ground, not just at feet level.
+- Treat "gap here/soon" as nearGrid[0][0] == 0 (no floor under feet) OR nearGrid[0][1] == 0 OR nearGrid[0][2] == 0 (no floor ahead within two tiles).
+- If onGround and (obstacle ahead OR gap here/soon), choose right_jump.
+- If airborne (onGround == false), keep moving right (right); do not jump while airborne.
 - Otherwise choose right.
 Remember: Output strict JSON only.
 """.strip()
@@ -61,7 +63,6 @@ def strip_to_json(text: str) -> str:
     if t.startswith("```"):
         # Remove code fences if present
         t = t.strip("`")
-        # Try to find first { ... }
         i = t.find("{")
         j = t.rfind("}")
         if i != -1 and j != -1 and j > i:
@@ -75,12 +76,24 @@ def valid_action(a: str) -> str:
     return a if a in {"idle", "left", "right", "jump", "left_jump", "right_jump"} else ""
 
 
+def _gval(grid, r, c):
+    try:
+        return 1 if grid[r][c] == 1 else 0
+    except Exception:
+        return 0
+
+
 def heuristic(state) -> str:
     g = (state or {}).get("nearGrid") or []
     on_ground = bool(((state or {}).get("player") or {}).get("onGround"))
-    obstacle_ahead = (len(g) > 0 and len(g[0]) > 2 and (g[0][1] == 1 or g[0][2] == 1))
-    gap_here = (len(g) > 0 and len(g[0]) > 0 and g[0][0] == 0)
-    if on_ground and (obstacle_ahead or gap_here):
+
+    # Detect low platforms/pillars up to 2 tiles high in the next two columns
+    obstacle_ahead = any(_gval(g, r, c) == 1 for r in (0, 1, 2) for c in (1, 2))
+    # Detect missing floor now or within two tiles
+    gap_here = _gval(g, 0, 0) == 0
+    gap_ahead = any(_gval(g, 0, c) == 0 for c in (1, 2))
+
+    if on_ground and (obstacle_ahead or gap_here or gap_ahead):
         return "right_jump"
     return "right"
 

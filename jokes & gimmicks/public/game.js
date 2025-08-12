@@ -63,18 +63,23 @@ function makeLevel() {
   for (let x = 0; x < LEVEL_W; x++) {
     for (let y = LEVEL_H - 2; y < LEVEL_H; y++) lvl[y][x] = 1;
   }
-  // Platforms and gaps
-  for (let x = 10; x < 20; x++) lvl[14][x] = 1;
-  for (let x = 22; x < 28; x++) lvl[12][x] = 1;
-  for (let x = 35; x < 45; x++) lvl[15][x] = 1;
+
+  // Lowered platforms so AI can mount them (1–2 tiles above ground)
+  for (let x = 10; x < 20; x++) lvl[17][x] = 1; // was 14
+  for (let x = 22; x < 28; x++) lvl[16][x] = 1; // was 12
+  for (let x = 35; x < 45; x++) lvl[17][x] = 1; // was 15
+
   // Gaps in ground
   for (let x = 48; x < 52; x++) lvl[LEVEL_H - 2][x] = 0;
   for (let x = 70; x < 74; x++) lvl[LEVEL_H - 2][x] = 0;
-  // Pillars
-  for (let y = LEVEL_H - 3; y > LEVEL_H - 8; y--) lvl[y][60] = 1;
-  for (let y = LEVEL_H - 3; y > LEVEL_H - 10; y--) lvl[y][85] = 1;
-  // Goal pillar
+
+  // Short pillars (1 tile tall) so AI can jump over
+  lvl[LEVEL_H - 3][60] = 1; // y = 17
+  lvl[LEVEL_H - 3][85] = 1; // y = 17
+
+  // Goal pillar (keep tall for flag visibility)
   for (let y = LEVEL_H - 3; y > LEVEL_H - 12; y--) lvl[y][LEVEL_W - 3] = 1;
+
   return lvl;
 }
 
