@@ -40,13 +40,13 @@ async def ensure_logged_in(page, login_timeout_sec: int) -> None:
 # ---------- AsyncComputer backed by Playwright --------------------------------
 
 @dataclass
+@dataclass
 class LocalPlaywrightComputer(AsyncComputer):
     width: int = 1280
     height: int = 900
-    start_url: str = "https://chatgpt.com/"
-    channel: str = "chrome"           # use system Chrome
-    user_data_dir: str | None = None  # pass real Chrome profile root to reuse login
-
+    start_url: str | None = None      # ← was "https://chatgpt.com/"
+    channel: str = "chrome"
+    user_data_dir: str | None = None
     _pw = None
     _context = None
     _page = None
@@ -67,31 +67,33 @@ class LocalPlaywrightComputer(AsyncComputer):
             self.user_data_dir = tempfile.mkdtemp(prefix="pw-chrome-")
 
         launch_args = [
-            "--no-first-run",
-            "--no-default-browser-check",
-            "--disable-extensions",
-            "--disable-features=OptimizationHints",
-            "--disable-blink-features=AutomationControlled",
-        ]
+                "--no-first-run",
+                "--no-default-browser-check",
+                "--disable-extensions",
+                "--disable-features=OptimizationHints",
+                "--disable-blink-features=AutomationControlled",
+                ]
 
         # Prefer system Chrome; fall back to bundled Chromium if that fails.
         try:
             self._context = await self._pw.chromium.launch_persistent_context(
-                user_data_dir=self.user_data_dir,
-                channel=self.channel,             # "chrome"
-                headless=False,
-                viewport={"width": self.width, "height": self.height},
-                args=launch_args,
-            )
+                    user_data_dir=self.user_data_dir,
+                    channel=self.channel,             # "chrome"
+                    headless=False,
+                    viewport={"width": self.width, "height": self.height},
+                    args=launch_args,
+                    )
         except Exception:
             self._context = await self._pw.chromium.launch_persistent_context(
-                user_data_dir=self.user_data_dir,
-                headless=False,
-                viewport={"width": self.width, "height": self.height},
-                args=launch_args,
-            )
+                    user_data_dir=self.user_data_dir,
+                    headless=False,
+                    viewport={"width": self.width, "height": self.height},
+                    args=launch_args,
+                    )
 
         self._page = self._context.pages[0] if self._context.pages else await self._context.new_page()
+        if self.start_url:  # ← leave this guard
+            await self._page.goto(self.start_url, wait_until="domcontentloaded")
 
         # Robust navigation to ChatGPT
         async def safe_goto(page, url):
@@ -102,8 +104,8 @@ class LocalPlaywrightComputer(AsyncComputer):
             await page.goto(url, wait_until="domcontentloaded", timeout=60_000)
             # Consider it "loaded" if body has content
             return await page.evaluate(
-                "document.contentType==='text/html' && !!document.body && document.body.innerHTML.trim().length>0"
-            )
+                    "document.contentType==='text/html' && !!document.body && document.body.innerHTML.trim().length>0"
+                    )
 
         ok = False
         for url in ("https://chatgpt.com/", "https://chat.openai.com/"):
@@ -131,9 +133,9 @@ class LocalPlaywrightComputer(AsyncComputer):
 
         if not ok:
             raise RuntimeError(
-                "Chrome opened but the page stayed blank. "
-                "Close all Chrome windows and try again, or run with a fresh profile (no extensions)."
-            )
+                    "Chrome opened but the page stayed blank. "
+                    "Close all Chrome windows and try again, or run with a fresh profile (no extensions)."
+                    )
 
     async def stop(self):
         if self._context:
@@ -211,7 +213,6 @@ async def main():
         print(f"Using Chrome user-data dir: {user_data_dir}")
 
     computer = LocalPlaywrightComputer(
-        start_url="https://chatgpt.com/",
         channel="chrome",
         user_data_dir=user_data_dir,
     )
@@ -221,22 +222,22 @@ async def main():
     await ensure_logged_in(computer._page, args.login_timeout)
 
     model = OpenAIResponsesModel(
-        model="computer-use-preview",
-        openai_client=AsyncOpenAI(),
-    )
+            model="computer-use-preview",
+            openai_client=AsyncOpenAI(),
+            )
 
     agent = Agent(
-        name="Desktop operator",
-        model=model,
-        instructions=(
-            "You are controlling a visible Chrome window. "
-            "Go to a new or existing chat at chatgpt.com, click the message textbox, "
-            f"type exactly: {args.say!r}, press Enter to send, then verify it appears. "
-            "Finally reply with 'done'."
-        ),
-        tools=[ComputerTool(computer=computer, on_safety_check=lambda _: True)],
-        model_settings=ModelSettings(truncation="auto"),  # required for computer-use
-    )
+            name="Desktop operator",
+            model=model,
+            instructions=(
+                "You are controlling a visible Chrome window. "
+                "Go to a new or existing chat at chatgpt.com, click the message textbox, "
+                f"type exactly: {args.say!r}, press Enter to send, then verify it appears. "
+                "Finally reply with 'done'."
+                ),
+            tools=[ComputerTool(computer=computer, on_safety_check=lambda _: True)],
+            model_settings=ModelSettings(truncation="auto"),  # required for computer-use
+            )
 
     try:
         result = await Runner.run(agent, input="Proceed.")
