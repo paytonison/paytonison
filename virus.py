@@ -13,6 +13,8 @@ from playwright.async_api import async_playwright, TimeoutError as PWTimeout
 from openai import AsyncOpenAI
 import argparse
 
+import tempfile
+
 # ---------- Helpers -----------------------------------------------------------
 
 def default_chrome_user_data_root() -> str:
@@ -24,12 +26,11 @@ def default_chrome_user_data_root() -> str:
     return os.path.expanduser("~/.config/google-chrome")
 
 async def ensure_logged_in(page, login_timeout_sec: int) -> None:
-    """Wait until the ChatGPT composer exists. If not, give user time to log in."""
-    await page.goto("https://chatgpt.com/", wait_until="domcontentloaded")
-    selectors = "form textarea, [contenteditable='true'], [data-testid*=composer]"
+    # We’re already on ChatGPT from start(); just detect composer or wait for you to login.
+    selectors = "form textarea, [contenteditable='true'], [data-testid*=composer i]"
     try:
         await page.wait_for_selector(selectors, timeout=10_000)
-        return  # already logged in
+        return
     except PWTimeout:
         print(f"Login required. Complete login in the opened Chrome window "
               f"(waiting up to {login_timeout_sec}s)…")
@@ -60,26 +61,79 @@ class LocalPlaywrightComputer(AsyncComputer):
 
     async def start(self):
         self._pw = await async_playwright().start()
-        # If you reuse a real profile, make sure no regular Chrome is running.
+
+        # Guarantee a valid user-data dir (Chrome hates "")
+        if not self.user_data_dir:
+            self.user_data_dir = tempfile.mkdtemp(prefix="pw-chrome-")
+
+        launch_args = [
+            "--no-first-run",
+            "--no-default-browser-check",
+            "--disable-extensions",
+            "--disable-features=OptimizationHints",
+            "--disable-blink-features=AutomationControlled",
+        ]
+
+        # Prefer system Chrome; fall back to bundled Chromium if that fails.
         try:
             self._context = await self._pw.chromium.launch_persistent_context(
-                user_data_dir=self.user_data_dir or "",
-                channel=self.channel,
+                user_data_dir=self.user_data_dir,
+                channel=self.channel,             # "chrome"
                 headless=False,
                 viewport={"width": self.width, "height": self.height},
-                args=["--disable-blink-features=AutomationControlled"],
+                args=launch_args,
             )
-        except Exception as e:
-            msg = str(e).lower()
-            if "another browser instance" in msg or "profile" in msg and "in use" in msg:
-                raise RuntimeError(
-                    "Chrome refused to start with that profile (is Chrome already running?). "
-                    "Close all Chrome windows and try again."
-                ) from e
-            raise
+        except Exception:
+            self._context = await self._pw.chromium.launch_persistent_context(
+                user_data_dir=self.user_data_dir,
+                headless=False,
+                viewport={"width": self.width, "height": self.height},
+                args=launch_args,
+            )
+
         self._page = self._context.pages[0] if self._context.pages else await self._context.new_page()
-        if self.start_url:
-            await self._page.goto(self.start_url, wait_until="domcontentloaded")
+
+        # Robust navigation to ChatGPT
+        async def safe_goto(page, url):
+            try:
+                await page.bring_to_front()
+            except Exception:
+                pass
+            await page.goto(url, wait_until="domcontentloaded", timeout=60_000)
+            # Consider it "loaded" if body has content
+            return await page.evaluate(
+                "document.contentType==='text/html' && !!document.body && document.body.innerHTML.trim().length>0"
+            )
+
+        ok = False
+        for url in ("https://chatgpt.com/", "https://chat.openai.com/"):
+            try:
+                ok = await safe_goto(self._page, url)
+                if ok:
+                    break
+            except Exception:
+                pass
+
+        if not ok:
+            # Nuke the first tab; open a clean one and try again
+            try:
+                await self._page.close()
+            except Exception:
+                pass
+            self._page = await self._context.new_page()
+            for url in ("https://chatgpt.com/", "https://chat.openai.com/"):
+                try:
+                    ok = await safe_goto(self._page, url)
+                    if ok:
+                        break
+                except Exception:
+                    pass
+
+        if not ok:
+            raise RuntimeError(
+                "Chrome opened but the page stayed blank. "
+                "Close all Chrome windows and try again, or run with a fresh profile (no extensions)."
+            )
 
     async def stop(self):
         if self._context:
