@@ -89,6 +89,7 @@ agent = Agent(
         "If the user provided a URL, pass it to 'launch_chrome'. "
         "Report success or a clear error."
     ),
+    model="gpt-5",
     tools=[find_chrome, launch_chrome],
 )
 
