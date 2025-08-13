@@ -51,31 +51,48 @@ _Discover more experiments and prototypes in my [GitHub repos](https://github.co
 
 ---
 
-## About This Repository’s Workflow
+# About This Repository’s Workflow
 
-**Notice**:
-This repository is part of an ongoing, publicly-visible development process. Code changes, refactors, and upgrades are implemented and tested locally with the assistance of AI tools (including GitHub Copilot and ChatGPT), but commits and pushes only happen when I’m fully confident in their stability, purpose, and improvement.
+This repo is part of an ongoing, publicly-visible development process. Code changes, refactors, and upgrades are all implemented and tested locally with the assistance of AI tools (GitHub Copilot, ChatGPT, etc.) — but nothing gets committed here until I’m confident it’s stable, purposeful, and an actual improvement over what came before.
+
+(Yes, the file is called virus.py. No, it’s not malware. The name’s a joke.)
 
 ---
 
-### *My Commit Philosophy*
+## My Commit Philosophy
 
-* Deliberate Commits:
-I do not commit/push every change as I go. Instead, I work iteratively, often in long local branches, only updating the public repo after extensive testing, review, and reflection.
+*Deliberate Commits*
 
-* Copilot & AI Integration:
-As a dyslexic who has difficulty with spatial sequencing (sometimes called spatial counting or tracking), I use tools like Copilot and ChatGPT as accessibility aids. They reduce cognitive friction when writing, editing, and debugging code; however, ***all logic, design, and conceptual direction come directly from me.***
-AI as a prosthetic, not a pilot: The AI helps clarify syntax, fill gaps, and catch errors that are otherwise challenging due to my neurotype.
-*  Human-in-the-loop: No code is ever committed blindly. Every algorithm, architectural decision, or structural choice is my own; AI is used to accelerate, not dictate, the process.
-*  Final review: All commits are reviewed, tested, and validated by me before being pushed, regardless of AI input.
-* Resilience & Rollback:
-Sometimes, things break. When experiments go sideways, I may roll back local changes, restore from previous clones, or even re-download folders before pushing stable updates. You might see evidence of this in commit histories or branch structures.
-*  Transparency & Learning:
-This repo is a living record of my skills evolving in real time. By keeping my projects public, I’m inviting others to see not just the polished final product, but the actual journey—successes, refactors, and recoveries included.
+I don’t push every keystroke like a panic-stricken “green square” addict. Most of my work happens in long local branches, with bursts of visible commits only after heavy iteration, testing, and rethinking.
 
-### *Why This Matters*
-* You may notice fewer “micro-commits” or work-in-progress branches compared to other public projects. This is intentional. I prefer to keep history clean and focused, avoiding noise for reviewers, future collaborators, and myself.
-* If you spot major refactors, sudden improvements, or style changes, that’s likely a reflection of adopting new tools, patterns, or AI-assisted suggestions that were first vetted offline.
+*Copilot & AI Integration*
+
+As someone who’s dyslexic and occasionally gets tangled in spatial sequencing (aka: “where the hell am I in this code block again?”), I use Copilot and ChatGPT as accessibility tools. They smooth out the friction when I’m writing, editing, or debugging — but:
+* AI is a prosthetic, not a pilot. All logic, design, and conceptual direction is mine.
+* The AI helps with syntax, filling in boilerplate, and catching little things my brain likes to skip over.
+
+*Human-in-the-Loop*
+
+No commit here is blind trust in a machine. Every algorithm, structure, or architectural call is my own — the AI just speeds up the manual labor side.
+
+*Final Review*
+
+All changes are reviewed, tested, and signed off by me before they ever leave my local machine.
+
+*Resilience & Rollback*
+
+Sometimes, experiments explode spectacularly. I’m not afraid to nuke a branch, restore from a backup, or rip something out entirely before pushing. Commit history will occasionally reflect these… adventures.
+
+*Transparency & Learning*
+
+This repo isn’t just a product — it’s a public journal of my process. You’ll see wins, failures, refactors, recoveries, and the occasional questionable commit message. That’s on purpose.
+
+---
+
+**Why This Matters**
+* You’ll see fewer “one-line tweak” commits here than in some repos — I keep history clean and high-signal for my own sanity and for anyone else browsing.
+* If you notice sudden leaps in code style, structure, or capability, that’s likely me integrating a new tool, pattern, or AI-assisted refactor that’s already been stress-tested offline.
+* This isn’t just about code; it’s about showing the process. The good, the bad, the “man plans / God laughs” moments — all part of the package.
 
 ---
 
