@@ -61,35 +61,36 @@ This repo is part of an ongoing, publicly-visible development process. Code chan
 
 ## My Commit Philosophy
 
-*Deliberate Commits*
+**Deliberate Commits**
 
 I don’t push every keystroke like a panic-stricken “green square” addict. Most of my work happens in long local branches, with bursts of visible commits only after heavy iteration, testing, and rethinking.
 
-*Copilot & AI Integration*
+**Copilot & AI Integration**
 
 As someone who’s dyslexic and occasionally gets tangled in spatial sequencing (aka: “where the hell am I in this code block again?”), I use Copilot and ChatGPT as accessibility tools. They smooth out the friction when I’m writing, editing, or debugging — but:
 * AI is a prosthetic, not a pilot. All logic, design, and conceptual direction is mine.
 * The AI helps with syntax, filling in boilerplate, and catching little things my brain likes to skip over.
 
-*Human-in-the-Loop*
+**Human-in-the-Loop**
 
 No commit here is blind trust in a machine. Every algorithm, structure, or architectural call is my own — the AI just speeds up the manual labor side.
 
-*Final Review*
+**Final Review**
 
 All changes are reviewed, tested, and signed off by me before they ever leave my local machine.
 
-*Resilience & Rollback*
+**Resilience & Rollback**
 
 Sometimes, experiments explode spectacularly. I’m not afraid to nuke a branch, restore from a backup, or rip something out entirely before pushing. Commit history will occasionally reflect these… adventures.
 
-*Transparency & Learning*
+**Transparency & Learning**
 
 This repo isn’t just a product — it’s a public journal of my process. You’ll see wins, failures, refactors, recoveries, and the occasional questionable commit message. That’s on purpose.
 
 ---
 
 **Why This Matters**
+
 * You’ll see fewer “one-line tweak” commits here than in some repos — I keep history clean and high-signal for my own sanity and for anyone else browsing.
 * If you notice sudden leaps in code style, structure, or capability, that’s likely me integrating a new tool, pattern, or AI-assisted refactor that’s already been stress-tested offline.
 * This isn’t just about code; it’s about showing the process. The good, the bad, the “man plans / God laughs” moments — all part of the package.
