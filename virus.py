@@ -120,26 +120,18 @@ async def main():
     # Auto-approve safety checks for this demo; consider prompting the user in production
     def approve_safety(_): return True
 
-    settings_kwargs = {}
-    if ModelSettings:
-        settings_kwargs["model_settings"] = ModelSettings(truncation="auto")
-
     agent = Agent(
-        name="Desktop operator",
-        model=model,
-        instructions=(
-            "You are controlling a visible Chrome window. "
-            "Goal: In the current window, open ChatGPT and post exactly: 'Shall we play a game?'. "
-            "Steps: (1) If redirected to login/consent, stop and say 'login required'. "
-            "(2) Otherwise ensure you're on a chat page, click the main message textbox "
-            "(ARIA role=textbox; placeholder like 'Send a message...'). "
-            "(3) Type exactly: Shall we play a game? "
-            "(4) Press Enter to send. Then verify the message bubble appears. "
-            "Finally reply with 'done'."
-        ),
-        tools=[ComputerTool(computer=computer, on_safety_check=lambda _: True)],
-        **settings_kwargs,
-    )
+    name="Desktop operator",
+    model=model,  # OpenAIResponsesModel("computer-use-preview")
+    instructions=(
+        "You are controlling a visible Chrome window. "
+        "Goal: In the current window, open ChatGPT and post exactly: 'Shall we play a game?'. "
+        "If login/consent appears, say 'login required', otherwise click the textbox, type it, and press Enter, then reply 'done'."
+    ),
+    tools=[ComputerTool(computer=computer, on_safety_check=lambda _: True)],
+    model_settings=ModelSettings(truncation="auto"),  # <-- required for Computer Use
+)
+
 
     try:
         result = await Runner.run(agent, input="Proceed.")
