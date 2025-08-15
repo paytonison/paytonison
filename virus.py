@@ -16,14 +16,14 @@ import argparse
 import tempfile
 
 # ---------- Helpers -----------------------------------------------------------
-
-def default_chrome_user_data_root() -> str:
+def default_firefox_user_data_root() -> str:
+    """Return the default Firefox profile root (not a specific profile)."""
     if sys.platform == "darwin":
-        return os.path.expanduser("~/Library/Application Support/Google/Chrome")
+        return os.path.expanduser("~/Library/Application Support/Firefox")
     if sys.platform.startswith("win"):
-        return os.path.join(os.environ.get("LOCALAPPDATA", ""), "Google", "Chrome", "User Data")
+        return os.path.join(os.environ.get("APPDATA", ""), "Mozilla", "Firefox")
     # linux
-    return os.path.expanduser("~/.config/google-chrome")
+    return os.path.expanduser("~/.mozilla/firefox")
 
 async def ensure_logged_in(page, login_timeout_sec: int) -> None:
     # We’re already on ChatGPT from start(); just detect composer or wait for you to login.
@@ -40,12 +40,11 @@ async def ensure_logged_in(page, login_timeout_sec: int) -> None:
 # ---------- AsyncComputer backed by Playwright --------------------------------
 
 @dataclass
-@dataclass
 class LocalPlaywrightComputer(AsyncComputer):
     width: int = 1280
     height: int = 900
     start_url: str | None = None      # ← was "https://chatgpt.com/"
-    channel: str = "chrome"
+    channel: str = "firefox"          # <-- default to Firefox
     user_data_dir: str | None = None
     _pw = None
     _context = None
@@ -59,6 +58,44 @@ class LocalPlaywrightComputer(AsyncComputer):
     def dimensions(self) -> tuple[int, int]:
         return (self.width, self.height)
 
+    async def start(self):
+        self._pw = await async_playwright().start()
+
+        # Guarantee a valid user‑data dir (Firefox hates "")
+        if not self.user_data_dir:
+            # Create a temporary directory that Playwright will use as the profile root
+            self.user_data_dir = tempfile.mkdtemp(prefix="pw-firefox-")
+
+        # Firefox‑specific launch arguments – keep it minimal
+        launch_args = []
+
+        # Prefer system Firefox; fall back to bundled if that fails.
+        try:
+            if self.channel == "firefox":
+                self._context = await self._pw.firefox.launch_persistent_context(
+                    user_data_dir=self.user_data_dir,
+                    headless=False,
+                    viewport={"width": self.width, "height": self.height},
+                    args=launch_args,
+                )
+            else:   # fallback to Chromium (kept for backward compatibility)
+                self._context = await self._pw.chromium.launch_persistent_context(
+                    user_data_dir=self.user_data_dir,
+                    channel=self.channel,
+                    headless=False,
+                    viewport={"width": self.width, "height": self.height},
+                    args=launch_args,
+                )
+        except Exception:
+            # If the chosen browser fails to launch, try Chromium as a last resort
+            self._context = await self._pw.chromium.launch_persistent_context(
+                user_data_dir=self.user_data_dir,
+                headless=False,
+                viewport={"width": self.width, "height": self.height},
+                args=launch_args,
+            )
+
+        # …rest of the original start() body unchanged…
     async def start(self):
         self._pw = await async_playwright().start()
 
@@ -195,9 +232,9 @@ async def main():
     parser = argparse.ArgumentParser(description="Post to ChatGPT via Agents ComputerTool.")
     parser.add_argument("--say", default="Shall we play a game?", help="Message to send.")
     parser.add_argument("--reuse-profile", action="store_true",
-                        help="Reuse your signed-in Chrome profile (close Chrome first).")
+                        help="Reuse your signed‑in Firefox profile (close Firefox first).")
     parser.add_argument("--profile-dir", default=None,
-                        help="Explicit Chrome user-data root to reuse (NOT the '/Default' subfolder).")
+                        help="Explicit Firefox user-data root to reuse (NOT the '/Default' subfolder).")
     parser.add_argument("--login-timeout", type=int, default=600,
                         help="Seconds to wait for manual login if needed.")
     args = parser.parse_args()
@@ -206,14 +243,15 @@ async def main():
     if args.profile_dir:
         user_data_dir = os.path.expanduser(args.profile_dir)
     elif args.reuse_profile:
-        user_data_dir = default_chrome_user_data_root()
+        # Use the Firefox helper instead of the Chrome one
+        user_data_dir = default_firefox_user_data_root()
 
     if user_data_dir:
         Path(user_data_dir).mkdir(parents=True, exist_ok=True)
-        print(f"Using Chrome user-data dir: {user_data_dir}")
+        print(f"Using Firefox user-data dir: {user_data_dir}")
 
     computer = LocalPlaywrightComputer(
-        channel="chrome",
+        channel="firefox",          # <-- explicitly ask for Firefox
         user_data_dir=user_data_dir,
     )
     await computer.start()
@@ -230,7 +268,7 @@ async def main():
             name="Desktop operator",
             model=model,
             instructions=(
-                "You are controlling a visible Chrome window. "
+                "You are controlling a visible Firefox window. "
                 "Go to a new or existing chat at chatgpt.com, click the message textbox, "
                 f"type exactly: {args.say!r}, press Enter to send, then verify it appears. "
                 "Finally reply with 'done'."
