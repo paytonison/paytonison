@@ -1,45 +1,36 @@
-# **LLMs 101: What Even Is It?**
+# LLMs 101: What Even Is It?
+---
 ### Preface
 
-A large language model (LLM) is an artificial neural network, a type of machine learning algorithm that mimics organic neural networks, trained on vast quantities of text-based data. The most widespread LLM-type artificial neural networks are known as Generative Pre-Trained Transformers (GPTs), which serve as a backbone for artificial intelligence. These gained international recognition when OpenAI released their ChatGPT chatbot that used GPT-3, thereby kicking off the AI Arms Race.
+Large language models (LLMs) are artificial neural networks trained on vast amounts of text. The most common type is the **transformer**, introduced in the 2017 paper _Attention Is All You Need_. Transformers break text into smaller units called **tokens**, turn those into numbers, run them through layers of matrix math and attention, and then predict what tokens come next.
 
-To understand LLMs, you need a little history first. In 2017, a group of Google researchers (aka, nerds) wrote the monumental paper _Attention Is All You Need_, which introduced the transformer architecture. Transformers take text, break it into smaller units called _tokens_, turn those into numerical values, run them through layers of matrix math and attention mechanisms, and finally convert the result back into human-readable text. Think of it like translating English to numbers, juggling those numbers around, and translating them back.
-
-At the heart of it all is a mathematical process called **matrix multiplication**—a way of combining two grids of numbers to create a new one. In AI, these grids are called **weights**, and adjusting them during training is how models “learn.”
+OpenAI’s ChatGPT, built on GPT-3, brought this architecture into the spotlight and kicked off today’s wave of AI applications.
 
 ---
-### What are they used for?
+### What can LLMs do?
 
-Despite the name “large language model,” LLMs aren’t limited to just language. They can take in many types of data (text, images, audio—depending on training) and spit out predictions in kind. The trick is always the same: encode the input into numbers the model understands, let it do the math, decode the output.
+Although they’re called _language_ models, LLMs can handle many kinds of data if trained for it. For text, typical uses include:
 
-For language, LLMs shine. Some examples include:
-- Text generation
-- Text completion
-- Text analysis
-- Translation
-- Semantic search
-- Question answering
-- Agentic tasks
-- Countless others
+- Generating text    
+- Completing text
+- Translating text
+- Analyzing or summarizing text
+- Answering questions
+- Powering agents that perform tasks
 
-We’ll stick with the first few here, since they’re the backbone of most Cookbook recipes.
+This Cookbook focuses on the first few, since they’re the foundation of most real-world applications.
 
 ---
-### **Text generation**
+### How do they work?
 
-So how does the magic actually happen? Under the hood, an LLM is a **prediction engine**. It’s trained on a massive corpus of text and learns statistical relationships between tokens. When you type a prompt, the model predicts the most likely next token, then the next, and so on until you stop it.
+At their core, LLMs are **prediction engines**. Given some input text, they predict the most likely next token, then the next, and so on until they produce a coherent output.
 
-The lookup table that helps with this is called an **embedding matrix**. Instead of storing whole words, the model breaks text into _tokens_ (subword chunks like play, ##ing, or un). Each token is mapped to a vector in a giant space, where tokens with similar meanings or contexts are close together. For example:
-
-- _king_ is to _queen_ as _emperor_ is to _empress_.
-- These aren’t synonyms, but they share semantic and relational properties.
-- The model can “see” these relationships numerically.
-
-Using embeddings and attention, the model decides which tokens are most likely to follow. String enough predictions together and—presto—you’ve got a coherent sentence. Or at least, something that looks coherent.
+Tokens live in an **embedding space**—a mathematical map where related concepts sit near one another. For example, _king_ and _queen_ are neighbors, just as _emperor_ and _empress_ are. This structure allows the model to capture relationships and context when generating text.
 
 ---
-### **So what?**
+### **Why it matters for you**
 
-The key idea: LLMs don’t “understand” text like humans do. They crunch probabilities to predict the next token. That prediction power is exactly what you’ll tap into in the Cookbook: generating text, completing thoughts, analyzing documents, and more.
+You don’t need every detail of the math to use LLMs effectively. The key takeaway is simple:
+**LLMs generate outputs by predicting one token at a time.**
 
----
+The rest of this Cookbook will show you how to harness that prediction power—whether you want to generate text, complete thoughts, or analyze documents.
