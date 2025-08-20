@@ -3,17 +3,28 @@
 # Buckle up, your Gremlin chat is about to get mischievous.
 
 # Snatch the OpenAI client, you mischievous algorithm wrangler.
+import os
 from openai import OpenAI
 # Hijack datetime for sneaky timestamps on our secret logs.
 from datetime import datetime
+
 # Summon our cheeky Gremlin AI to do our bidding.
-client = OpenAI()
+try:
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+except Exception as e:
+    print(f"Failed to initialize OpenAI client: {e}")
+    print("Make sure you have set the OPENAI_API_KEY environment variable.")
+    client = None
 
 # This beast sends your mortal prompt to Gremlin HQ and fetches the sassiest comeback.
 def get_gremlin_response(prompt):
-    # Kick off the chat ritual with Gremlin mischief in every word.
-    response = client.chat.completions.create(
-        model="gpt-4.1",  # Fuel the chaos engine with upgraded Gremlin magic
+    if not client:
+        return "🗲 Gremlin servers are down! Set your OPENAI_API_KEY to unleash the chaos."
+    
+    try:
+        # Kick off the chat ritual with Gremlin mischief in every word.
+        response = client.chat.completions.create(
+        model="gpt-4o-mini",  # Fuel the chaos engine with upgraded Gremlin magic
         messages=[
             {
                 "role": "system",
@@ -24,14 +35,16 @@ def get_gremlin_response(prompt):
             {"role": "assistant", "content": "Hey, how can I help?"},  # Lure them in with a charming Gremlin hello
             {"role": "user", "content": prompt}  # The mortal's plea for mischief
         ],
-        temperature=0.8,       # Tweak the randomness dial for unpredictable shenanigans
-        max_tokens=1024,       # Cap the length of our rambunctious reply
-        top_p=1.0,             # Keep the nucleus intact; no half-measures
-        frequency_penalty=0.3, # No repeating the same old nonsense
-        presence_penalty=0.5   # Encourage fresh chaos in every line
-    )
-    # Yank the Gremlin's snark straight from the API and strip the fluff
-    return response.choices[0].message.content.strip()
+            temperature=0.8,       # Tweak the randomness dial for unpredictable shenanigans
+            max_tokens=1024,       # Cap the length of our rambunctious reply
+            top_p=1.0,             # Keep the nucleus intact; no half-measures
+            frequency_penalty=0.3, # No repeating the same old nonsense
+            presence_penalty=0.5   # Encourage fresh chaos in every line
+        )
+        # Yank the Gremlin's snark straight from the API and strip the fluff
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"🗲 Gremlin mischief failed: {str(e)}. The servers must be having a tantrum!"
 
 # This part etches our Gremlin saga into a crumbling parchment (text file).
 def save_conversation(conversation_history):

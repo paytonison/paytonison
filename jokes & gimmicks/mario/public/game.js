@@ -1,5 +1,5 @@
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
 
 const TILE = 32;
 const LEVEL_W = 120;
@@ -28,22 +28,22 @@ const GOAL_X = (LEVEL_W - 3) * TILE;
 
 const keys = Object.create(null);
 let aiEnabled = true;
-let lastAction = "idle";
+let lastAction = 'idle';
 let actionUntil = 0;
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener('keydown', (e) => {
   if (e.repeat) return;
-  if (e.code === "KeyA") {
+  if (e.code === 'KeyA') {
     aiEnabled = !aiEnabled;
-    document.getElementById("status").textContent = `AI: ${aiEnabled ? "ON" : "OFF"}`;
-  } else if (e.code === "KeyR") {
+    document.getElementById('status').textContent = `AI: ${aiEnabled ? 'ON' : 'OFF'}`;
+  } else if (e.code === 'KeyR') {
     reset();
   } else {
     keys[e.code] = true;
   }
 });
 
-document.addEventListener("keyup", (e) => {
+document.addEventListener('keyup', (e) => {
   keys[e.code] = false;
 });
 
@@ -184,7 +184,7 @@ function update(dt) {
 
 function draw() {
   // Sky
-  ctx.fillStyle = "#87ceeb";
+  ctx.fillStyle = '#87ceeb';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Level
@@ -197,13 +197,13 @@ function draw() {
     for (let tx = x0; tx < x1; tx++) {
       if (tx < 0 || ty < 0 || tx >= LEVEL_W || ty >= LEVEL_H) continue;
       if (WORLD[ty][tx] === 1) {
-        ctx.fillStyle = "#8b4513";
+        ctx.fillStyle = '#8b4513';
         ctx.fillRect(
           Math.floor(tx * TILE - CAMERA.x),
           Math.floor(ty * TILE - CAMERA.y),
           TILE, TILE
         );
-        ctx.strokeStyle = "rgba(0,0,0,0.15)";
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)';
         ctx.strokeRect(
           Math.floor(tx * TILE - CAMERA.x) + 0.5,
           Math.floor(ty * TILE - CAMERA.y) + 0.5,
@@ -214,13 +214,13 @@ function draw() {
   }
 
   // Goal flagpole
-  ctx.fillStyle = "#2e8b57";
+  ctx.fillStyle = '#2e8b57';
   ctx.fillRect(Math.floor(GOAL_X - CAMERA.x), Math.floor((LEVEL_H - 11) * TILE - CAMERA.y), 6, TILE * 10);
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = '#fff';
   ctx.fillRect(Math.floor(GOAL_X - CAMERA.x + 6), Math.floor((LEVEL_H - 11) * TILE - CAMERA.y), 18, 12);
 
   // Player
-  ctx.fillStyle = "#ff4136";
+  ctx.fillStyle = '#ff4136';
   ctx.fillRect(
     Math.floor(player.x - CAMERA.x),
     Math.floor(player.y - CAMERA.y),
@@ -228,16 +228,15 @@ function draw() {
   );
 
   // HUD info
-  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillRect(8, canvas.height - 54, 260, 46);
-  ctx.fillStyle = "#fff";
-  ctx.font = "12px monospace";
-  ctx.fillText(`AI: ${aiEnabled ? "ON" : "OFF"}  last: ${lastAction}`, 16, canvas.height - 32);
+  ctx.fillStyle = '#fff';
+  ctx.font = '12px monospace';
+  ctx.fillText(`AI: ${aiEnabled ? 'ON' : 'OFF'}  last: ${lastAction}`, 16, canvas.height - 32);
   ctx.fillText(`x:${(player.x/TILE).toFixed(1)} y:${(player.y/TILE).toFixed(1)}`, 16, canvas.height - 16);
 }
 
-function gameLoop(ts) {
-  const now = performance.now();
+function gameLoop() {
   const dt = 1 / 60; // fixed step for stability
   update(dt);
   draw();
@@ -254,26 +253,26 @@ function applyAction(action) {
   keys.Space = false;
 
   switch (action) {
-    case "left":
-      keys.ArrowLeft = true;
-      break;
-    case "right":
-      keys.ArrowRight = true;
-      break;
-    case "jump":
-      if (player.onGround) keys.Space = true;
-      break;
-    case "left_jump":
-      keys.ArrowLeft = true;
-      if (player.onGround) keys.Space = true;
-      break;
-    case "right_jump":
-      keys.ArrowRight = true;
-      if (player.onGround) keys.Space = true;
-      break;
-    case "idle":
-    default:
-      break;
+  case 'left':
+    keys.ArrowLeft = true;
+    break;
+  case 'right':
+    keys.ArrowRight = true;
+    break;
+  case 'jump':
+    if (player.onGround) keys.Space = true;
+    break;
+  case 'left_jump':
+    keys.ArrowLeft = true;
+    if (player.onGround) keys.Space = true;
+    break;
+  case 'right_jump':
+    keys.ArrowRight = true;
+    if (player.onGround) keys.Space = true;
+    break;
+  case 'idle':
+  default:
+    break;
   }
 }
 
@@ -305,12 +304,12 @@ function snapshotState() {
 
 async function requestAction() {
   const state = snapshotState();
-  const res = await fetch("/agent/act", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+  const res = await fetch('/agent/act', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ state })
   });
-  if (!res.ok) throw new Error("agent HTTP " + res.status);
+  if (!res.ok) throw new Error('agent HTTP ' + res.status);
   const data = await res.json();
-  return data.action || "right";
+  return data.action || 'right';
 }

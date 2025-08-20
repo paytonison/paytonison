@@ -106,7 +106,7 @@ async function decideAction(state) {
 
     if (ACTIONS.has(a)) return a;
     return heuristic(state);
-  } catch (err) {
+  } catch {
     // On timeout, abort, etc. go safe
     return heuristic(state);
   } finally {
@@ -132,4 +132,12 @@ function heuristic(state) {
 
 app.listen(port, () => {
   console.log(`Mario agent server running: http://localhost:${port}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use. Try setting PORT environment variable to a different port.`);
+    console.error('Example: PORT=3001 npm start');
+  } else {
+    console.error('Server failed to start:', err.message);
+  }
+  process.exit(1);
 });

@@ -38,6 +38,31 @@ Hi, I’m **Payton Ison** — writer, philosopher, AI developer, and polymath. I
 ---
 _Discover more experiments and prototypes in my [GitHub repos](https://github.com/paytonison?tab=repositories)._
 
+## 🔧 Repository Projects & Quick Start
+
+This repository also contains several experimental projects:
+
+- **LLM Mario Agent** (`jokes & gimmicks/mario/`): A 2D Mario-style platformer with AI gameplay
+- **Gremlin AI Chatbot** (`jokes & gimmicks/gremlin.py`): A mischievous AI assistant  
+- **Minimal GPT Implementation** (`stupid.py`): From-scratch transformer model
+
+### Quick Setup
+
+1. **Mario AI Game**: 
+   ```bash
+   cd "jokes & gimmicks/mario"
+   npm install
+   export OPENAI_API_KEY="your_key"
+   npm start
+   ```
+
+2. **Gremlin Chatbot**:
+   ```bash
+   pip install openai
+   export OPENAI_API_KEY="your_key"
+   python3 "jokes & gimmicks/gremlin.py"
+   ```
+
 ---
 
 ## 🧠 Skills & Tools
