@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f269bc029e78415d",
+        "id": "a3c9c5a157bc1222",
         "type": "tabs",
         "children": [
           {
-            "id": "33e203f6447d0da1",
+            "id": "f4c631f9534ca01c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "llms 101.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "llms 101"
             }
           }
         ]
@@ -74,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "412af1d5ece30dc1",
@@ -157,6 +160,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -165,7 +169,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "33e203f6447d0da1",
+  "active": "f4c631f9534ca01c",
   "lastOpenFiles": [
     "openai-cookbook-llms-101.md",
     "llms 101.md",

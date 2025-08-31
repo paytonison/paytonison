@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+skip-string-normalization = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-select = ["I"]  # auto-fix imports
+fix = true
