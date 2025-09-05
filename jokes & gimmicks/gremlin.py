@@ -39,7 +39,7 @@ def save_conversation(conversation_history):
     # Stamp the session with a timestamp fit for legendary mischief.
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     filename = "gremlin_convo.txt"
-    
+
     try:
         # Crack open the parchment ledger in append mode; never lose a moment of mayhem.
         with open(filename, "a", encoding="utf-8") as file:
@@ -61,7 +61,7 @@ def main():
     # Summon an empty scroll to record our forthcoming capers.
     conversation_history = []
     print("Gremlin Chat (type 'exit' to quit and save conversation)")
-    
+
     # Echo the mortal's opening gambit.
     user_input = input("You: ")
     # Continue looping until the user types 'exit'.
@@ -76,7 +76,7 @@ def main():
         print(f"Gremlin: {response}")
         # Solicit the next mortal whisper.
         user_input = input("You: ")
-    
+
     # Once the mortal yields, entomb the scroll.
     if conversation_history:
         save_conversation(conversation_history)
