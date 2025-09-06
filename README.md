@@ -84,4 +84,4 @@ Contact
 
 Email: isonpayton@gmail.com | 
 GitHub: https://github.com/paytonison |
-LinkedIn: https://linkedin.com/in/paytonison |
+LinkedIn: https://linkedin.com/in/paytonison
