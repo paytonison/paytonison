@@ -84,6 +84,6 @@ Open an issue or discussion. I respond best to concrete proposals: problem state
 
 Contact
 
-Email: isonpayton@gmail.com | 
+Email: isonpayton@gmail.com & paytonison@icloud.com | 
 GitHub: https://github.com/paytonison |
 LinkedIn: https://linkedin.com/in/paytonison
