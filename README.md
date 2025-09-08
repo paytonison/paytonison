@@ -1,14 +1,10 @@
 # Payton Ison (paytonison)
 
-## Writer · Philosopher · AI Developer · Polymath
+### Writer · Philosopher · AI Developer · Polymath
 
-I build weird, useful, and experimental AI — from micro-AGI playthings to therapist-adjacent conversational agents. I write code, craft prompts, and design human-led methods that push how models learn and behave.
+## [_Ouroboros: Human-Led Recursive Reinforcement for Autoregressive Language Models_](https://zenodo.org/records/17074537)
 
----
-
-## TL;DR
-
-I make small, sharp experiments that reveal big ideas: human-led recursive reinforcement for LLMs, low-resource micro-AGI, and tooling that turns language into action. If you want inventive prototypes, readable process, and unapologetic iteration, you’re in the right repo.
+In my little workshop, I build robots that learn, feel, talk, and reason. This repo is a small collection of my many experiments to push the bounds of computing until the threads give way to lands once unthinkable. Asimov, eat your heart out.
 
 ---
 
