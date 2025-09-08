@@ -1,7 +1,5 @@
 # Payton Ison (paytonison)
 
-_Architect is what the outside looks like; designer is what the inside looks like._
-
 ## Writer · Philosopher · AI Developer · Polymath
 
 I build weird, useful, and experimental AI — from micro-AGI playthings to therapist-adjacent conversational agents. I write code, craft prompts, and design human-led methods that push how models learn and behave.
