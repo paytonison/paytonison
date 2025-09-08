@@ -2,7 +2,7 @@
 
 ### Writer · Philosopher · AI Developer · Polymath
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537svg)](https://doi.org/10.5281/zenodo.17074537)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537)
 
 In my little workshop, I build robots that learn, feel, talk, and reason. This repo is a small collection of my many experiments to push the bounds of computing until the threads give way to lands once unthinkable. Asimov, eat your heart out.
 
