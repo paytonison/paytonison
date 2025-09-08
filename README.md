@@ -70,14 +70,6 @@ PS: Yes, virus.py is a joke — nothing malicious. Read the code, not the filena
 
 ---
 
-# Want to collaborate?
-
-Open an issue or discussion. I respond best to concrete proposals: problem statement, data/compute constraints, and an initial metric for success.
-
----
-
-Contact
-
 Email: isonpayton@gmail.com | 
 GitHub: https://github.com/paytonison |
 LinkedIn: https://linkedin.com/in/paytonison
