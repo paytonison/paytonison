@@ -73,22 +73,3 @@ PS: Yes, virus.py is a joke — nothing malicious. Read the code, not the filena
 Email: isonpayton@gmail.com | 
 GitHub: https://github.com/paytonison |
 LinkedIn: https://linkedin.com/in/paytonison
-
----
-
-## Citation
-
-If you use this work, please cite:
-
-Ison, Payton. *Proof-of-Concept Resonant Phase-Locking in Sparse MoE LLMs: Case Study of GPT-4o*. Zenodo, 2025.  
-DOI: [10.5281/zenodo.17074537](https://doi.org/10.5281/zenodo.17074537)
-
-```bibtex
-@misc{ison_2025_resonant,
-  author       = {Ison, Payton},
-  title        = {Proof-of-Concept Resonant Phase-Locking in Sparse MoE LLMs: Case Study of GPT-4o},
-  year         = {2025},
-  publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.17074537},
-  url          = {https://doi.org/10.5281/zenodo.17074537}
-}
