@@ -6,7 +6,7 @@
 
 In my little workshop, I build robots that learn, feel, talk, and reason. This repo is a small collection of my many experiments to push the bounds of computing until the threads give way to lands once unthinkable.
 
-***What’s old is new again. #BuildDifferent***
+### _What’s old is new again. #BuildDifferent_
 
 ---
 
