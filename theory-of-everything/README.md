@@ -28,7 +28,6 @@ from Plato’s cave to quantum codes.
 This repo is the first articulation of that bridge.
 
 ---
----
 
 ## Overview
 
