@@ -52,7 +52,7 @@ Academic background: Physics & Computer Science (double major), plus an AA in Hi
 - **1914** — Long‑form literary project (experimental fiction × computational imagination).  
 - **LLM Mario Agent** — A structured‑state interface that lets an LLM “play” Mario via JSON state → action loops.
 
-Each project is a research artifact and a playground; READMEs document design choices and failure modes.  [oai_citation:0‡README.md](file-service://file-U2Apfy7qesn7EE4JkymvtG)
+Each project is a research artifact and a playground; READMEs document design choices and failure modes.
 
 ---
 
@@ -74,7 +74,7 @@ Each project is a research artifact and a playground; READMEs document design ch
 - **Tests & review:** nothing ships without local validation and a final review pass.  
 - **Commit hygiene:** deliberate, high‑signal commits; history shows the scars (rollbacks welcome).  
 
-> PS: `virus.py` is a joke—nothing malicious. Read the code, not the filename.  [oai_citation:1‡README.md](file-service://file-U2Apfy7qesn7EE4JkymvtG)
+> PS: `virus.py` is a joke—nothing malicious. Read the code, not the filename.
 
 ---
 
