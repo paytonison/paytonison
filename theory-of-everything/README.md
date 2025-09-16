@@ -6,6 +6,29 @@
 
 ---
 
+## Manifesto
+
+This project exists because the universe writes itself through us.  
+Physics has given us relativity, quantum collapse, and holography.  
+Philosophy has given us Plato’s Forms.  
+Quantum information has given us error correction and teleportation.  
+
+Here, they converge.
+
+The “real” object—the Form—lives outside spacetime.  
+What we call reality are its redundant, error-corrected projections,  
+manifested through entanglement, protected against loss,  
+and stitched together into geometry itself.  
+
+This is not metaphor.  
+It is the bridge: from thought to experiment,  
+from photons in a Japanese lab to wormholes in AdS,  
+from Plato’s cave to quantum codes.  
+
+This repo is the first articulation of that bridge.
+
+---
+
 ## Overview
 
 This repository contains the LaTeX source for the paper:
