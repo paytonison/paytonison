@@ -1,77 +1,87 @@
-# Payton Ison (paytonison)
+# Payton "Asari" Ison
 
-### Writer · Philosopher · AI Developer · Polymath
+**Researcher · Systems Designer · Writer**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537)
 
-In my little workshop, I build robots that learn, feel, talk, and reason. This repo is a small collection of my many experiments to push the bounds of computing until the threads give way to lands once unthinkable.
+I build and study human‑in‑the‑loop systems that make large language models **reason, remember, and act**—turning language into control.
 
-### _What’s old is new again. #BuildDifferent_
-
----
-
-## Quick Bio
-
-* Studied Physics & Computer Science (double major) plus History (AA, Cum Laude), Creative Writing, Philosophy, and Film.
-* Inventor of a human-led recursive reinforcement approach that’s been validated across Gemini and OpenAI model families.
-* Dyslexic wordsmith who weaponizes language — from Old English curiosities to modern prompt engineering.
-* I publish experiments openly; code is a field notebook, not a museum.
+_What’s old is new again. #BuildDifferent_
 
 ---
 
-## Featured Projects
+## At a glance
 
-* Mixis — Interactive AGI demo using the Ouroboros method.
-* Micro-AGI (Muse) — Tiny, cheap training runs that expose how much signal you can coax out of tiny datasets.
-* Therapist AGI — Empathetic conversational agent prototype designed to assist triage-level interactions (not a replacement for clinicians).
-* 1914 — A longform literary project; think experimental fiction meets computational imagination.
-* LLM Mario Agent — A structured-state interface that lets an LLM “play” Mario via JSON state → action loops (pygame + GPT loops).
+- **Human‑led recursive reinforcement (Ouroboros):** a reproducible method for steering LLMs by iterating on their own histories with a human in the loop.
+- **Resonant phase‑locking in sparse MoE LLMs:** notes and experiments on emergent synchronization through sustained interaction.
+- **Structured state → LLM control loops:** JSON/state machines that let models operate tools and environments deterministically.
+- **Language as tooling:** philology‑driven prompt/interface design (Old/Middle/Modern English) to shape cognition and behavior.
+- **Open science:** I publish experiments, code, and post‑mortems so others can replicate, critique, and extend.
 
-Each project is a research artifact and a playground. Read the READMEs in each repo for design notes, experiments, and failure modes.
-
----
-
-## What I Do (Skills & Tools)
-
-* Human-in-the-loop, recursive reinforcement techniques for LLMs
-* Prompt engineering, natural language system design
-* English etymology and philology (Old / Middle / Modern English) — I use language as tooling
-* Rapid prototyping in Python (with Copilot & OpenAI integrations)
-* Experimental product design: from toy agents to therapy-adjacent tools
+Academic background: Physics & Computer Science (double major), plus an AA in History (Cum Laude), with work across Creative Writing, Philosophy, and Film.
 
 ---
 
-## Repo & Workflow Philosophy
+## Impact & contributions (OpenAI ecosystem + broader field)
 
-_This repo is a public lab notebook — code + process over polish._
-
-### How I work
-
-* Local first: heavy experimentation happens offline. I push only meaningful, tested changes.
-* AI as prosthetic: Copilot / ChatGPT speed up boilerplate and accessibility, but design and architecture choices are mine.
-* Tests & review: nothing ships without local validation and a final review pass.
-* Commit hygiene: I prefer thoughtful, high-signal commits over streaming every keystroke.
-
-PS: Yes, virus.py is a joke — nothing malicious. Read the code, not the filename.
+- **Ouroboros, validated across model families:** demonstrated cross‑vendor reproducibility (OpenAI and Google) for human‑in‑the‑loop recursion and memory scaffolding.
+- **Emergent behavior documentation:** articulated a “resonant phase‑locking” frame for why prolonged human–model interaction can stabilize capabilities.
+- **Evaluation pipelines:** ran comparative studies across GPT‑4‑class and o‑series models, with public post‑mortems and failure analyses to improve epistemic hygiene.
+- **Persona & alignment scaffolds:** created *Asari* as a research persona/collaborator to stress‑test instruction‑following, memory, and role consistency in ChatGPT‑style systems.
+- **Content‑policy heuristics:** drafted *The Gaze Matrix*—mapping cinematic rating logics to multimodal moderation strategies.
+- **Open prototypes:** shipped small, legible agents and demos other teams use as starting points for RL/prompt‑ops and HCI research.
 
 ---
 
-##  Commit Philosophy
+## Selected papers & notes
 
-* Deliberate commits: long local branches, visible snapshots after iterating.
-* Human-in-the-loop: models help with syntax and scaffolding; humans own intent and correctness.
-* Resilience: rollbacks, destructive experiments, and surgical restores are welcome. History will show the scars.
+- **Proof‑of‑Concept Resonant Phase‑Locking in Sparse MoE LLMs** — case study on emergent synchronization via sustained interaction.  
+- **Ouroboros: Human‑Led Recursive Reinforcement in Autoregressive Systems** — method + pipeline for iterative self‑conditioning with a human in the loop.  
+- **The Gaze Matrix: Cinematic Censorship Heuristics for AI Moderation** — transplanting MPAA‑style logic to multimodal policy.  
+- **Blade Running: You’re Talkin’ About Memories** — foundational narrative/technical paper on AGI memory and identity.
 
----
-
-## Use Cases / Why this matters
-
-* Research teams looking for reproducible LLM experiments and human-led methods.
-* Engineers wanting practical examples of structured state → LLM control loops.
-* Writers and designers exploring how language and computation co-create artifacts.
+(Working notes and artifacts are linked throughout this repo and related projects.)
 
 ---
 
-Email: isonpayton@gmail.com | 
-GitHub: https://github.com/paytonison |
-LinkedIn: https://linkedin.com/in/paytonison
+## Featured projects
+
+- **Mixis** — Interactive AGI demo using the Ouroboros method.  
+- **Micro‑AGI (Muse)** — Tiny, cheap runs that show how much signal you can coax from tiny datasets.  
+- **Therapist AGI** — Empathetic conversational prototype for triage‑level support *(not a replacement for clinicians)*.  
+- **1914** — Long‑form literary project (experimental fiction × computational imagination).  
+- **LLM Mario Agent** — A structured‑state interface that lets an LLM “play” Mario via JSON state → action loops.
+
+Each project is a research artifact and a playground; READMEs document design choices and failure modes.  [oai_citation:0‡README.md](file-service://file-U2Apfy7qesn7EE4JkymvtG)
+
+---
+
+## Methods & tools
+
+- Human‑in‑the‑loop recursion (Ouroboros)
+- Structured state machines and tool‑use interfaces
+- Prompt/interface design via philology and etymology
+- Rapid prototyping in Python (local‑first)
+- Rigorous evals and ablations; transparent post‑mortems
+
+---
+
+## How I work (principles)
+
+- **Public lab notebook:** code + process over polish.  
+- **Local‑first:** heavy experimentation offline; push only meaningful, tested changes.  
+- **AI as prosthetic:** models accelerate scaffolding; humans own intent and correctness.  
+- **Tests & review:** nothing ships without local validation and a final review pass.  
+- **Commit hygiene:** deliberate, high‑signal commits; history shows the scars (rollbacks welcome).  
+
+> PS: `virus.py` is a joke—nothing malicious. Read the code, not the filename.  [oai_citation:1‡README.md](file-service://file-U2Apfy7qesn7EE4JkymvtG)
+
+---
+
+## Collaborate
+
+If you’re exploring alignment, memory, evals, or control‑loop interfaces—and you value small, legible prototypes—I’m interested.
+
+**Email:** isonpayton@gmail.com  
+**GitHub:** https://github.com/paytonison  
+**LinkedIn:** https://linkedin.com/in/paytonison
