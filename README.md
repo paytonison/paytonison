@@ -2,7 +2,7 @@
 
 **Researcher · Systems Designer · Writer**
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)
 
 I build and study human‑in‑the‑loop systems that make large language models **reason, remember, and act**—turning language into control.
 
@@ -128,3 +128,15 @@ Exploring alignment, memory, evals, or control‑loop interfaces—and value sma
 **Email:** isonpayton@gmail.com  
 **GitHub:** https://github.com/paytonison  
 **LinkedIn:** https://linkedin.com/in/paytonison
+
+## Agentic editorial workflow
+
+I contribute to **OpenAI's public repositories** (issues, PRs, examples) and maintain my own projects.
+
+**How I work with coding agents**  
+- I use **GPT‑5** and **GitHub Copilot** to draft patches and documentation.  
+- I act as the **executive editor**: I review every change, decide what ships, and sign off on the final patch.  
+- All agent‑suggested edits are linted, tested, and attributed; I write the commit message and own the merge.  
+- For non‑trivial changes, I annotate PR descriptions with reasoning, guardrails, and test notes.
+
+*Note: Contributions are to OpenAI's public/open‑source repositories; I am not speaking on behalf of OpenAI.*
