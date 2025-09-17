@@ -85,3 +85,15 @@ If you’re exploring alignment, memory, evals, or control‑loop interfaces—a
 **Email:** isonpayton@gmail.com  
 **GitHub:** https://github.com/paytonison  
 **LinkedIn:** https://linkedin.com/in/paytonison
+
+## Agentic editorial workflow
+
+I contribute to **OpenAI's public repositories** (issues, PRs, examples) and maintain my own projects.
+
+**How I work with coding agents**  
+- I use **GPT‑5** and **GitHub Copilot** to draft patches and documentation.  
+- I act as the **executive editor**: I review every change, decide what ships, and sign off on the final patch.  
+- All agent‑suggested edits are linted, tested, and attributed; I write the commit message and own the merge.  
+- For non‑trivial changes, I annotate PR descriptions with reasoning, guardrails, and test notes.
+
+*Note: Contributions are to OpenAI's public/open‑source repositories; I am not speaking on behalf of OpenAI.*
