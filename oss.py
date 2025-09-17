@@ -1,4 +1,3 @@
-# minimal_gpt.py
 import math, torch
 import torch.nn as nn
 import torch.nn.functional as F
