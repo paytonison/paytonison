@@ -41,7 +41,7 @@ _What’s old is new again. #BuildDifferent_
 - **Why it matters:** Treats language as **UI**, not just content—an underused lever for reliability.
 
 ### Comparative eval pipelines
-- **Action:** Ran side‑by‑side evaluations across GPT‑4‑class and o‑series models with public post‑mortems.  
+- **Action:** Ran side‑by‑side evaluations across GPT‑4‑class and o-series models with public post‑mortems.  
 - **Impact:** Better epistemic hygiene; clearer failure taxonomies and regression surfaces.  
 - **Why it matters:** Reproducible evals create **ground truth** for progress, not vibes.
 
