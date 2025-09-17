@@ -114,7 +114,7 @@ _What’s old is new again. #BuildDifferent_
 ## How I work (principles)
 - **Public lab notebook:** code + process over polish.  
 - **Local‑first:** experiment offline; push only meaningful, tested changes.  
-- **AI as prosthetic:** models accelerate scaffolding; humans own intent/correctness.  
+- **AI as prosthetic:** models accelerate scaffolding; humans own intent‑correctness.  
 - **Tests & review:** nothing ships without local validation and a final pass.  
 - **Commit hygiene:** deliberate, high‑signal commits; history shows the scars (rollbacks welcome).
 
