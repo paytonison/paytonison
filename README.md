@@ -140,4 +140,9 @@ I contribute to **OpenAI's public repositories** (issues, PRs, examples) and mai
 - All agent‑suggested edits are linted, tested, and attributed; I write the commit message and own the merge.  
 - For non‑trivial changes, I annotate PR descriptions with reasoning, guardrails, and test notes.
 
+**Benefits of this workflow**
+- **Efficiency:** So far, I’ve only used ~3.5% of my premium Copilot request quota to achieve those four PRs, underscoring the leverage of this workflow.
+- **Quality:** I catch and fix errors before they reach production, ensuring high standards.
+- **Learning:** I gain insights into how coding agents think, which informs my own work in human‑in‑the‑loop systems.
+
 *Note: Contributions are to OpenAI's public/open‑source repositories; I am not speaking on behalf of OpenAI.*
