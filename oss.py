@@ -1,3 +1,5 @@
+# TinyGPT: minimal GPT-OSS implementation in PyTorch
+# Actually works.
 import math, torch
 import torch.nn as nn
 import torch.nn.functional as F
