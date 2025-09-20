@@ -4,6 +4,11 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537) 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)
+
+I build and study human-in-the-loop systems that make large language models **reason, remember, and act**—turning language into control.
+
+_What’s old is new again. #BuildDifferent_
 
 I build and study human‑in‑the‑loop systems that make large language models **reason, remember, and act**—turning language into control.
 
