@@ -8,11 +8,7 @@
 
 I build and study human-in-the-loop systems that make large language models **reason, remember, and act**—turning language into control.
 
-_What’s old is new again. #BuildDifferent_
-
-I build and study human‑in‑the‑loop systems that make large language models **reason, remember, and act**—turning language into control.
-
-_What’s old is new again. #BuildDifferent_
+_#BuildDifferent_
 
 ---
 
@@ -95,11 +91,6 @@ _What’s old is new again. #BuildDifferent_
 - **Action:** Encodes empathic interviewing and safety rails.  
 - **Impact:** Useful for rapid UX research on supportive dialogue.  
 - **Why it matters:** Evidence that careful scaffolding can produce safer interactions.
-
-**1914** — Long‑form literary project  
-- **Action:** Experimental fiction × computational imagination.  
-- **Impact:** Explores narrative memory and identity as system constraints.  
-- **Why it matters:** Tests the limits of long‑context reasoning in a human medium.
 
 **LLM Mario Agent** — JSON state → action loops  
 - **Action:** Lets an LLM “play” via deterministic state machines.  
