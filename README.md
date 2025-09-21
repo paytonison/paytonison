@@ -120,11 +120,16 @@ _#BuildDifferent_
 ---
 
 ## Collaborate
-Exploring alignment, memory, evals, or control‑loop interfaces—and value small, legible prototypes? I’m interested.
+
+Interested? Check below.
 
 **Email:** isonpayton@gmail.com  
 **GitHub:** https://github.com/paytonison  
-**LinkedIn:** https://linkedin.com/in/paytonison
+**LinkedIn:** https://linkedin.com/in/paytonison  
+**Threads:** https://threads.com/@pls.stfu.payton  
+**Elon:** https://x.com/pls_stfu_payton
+
+---
 
 ## Agentic editorial workflow
 
