@@ -69,4 +69,4 @@ _I build human‑in‑the‑loop systems that make language models reason, remem
 - **GitHub:** github.com/paytonison  
 - **LinkedIn:** linkedin.com/in/paytonison  
 - **Threads:** @pls.stfu.payton  
-- **X:** @pls_stfu_payton
+- **The Platform Formerly Known as Twitter:** @pls_stfu_payton
