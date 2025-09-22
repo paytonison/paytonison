@@ -63,15 +63,6 @@ _I build human‑in‑the‑loop systems that make language models reason, remem
 
 ---
 
-## How I work
-
-- **Public lab notebook:** code + process over polish  
-- **Local‑first:** experiment offline; push meaningful diffs  
-- **Prosthetic AI:** models accelerate scaffolding; humans own intent‑correctness  
-- **Commit hygiene:** small, legible commits; history shows the scars
-
----
-
 ## Get in touch
 
 - **Email:** isonpayton@gmail.com  
