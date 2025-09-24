@@ -1,10 +1,10 @@
 # Payton “Asari” Ison
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537) 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)
 
-Researcher · Systems Designer · Writer  
+**Researcher · Systems Designer · Writer**
+
 _I build human‑in‑the‑loop systems that make language models reason, remember, and act—turning language into control._
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)
 
 ---
 
@@ -66,7 +66,7 @@ _I build human‑in‑the‑loop systems that make language models reason, remem
 ## Get in touch
 
 - **Email:** isonpayton@gmail.com  
-- **GitHub:** github.com/paytonison  
-- **LinkedIn:** linkedin.com/in/paytonison  
-- **Threads:** @pls.stfu.payton  
-- **The Platform Formerly Known as Twitter:** @pls_stfu_payton
+- **GitHub:** https://github.com/paytonison  
+- **LinkedIn:** https://linkedin.com/in/paytonison  
+- **Threads:** https://threads.com/@pls.stfu.payton  
+- **The Platform Formerly Known as Twitter:** https://x.com/pls_stfu_payton
