@@ -1,0 +1,25 @@
+#!/bin/zsh
+set -euo pipefail
+exists() { command -v "$1" >/dev/null 2>&1; }
+exists jq || { print -ru2 "jq required"; exit 1; }
+
+apply_one() {
+  local id="$1"
+  local diff
+  diff="$(jq -r --arg id "$id" '.artifacts[]?|select(.id==$id and .type=="diff")|.unified' scratchpad.json)"
+  [[ -z "$diff" || "$diff" == "null" ]] && return 0
+  print -- "\n--- Applying $id ---"
+  print -r -- "$diff" | git apply --check - || { print -ru2 "check failed; trying 3-way"; }
+  print -r -- "$diff" | git apply --3way - || { print -ru2 "3-way failed for $id"; return 1; }
+}
+
+# apply in stable ID order (A-* first, then B-*)
+ids=($(jq -r '.artifacts[]?|select(.type=="diff")|.id' scratchpad.json | sort))
+for i in $ids; do apply_one "$i" || true; done
+
+print -- "\nRun tests (dry):"
+if command -v pytest >/dev/null 2>&1; then
+  pytest -q || print -ru2 "Tests failing—summarize failure and add a request back to the scouts."
+else
+  print -- "pytest not found; skipping."
+fi
