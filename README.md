@@ -4,7 +4,9 @@
 
 _I build human‑in‑the‑loop systems that make language models reason, remember, and act—turning language into control._
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17074537.svg)](https://doi.org/10.5281/zenodo.17074537)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17254818.svg)](https://doi.org/10.5281/zenodo.17254818)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)
+
+
 
 ---
 
