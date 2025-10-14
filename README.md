@@ -66,5 +66,4 @@ _I build human‑in‑the‑loop systems that make language models reason, remem
 - **Email:** isonpayton@gmail.com  
 - **GitHub:** https://github.com/paytonison  
 - **LinkedIn:** https://linkedin.com/in/paytonison  
-- **Threads:** https://threads.com/@pls.stfu.payton  
-- **The Platform Formerly Known as Twitter:** https://x.com/pls_stfu_payton
+- **The Platform Formerly Known as Twitter:** https://x.com/p8on_
