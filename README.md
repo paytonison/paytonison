@@ -111,7 +111,7 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 
 ## Get in touch
 
-- **Email:** isonpayton@gmail.com  
-- **GitHub:** https://github.com/paytonison  
-- **LinkedIn:** https://linkedin.com/in/paytonison  
-- **The Platform Formerly Known as Twitter:** https://x.com/p8on_
+- **Email:** <isonpayton@gmail.com>  
+- **GitHub:** <https://github.com/paytonison>  
+- **LinkedIn:** <https://linkedin.com/in/paytonison>  
+- **The Platform Formerly Known as Twitter:** <https://x.com/p8on_>
