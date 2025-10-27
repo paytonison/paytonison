@@ -76,7 +76,6 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 - **Political Attractors of Automated Economies.** Macro‑systems lens on automation showing why thermodynamic inputs, maintenance labor, and positional goods produce techno‑communist vs. techno‑feudalist attractors; motivates interoperability mandates, federated ownership, and human craft premiums. `papers/post-scarcity.*`
 
 > See **`personal/`** for the public lab notebook (agentic browser seed, ARR telemetry, persona specs, resonance logs).
->>>>>>> 82a57626112a0646714cf388420befbdc87b8d43
 
 ---
 
@@ -107,7 +106,6 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 - **Failure as curriculum.** ARR turns execution mistakes into reusable deltas; Ouroboros replays conversational history with human scoring to stabilize persona.
 - **Resonance & reciprocity.** RFE and Simulated Intimacy treat alignment as relational—tracking phase locking, parasocial risk, and empathy practice metrics.
 - **Political economy of automation.** Post‑scarcity work grounds technical design in energy, oversight labor, and positional scarcity so systems stay contestable.
->>>>>>> 82a57626112a0646714cf388420befbdc87b8d43
 
 ---
 
