@@ -2,7 +2,7 @@
 
 **Researcher · Systems Designer · Writer**
 
-_I build systems that make robots reason, remember, and act, turning language into control._
+_I build systems that make computers reason, remember, and act, turning language into control._
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17254818.svg)](https://doi.org/10.5281/zenodo.17254818)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17346405.svg)](https://doi.org/10.5281/zenodo.17346405)
 
