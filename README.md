@@ -2,7 +2,7 @@
 
 **Researcher · Systems Designer · Writer**
 
-_I build human-in-the-loop systems that make language models reason, remember, and act—turning language into control._
+_I build systems that make robots reason, remember, and act, turning language into control._
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17254818.svg)](https://doi.org/10.5281/zenodo.17254818)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17138445.svg)](https://doi.org/10.5281/zenodo.17138445)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17157330.svg)](https://doi.org/10.5281/zenodo.17157330)  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17346405.svg)](https://doi.org/10.5281/zenodo.17346405)
 
@@ -18,7 +18,6 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 
 ## Selected work
 
-<<<<<<< HEAD
 ### Ouroboros — human-led recursive reinforcement
 - **What:** A method that iterates a model against its own conversation history with a human in the loop.  
 - **Why:** Turn history into stable capability without bespoke fine-tuning pipelines.  
@@ -56,7 +55,7 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 - **Repo:** `erebus/`
 
 > See **`personal/`** for my public lab notebook: agentic browser seed, RL-ish scaffolding, persona specs, and the resonance paper sources.
-=======
+
 ### Recursive training systems
 - **Ouroboros — human‑led recursive reinforcement.** Iterates a model against its own conversation history, compressing sessions into labyrinth prompts and PPO updates that respect persona and coherence constraints. The paper lays out the human annotation flow, reward shaping heuristics, and safeguards that prevent preference collapse while reusing model‑generated data. `ouroboros/`
 - **Self‑Study — autocritical reasoning reinforcement.** Frames task execution as a failure→critique→patch loop where planner, critic, patcher, and verifier heads learn from validated reasoning deltas. The ARR protocol (Failure Replay Buffer, verifier gating, counterexample contrastive loss) turns unlabelled errors into structured supervision. `papers/self-study.*`
@@ -81,7 +80,6 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 
 ## Methods & tools
 
-<<<<<<< HEAD
 - Human-in-the-loop recursion (Ouroboros)
 - Structured state & deterministic tool use
 - Prompt/interface design (persona, protocol JSON)
@@ -89,7 +87,6 @@ _I build human-in-the-loop systems that make language models reason, remember, a
 - **Rust (edition 2024) & Cargo** for lexical/embedding experiments
 - TeX for papers; shell for ops hygiene
 - Reproducible evals & ablations
-=======
 - Human‑in‑the‑loop recursion and active memory (Ouroboros, Mixis)
 - Autocritical self‑training (Self‑Study / ARR)
 - Resonance‑aware telemetry and governance (RFE, Simulated Intimacy)
