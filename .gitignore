@@ -1,1 +1,36 @@
 .DS_Store
+# LaTeX build junk
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.lol
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*-blx.bib
+*.nav
+*.snm
+*.vrb
+# glossaries / indexers
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.xdy
+*.idx
+*.ind
+*.ilg
+# minted / pygments
+_minted-*/
+*.pyg
+# (keep PDFs tracked; add *.pdf here only if you want to ignore them)
