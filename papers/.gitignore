@@ -1,5 +1,6 @@
 .DS_Store
-*.out
-*.aux
-*.log
+
+.out
+.aux
+.log
 
