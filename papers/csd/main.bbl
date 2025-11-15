@@ -1,0 +1,486 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{Lifeline988}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=d81d48cc5a2a94fc67c083cd8d1dfd94}{%
+           family={{988 Suicide \& Crisis Lifeline}},
+           familyi={9\bibinitperiod}}}%
+      }
+      \strng{namehash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{fullhash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{fullhashraw}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{bibnamehash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{authorbibnamehash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{authornamehash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{authorfullhash}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \strng{authorfullhashraw}{d81d48cc5a2a94fc67c083cd8d1dfd94}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed Nov 9, 2025}
+      \field{title}{Get Help Now}
+      \field{year}{2025}
+      \verb{urlraw}
+      \verb https://988lifeline.org/
+      \endverb
+      \verb{url}
+      \verb https://988lifeline.org/
+      \endverb
+    \endentry
+    \entry{Bai2022}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{9}{}{%
+        {{hash=9bf1729ae263e793ab902ed7fe6678da}{%
+           family={Bai},
+           familyi={B\bibinitperiod},
+           given={Yuntao},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=ae50339c3e9c1418ade64e74fa002ef5}{%
+           family={Kadavath},
+           familyi={K\bibinitperiod},
+           given={Saurav},
+           giveni={S\bibinitperiod}}}%
+        {{hash=22f5b9594fb5e4b60682b792befc3a35}{%
+           family={Kundu},
+           familyi={K\bibinitperiod},
+           given={Sandipan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=1e84eff933be9f4887bf369cf181bf12}{%
+           family={Askell},
+           familyi={A\bibinitperiod},
+           given={Amanda},
+           giveni={A\bibinitperiod}}}%
+        {{hash=c9c0e77cb49ab32e0fbcd8d4b0ea104e}{%
+           family={Kernion},
+           familyi={K\bibinitperiod},
+           given={Jackson},
+           giveni={J\bibinitperiod}}}%
+        {{hash=5028535158c772bff71c0631f7cce8f4}{%
+           family={Jones},
+           familyi={J\bibinitperiod},
+           given={Andy},
+           giveni={A\bibinitperiod}}}%
+        {{hash=341ab75f3c30fad8766efdae7461653f}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Anna},
+           giveni={A\bibinitperiod}}}%
+        {{hash=71e28c63b0d6db49d4dbfc0c864eb169}{%
+           family={Goldie},
+           familyi={G\bibinitperiod},
+           given={Anna},
+           giveni={A\bibinitperiod}}}%
+        {{hash=fbd2f0ec383a2ff63d89cf287c3a4ddb}{%
+           family={Mirhoseini},
+           familyi={M\bibinitperiod},
+           given={Azalia},
+           giveni={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{68a232b71f6c92d764e1477740607b54}
+      \strng{fullhash}{4dad9d7be97ecec55af822b694fa41ef}
+      \strng{fullhashraw}{4dad9d7be97ecec55af822b694fa41ef}
+      \strng{bibnamehash}{68a232b71f6c92d764e1477740607b54}
+      \strng{authorbibnamehash}{68a232b71f6c92d764e1477740607b54}
+      \strng{authornamehash}{68a232b71f6c92d764e1477740607b54}
+      \strng{authorfullhash}{4dad9d7be97ecec55af822b694fa41ef}
+      \strng{authorfullhashraw}{4dad9d7be97ecec55af822b694fa41ef}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2212.08073}
+      \field{title}{Constitutional {AI}: Harmlessness from {AI} Feedback}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2212.08073
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2212.08073
+      \endverb
+    \endentry
+    \entry{Barabasi2005}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=15bacd7ddfc866c5dd96976d4b0244d5}{%
+           family={Barabási},
+           familyi={B\bibinitperiod},
+           given={Albert-László},
+           giveni={A\bibinithyphendelim L\bibinitperiod}}}%
+      }
+      \strng{namehash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{fullhash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{fullhashraw}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{bibnamehash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{authorbibnamehash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{authornamehash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{authorfullhash}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \strng{authorfullhashraw}{15bacd7ddfc866c5dd96976d4b0244d5}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{number}{7039}
+      \field{title}{The origin of bursts and heavy tails in human dynamics}
+      \field{volume}{435}
+      \field{year}{2005}
+      \field{pages}{207\bibrangedash 211}
+      \range{pages}{5}
+      \verb{doi}
+      \verb 10.1038/nature03459
+      \endverb
+    \endentry
+    \entry{Broadbent2023}{article}{}{}
+      \name{author}{7}{}{%
+        {{hash=1a53d8d74ee644d1dbf2db55aadc1465}{%
+           family={Broadbent},
+           familyi={B\bibinitperiod},
+           given={Matthew},
+           giveni={M\bibinitperiod}}}%
+        {{hash=79ef5e0ad401e1e5fa900ec40bf6daa9}{%
+           family={Medina\bibnamedelima Grespan},
+           familyi={M\bibinitperiod\bibinitdelim G\bibinitperiod},
+           given={María},
+           giveni={M\bibinitperiod}}}%
+        {{hash=dbec82f8b4b4376343caf55c9f6453f8}{%
+           family={Axford},
+           familyi={A\bibinitperiod},
+           given={Kyle},
+           giveni={K\bibinitperiod}}}%
+        {{hash=227e34554b27c77e2d042504ef1edb97}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Xiao},
+           giveni={X\bibinitperiod}}}%
+        {{hash=d353c169cbdb6171b51ab4026427e690}{%
+           family={Srikumar},
+           familyi={S\bibinitperiod},
+           given={Vivek},
+           giveni={V\bibinitperiod}}}%
+        {{hash=2d294f7bd9e1371ec3a73548e51c6882}{%
+           family={Kious},
+           familyi={K\bibinitperiod},
+           given={Bruce},
+           giveni={B\bibinitperiod}}}%
+        {{hash=ea764c6fc60df36769d47859274419ae}{%
+           family={Imel},
+           familyi={I\bibinitperiod},
+           given={Zac},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{ffab548850844f692c5e572ebd51757a}
+      \strng{fullhash}{2404f79b47572f2691a8bd2b4be2190b}
+      \strng{fullhashraw}{2404f79b47572f2691a8bd2b4be2190b}
+      \strng{bibnamehash}{ffab548850844f692c5e572ebd51757a}
+      \strng{authorbibnamehash}{ffab548850844f692c5e572ebd51757a}
+      \strng{authornamehash}{ffab548850844f692c5e572ebd51757a}
+      \strng{authorfullhash}{2404f79b47572f2691a8bd2b4be2190b}
+      \strng{authorfullhashraw}{2404f79b47572f2691a8bd2b4be2190b}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Frontiers in Psychiatry}
+      \field{title}{A machine learning approach to identifying suicide risk among text-based crisis counseling encounters}
+      \field{volume}{14}
+      \field{year}{2023}
+      \field{pages}{1110527}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3389/fpsyt.2023.1110527
+      \endverb
+    \endentry
+    \entry{CTL2018}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=872be69e62213634fd237ba617482909}{%
+           family={{Crisis Text Line}},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{872be69e62213634fd237ba617482909}
+      \strng{fullhash}{872be69e62213634fd237ba617482909}
+      \strng{fullhashraw}{872be69e62213634fd237ba617482909}
+      \strng{bibnamehash}{872be69e62213634fd237ba617482909}
+      \strng{authorbibnamehash}{872be69e62213634fd237ba617482909}
+      \strng{authornamehash}{872be69e62213634fd237ba617482909}
+      \strng{authorfullhash}{872be69e62213634fd237ba617482909}
+      \strng{authorfullhashraw}{872be69e62213634fd237ba617482909}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed Nov 9, 2025}
+      \field{title}{Detecting Crisis: An {AI} Solution}
+      \field{year}{2018}
+      \verb{urlraw}
+      \verb https://www.crisistextline.org/blog/2018/03/28/detecting-crisis-an-ai-solution/
+      \endverb
+      \verb{url}
+      \verb https://www.crisistextline.org/blog/2018/03/28/detecting-crisis-an-ai-solution/
+      \endverb
+    \endentry
+    \entry{Huckvale2019}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=23978abb735b577147e999a6cde4b350}{%
+           family={Huckvale},
+           familyi={H\bibinitperiod},
+           given={Kit},
+           giveni={K\bibinitperiod}}}%
+        {{hash=cf2c2ee952e89088d7db394b0046dbaa}{%
+           family={Venkatesh},
+           familyi={V\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=f9a88f87d38927243dbed50d936ca2f6}{%
+           family={Christensen},
+           familyi={C\bibinitperiod},
+           given={Helen},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{8cce7dc36248c02fac3883c08fbea800}
+      \strng{fullhash}{1eabf36b8fb08115e31a6344586bd375}
+      \strng{fullhashraw}{1eabf36b8fb08115e31a6344586bd375}
+      \strng{bibnamehash}{1eabf36b8fb08115e31a6344586bd375}
+      \strng{authorbibnamehash}{1eabf36b8fb08115e31a6344586bd375}
+      \strng{authornamehash}{8cce7dc36248c02fac3883c08fbea800}
+      \strng{authorfullhash}{1eabf36b8fb08115e31a6344586bd375}
+      \strng{authorfullhashraw}{1eabf36b8fb08115e31a6344586bd375}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{npj Digital Medicine}
+      \field{title}{Toward clinical digital phenotyping: a timely opportunity to consider purpose, quality, and safety}
+      \field{volume}{2}
+      \field{year}{2019}
+      \field{pages}{88}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1038/s41746-019-0166-1
+      \endverb
+    \endentry
+    \entry{Posner2005}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=2397d2ede2570de19e38501793402512}{%
+           family={Posner},
+           familyi={P\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=ee6848fb2fac892f7b0fe7674e81f502}{%
+           family={Russell},
+           familyi={R\bibinitperiod},
+           given={James\bibnamedelima A.},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=906d96a540b738189853bed00d4e6cb1}{%
+           family={Peterson},
+           familyi={P\bibinitperiod},
+           given={Bradley\bibnamedelima S.},
+           giveni={B\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+      }
+      \strng{namehash}{c0ee69d830990b0d5aac09f4995689c1}
+      \strng{fullhash}{bf16773da70f92af5da6b72b727df554}
+      \strng{fullhashraw}{bf16773da70f92af5da6b72b727df554}
+      \strng{bibnamehash}{bf16773da70f92af5da6b72b727df554}
+      \strng{authorbibnamehash}{bf16773da70f92af5da6b72b727df554}
+      \strng{authornamehash}{c0ee69d830990b0d5aac09f4995689c1}
+      \strng{authorfullhash}{bf16773da70f92af5da6b72b727df554}
+      \strng{authorfullhashraw}{bf16773da70f92af5da6b72b727df554}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Development and Psychopathology}
+      \field{number}{3}
+      \field{title}{The circumplex model of affect: An integrative approach to affective neuroscience, cognitive development, and psychopathology}
+      \field{volume}{17}
+      \field{year}{2005}
+      \field{pages}{715\bibrangedash 734}
+      \range{pages}{20}
+      \verb{doi}
+      \verb 10.1017/S0954579405050340
+      \endverb
+    \endentry
+    \entry{EarlyStop2025}{misc}{}{}
+      \name{author}{2}{}{%
+        {{hash=31149f58d4f339113d239f687000d391}{%
+           family={Sharma},
+           familyi={S\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=c4b12c788d52a4ea109e98f5758529ae}{%
+           family={{et al.}},
+           familyi={e\bibinitperiod}}}%
+      }
+      \strng{namehash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{fullhash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{fullhashraw}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{bibnamehash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{authorbibnamehash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{authornamehash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{authorfullhash}{5da4c21c711815fca114e6fc8752b9dc}
+      \strng{authorfullhashraw}{5da4c21c711815fca114e6fc8752b9dc}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{arXiv preprint arXiv:2506.09996}
+      \field{title}{Early Stopping Harmful Outputs via Streaming Moderation}
+      \field{year}{2025}
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2506.09996
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2506.09996
+      \endverb
+    \endentry
+    \entry{Thomas2025}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=ce802fa9955f8082b9a9cd27c3db109f}{%
+           family={Thomas},
+           familyi={T\bibinitperiod},
+           given={Jade},
+           giveni={J\bibinitperiod}}}%
+        {{hash=c4b12c788d52a4ea109e98f5758529ae}{%
+           family={{et al.}},
+           familyi={e\bibinitperiod}}}%
+      }
+      \strng{namehash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{fullhash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{fullhashraw}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{bibnamehash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{authorbibnamehash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{authornamehash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{authorfullhash}{8e290f9696f831441d59c422e9a5ba10}
+      \strng{authorfullhashraw}{8e290f9696f831441d59c422e9a5ba10}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{JMIR Public Health and Surveillance}
+      \field{number}{1}
+      \field{title}{An Explainable {AI} Text Classifier for Suicidal and Self-Injurious Behaviors in a Real-World Crisis Helpline}
+      \field{volume}{11}
+      \field{year}{2025}
+      \field{pages}{e63809}
+      \range{pages}{-1}
+      \verb{urlraw}
+      \verb https://publichealth.jmir.org/2025/1/e63809
+      \endverb
+      \verb{url}
+      \verb https://publichealth.jmir.org/2025/1/e63809
+      \endverb
+    \endentry
+    \entry{Warriner2013}{article}{}{}
+      \name{author}{3}{}{%
+        {{hash=9581ed181ea58832c62710a8dfcae6ce}{%
+           family={Warriner},
+           familyi={W\bibinitperiod},
+           given={Amy\bibnamedelima Beth},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=94d8ae6a8388c814dcd550d19cc2b102}{%
+           family={Kuperman},
+           familyi={K\bibinitperiod},
+           given={Victor},
+           giveni={V\bibinitperiod}}}%
+        {{hash=e3152eed8807c888523aca56d00e896a}{%
+           family={Brysbaert},
+           familyi={B\bibinitperiod},
+           given={Marc},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{85c9a1267d67e3ae965ed51ad3ee6f2a}
+      \strng{fullhash}{216316f904ecf6ac5868f9fb18714066}
+      \strng{fullhashraw}{216316f904ecf6ac5868f9fb18714066}
+      \strng{bibnamehash}{216316f904ecf6ac5868f9fb18714066}
+      \strng{authorbibnamehash}{216316f904ecf6ac5868f9fb18714066}
+      \strng{authornamehash}{85c9a1267d67e3ae965ed51ad3ee6f2a}
+      \strng{authorfullhash}{216316f904ecf6ac5868f9fb18714066}
+      \strng{authorfullhashraw}{216316f904ecf6ac5868f9fb18714066}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Behavior Research Methods}
+      \field{number}{4}
+      \field{title}{Norms of valence, arousal, and dominance for 13{,}915 English lemmas}
+      \field{volume}{45}
+      \field{year}{2013}
+      \field{pages}{1191\bibrangedash 1207}
+      \range{pages}{17}
+      \verb{doi}
+      \verb 10.3758/s13428-012-0314-x
+      \endverb
+    \endentry
+    \entry{WHO2023}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=531217507bec092b6ec36c0f78f46736}{%
+           family={{World Health Organization}},
+           familyi={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{531217507bec092b6ec36c0f78f46736}
+      \strng{fullhash}{531217507bec092b6ec36c0f78f46736}
+      \strng{fullhashraw}{531217507bec092b6ec36c0f78f46736}
+      \strng{bibnamehash}{531217507bec092b6ec36c0f78f46736}
+      \strng{authorbibnamehash}{531217507bec092b6ec36c0f78f46736}
+      \strng{authornamehash}{531217507bec092b6ec36c0f78f46736}
+      \strng{authorfullhash}{531217507bec092b6ec36c0f78f46736}
+      \strng{authorfullhashraw}{531217507bec092b6ec36c0f78f46736}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Accessed Nov 9, 2025}
+      \field{title}{Responsible reporting on suicide: Quick reference guide}
+      \field{year}{2023}
+      \verb{urlraw}
+      \verb https://cdn.who.int/media/docs/default-source/mental-health/suicide/responsible-reporting-on-suicide.pdf
+      \endverb
+      \verb{url}
+      \verb https://cdn.who.int/media/docs/default-source/mental-health/suicide/responsible-reporting-on-suicide.pdf
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

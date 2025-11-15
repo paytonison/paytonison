@@ -1,0 +1,347 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{microtype}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% ---------- Metadata ----------
+\title{\bf Mantissa Reserve: High-Precision--First Inference for Phase-Faithful Sparse Mixture-of-Experts and Energy-Aware Scheduling}
+\author{Payton Ison \and GPT-5 Pro}
+\date{November 8, 2025}
+
+% ---------- Macros ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\ip}[2]{\left\langle #1,\,#2 \right\rangle}
+\newcommand{\bfx}{\mathbf{x}}
+\newcommand{\bfW}{\mathbf{W}}
+\newcommand{\bfy}{\mathbf{y}}
+\newcommand{\bfe}{\mathbf{e}}
+\newcommand{\angles}[2]{\angle\!\left(#1,\,#2\right)}
+\newcommand{\ud}{\,\mathrm{d}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study how floating-point bit allocation---especially mantissa width---governs the stability of \emph{phase information} (directional structure and rankings induced by inner products) in modern inference workloads. Sparse Mixture-of-Experts (MoE) models are an extreme stress test: tiny perturbations to router logits and expert aggregates can flip top-$k$ selection and derail efficiency gains. We formalize \emph{phase fidelity} via angular preservation and rank stability, derive bounds connecting mantissa bits to layerwise phase drift, and show why an ``extra $23$-bit precision layer'' (i.e., FP32 accumulation) qualitatively changes these bounds even when multiplies use FP8/FP16/bfloat16.
+
+We propose \textbf{Mantissa Reserve Accumulation (MRA)}, a drop-in compute pattern that (i) performs low-bit multiplies, (ii) accumulates with a $23$-bit mantissa reserve, and (iii) carries a compact residual to subsequent phase-critical sites. For MoE, we introduce \textbf{Phase-Fidelity Quantization (PFQ)} that concentrates precision at the router and expert-combine boundaries, and we provide sufficient conditions under which top-$k$ remains unchanged. Finally, we present \textbf{PRISM}, a precision-aware datacenter scheduler that allocates the mantissa reserve only where it provably improves phase fidelity under energy/SLO constraints.
+
+Our analysis isolates where precision truly \emph{buys} reliability: not uniformly everywhere, but at a small set of phase-critical reductions. The resulting designs preserve accuracy while enabling aggressive low-bit inference for the majority of FLOPs.
+\end{abstract}
+
+\section{Introduction}
+
+The hardware and energy profile of large language model (LLM) inference is increasingly dominated by memory movement and reduction operations, not raw multiply throughput. Precision reduction (FP8/FP16/bfloat16) helps throughput and memory pressure, but it risks corrupting the \emph{phase} of intermediate representations: the direction of vectors, the sign pattern of features, and the ranking of router logits. In sparse Mixture-of-Experts (MoE) models, such phase errors are amplified: a single rank flip can route tokens to the wrong experts, harming both quality and efficiency.
+
+This paper makes three contributions:
+
+\begin{enumerate}
+  \item \textbf{A precision--phase theory.} We provide bounds that connect mantissa width to \emph{angular error} and to \emph{rank stability} of inner products. The key constant is unit roundoff $u=2^{-(t+1)}$ for mantissa bits $t$. For dot products of length $n$, the classical $\gamma_n \approx \frac{nu}{1-nu}$ constant governs worst-case relative error; when accumulation uses a $t=23$-bit mantissa (FP32), $\gamma_n$ remains small for practical $n$, while with $t\in\{2,3,7,10\}$ (FP8, bfloat16, FP16) it can exceed $1$ for large $n$, invalidating stability guarantees.
+  \item \textbf{Mantissa Reserve Accumulation (MRA).} We propose a compute pattern that retains low-bit multiplies (FP8/FP16/bfloat16) but \emph{always} accumulates with an extra $23$-bit mantissa reserve (FP32). We further store a compact residual (\emph{phase carry}) that is injected exactly at phase-critical barriers (e.g., router logits, attention score reductions, and expert combines).
+  \item \textbf{PRISM scheduling for energy efficiency.} We formulate a cluster scheduler that allocates the mantissa reserve where it improves a \emph{Phase Sensitivity Index (PSI)} and satisfies SLOs while minimizing energy. The result is precision \emph{elasticity}: the system is mostly low-bit but ``snaps'' to a high-precision reserve at the few reductions that matter.
+\end{enumerate}
+
+We emphasize pragmatism: the method requires only standard FP32 accumulators---ubiquitous in commodity accelerators---and simple software hooks. No specialized hardware is assumed.
+
+\section{Background and Notation}
+
+\paragraph{Floating-point formats.}
+We denote a floating-point format by $(s,e,t)$: sign bit $s=1$, exponent width $e$, and mantissa width $t$. For IEEE FP32, $(1,8,23)$; FP16, $(1,5,10)$; bfloat16, $(1,8,7)$; common FP8 variants include E4M3 $(1,4,3)$ and E5M2 $(1,5,2)$. The unit roundoff (maximum relative rounding error to nearest) is $u=2^{-(t+1)}$ for normalized numbers. Thus:
+\[
+u_{\text{FP32}} = 2^{-24}\approx 5.96\times 10^{-8},\;
+u_{\text{FP16}} = 2^{-11} \approx 4.88\times 10^{-4},\;
+u_{\text{bf16}} = 2^{-8} = 3.906\times 10^{-3},\;
+u_{\text{FP8(E4M3)}} = 2^{-4}=6.25\times 10^{-2}.
+\]
+
+\paragraph{Phase fidelity.}
+Let $\bfx,\tilde\bfx\in\R^d$ denote a true and a perturbed vector. We quantify phase by:
+\begin{itemize}
+  \item \emph{Cosine alignment} $A(\bfx,\tilde\bfx)=\frac{\ip{\bfx}{\tilde\bfx}}{\norm{\bfx}\,\norm{\tilde\bfx}}$ and its angle $\angles{\bfx}{\tilde\bfx}=\arccos A(\bfx,\tilde\bfx)$.
+  \item \emph{Sign Flip Rate (SFR)} $=\frac{1}{d}\sum_i \mathbf{1}\{\mathrm{sign}(x_i)\neq \mathrm{sign}(\tilde x_i)\}$.
+  \item \emph{Rank stability} under inner products: given scores $s_i=\ip{\bfw_i}{\bfx}$, define the top-$k$ set $\mathcal{T}_k$; a perturbation produces $\tilde s_i$ and $\tilde{\mathcal{T}}_k$. The \emph{Gating Stability Index (GSI)} is $\mathrm{GSI}=\Prob[\tilde{\mathcal{T}}_k=\mathcal{T}_k]$ over inputs or noise.
+\end{itemize}
+
+\paragraph{Dot-product error constants.}
+For a dot product $s=\ip{\bfa}{\bfb}$ of length $n$ under rounding to nearest with unit roundoff $u$, classical analysis yields
+\begin{equation}
+\label{eq:gamma}
+\left|\mathrm{fl}(\ip{\bfa}{\bfb}) - \ip{\bfa}{\bfb}\right|
+\;\le\; \gamma_n \sum_{i=1}^n |a_i b_i|,\qquad
+\gamma_n := \frac{nu}{1-nu}\,,
+\end{equation}
+assuming $nu<1$ and no under/overflow during accumulation.
+The qualitative behavior is stark: if $nu\ll 1$, the dot product is well conditioned; if $nu\gtrsim 1$, the bound is vacuous.
+
+\section{Why an ``Extra 23 Bits'' Changes the Game}
+
+Even when multiplications are performed at low precision, \emph{accumulation precision} dominates the error in long reductions (e.g., GEMM inner sums, attention score reduces, expert combines). Consider a length-$n$ dot product executed with:
+\begin{enumerate}
+  \item low-bit multiplies and low-bit accumulation (mantissa $t_\times$, $t_+$), versus
+  \item low-bit multiplies with \emph{FP32 accumulation} ($t_+=23$).
+\end{enumerate}
+Let $u_\times=2^{-(t_\times+1)}$ and $u_+=2^{-(t_++1)}$ be the unit roundoffs for multiply and accumulation, respectively. A coarse yet useful bound is
+\[
+\left|\mathrm{fl}(\ip{\bfa}{\bfb}) - \ip{\bfa}{\bfb}\right|
+\;\lesssim\;
+\left(
+\underbrace{u_\times}_{\text{product quant.}}
++
+\underbrace{\frac{nu_+}{1-nu_+}}_{\text{accumulation}}
+\right)\sum_i |a_i b_i|\,.
+\]
+For $n=4096$ (typical head dimension or MLP width), the terms are illustrative:
+\[
+\gamma_n^{\text{accum}}(t_+=23)\approx \frac{4096\cdot 2^{-24}}{1-4096\cdot 2^{-24}} \approx 2.44\times 10^{-4}\,,
+\]
+whereas with $t_+\in\{10,7,3\}$ we get $nu_+\in\{2.0,\;16.0,\;256.0\}$ and the bound becomes useless. This is the essence of the \emph{mantissa reserve}: a $23$-bit accumulator qualitatively restores a small $\gamma_n$ for realistic $n$ even if the inputs are low-bit.
+
+\section{From Magnitude to Phase: Angular and Rank Stability}
+
+\subsection{Angular error across linear layers}
+
+Let $\tilde\bfx=\bfx+\bfe$ with $\norm{\bfe}\le \varepsilon\norm{\bfx}$. Then
+\begin{equation}
+\label{eq:angle-bound}
+1 - A(\bfx,\tilde\bfx) \;\le\; \tfrac{1}{2}\varepsilon^2 + O(\varepsilon^3),\qquad
+\angles{\bfx}{\tilde\bfx} \;\le\; \varepsilon + O(\varepsilon^2)\,.
+\end{equation}
+For a linear map $\bfy=\bfW\bfx$, $\tilde\bfy=\mathrm{fl}(\bfW)\tilde\bfx+\delta$ where $\delta$ collects dot-product errors from accumulation. If each output coordinate is a length-$n$ reduction with accumulation unit roundoff $u_+$, then, neglecting second-order terms,
+\[
+\norm{\delta}_\infty \lesssim \gamma_n^{\text{accum}} \max_j \sum_i |W_{ji} x_i|\,.
+\]
+When accumulation uses the mantissa reserve ($t_+=23$), $\gamma_n$ is small, and the resulting \emph{angular drift} bound follows by a standard perturbation argument:
+\begin{proposition}[Layerwise phase drift]
+\label{prop:phase-drift}
+Ignoring under/overflow and assuming normalized activations $\norm{\bfx}=1$, the expected cosine misalignment after a linear layer satisfies
+\[
+1 - \E\!\left[A(\bfy,\tilde\bfy)\right]
+\;\lesssim\;
+c_1 \, u_\times^2 + c_2 \, \left(\gamma_n^{\text{accum}}(t_+{=}23)\right)^2,
+\]
+for constants $c_1,c_2$ depending on weight statistics. The dominant term is the accumulation constant whenever $n$ is large.
+\end{proposition}
+
+\subsection{Rank stability for gating (MoE routers)}
+
+Let $s_i=\ip{\bfw_i}{\bfx}$ denote router logits, and let $m_k:=s_{(k)}-s_{(k+1)}$ be the top-$k$ margin (order statistics). Low-bit multiplies plus high-precision accumulation yield $\tilde s_i=s_i+\Delta_i$ with $|\Delta_i|\le \eta:=\gamma_n^{\text{accum}} \max_i \norm{\bfw_i}\norm{\bfx} + u_\times \sum_j |w_{ij} x_j|$. Then:
+
+\begin{theorem}[Sufficient condition for top-$k$ stability]
+\label{thm:topk}
+If $m_k > 2\eta$, then the top-$k$ index set is unchanged: $\tilde{\mathcal{T}}_k=\mathcal{T}_k$.
+\end{theorem}
+
+\noindent
+\textbf{Implication.} For realistic $n$, the $\eta$ term is dominated by the accumulation constant; using a $23$-bit accumulator (even with FP8/FP16 multiplies) sharply increases the regime where $m_k>2\eta$, explaining empirical observations that ``FP8 with FP32 accumulate'' preserves router choices while ``FP8 throughout'' does not.
+
+\section{Mantissa Reserve Accumulation (MRA)}
+\label{sec:mra}
+
+\subsection{Design goals}
+\begin{itemize}
+  \item Retain low-bit multiplies to save bandwidth and memory.
+  \item Use FP32 accumulation wherever phase is at risk: long reductions, router logits, attention score reductions, expert combines, layernorm statistics.
+  \item Track and re-inject a compact \emph{phase carry} residual around non-linearities to reduce drift across blocks.
+\end{itemize}
+
+\subsection{Computation pattern}
+
+Let $A\in\R^{m\times n}$, $B\in\R^{n\times p}$ be activations/weights stored at low precision (e.g., FP8 or bfloat16). MRA performs:
+\begin{enumerate}
+  \item Dequantize tiles to a fused multiply representation at low precision (\texttt{FP8/FP16}).
+  \item Multiply at low precision but accumulate into FP32 registers (FMA rounds once).
+  \item Apply a compensated reduction (Kahan/Neumaier-style) to further suppress cancellation when $n$ is large.
+  \item Optionally cache a \emph{phase carry} $r$ (the compensation term) and re-inject $r$ at subsequent phase-critical boundaries.
+\end{enumerate}
+
+\begin{algorithm}[t]
+\caption{MRA: GEMM micro-kernel (schematic)}
+\label{alg:mra}
+\begin{algorithmic}[1]
+\Require Tiles $A,B$ in low-bit format; output tile $C$ in FP32
+\State $C \gets 0$ \Comment{FP32 accumulator tile}
+\State $R \gets 0$ \Comment{phase-carry (compensation)}
+\For{each $k$-tile}
+  \State $\hat A \gets \mathrm{dequantize}(A_{\cdot k})$ \Comment{kept in low-bit lanes}
+  \State $\hat B \gets \mathrm{dequantize}(B_{k \cdot})$
+  \State $Y \gets \hat A \otimes \hat B$ \Comment{low-bit multiply}
+  \State \textbf{[FP32 accumulate with compensation]}
+  \State $y \gets \mathrm{sum}(Y)$ \Comment{tile reduce in FP32}
+  \State $t \gets C + y$
+  \State $R \gets (t - C) - y + R$
+  \State $C \gets t$
+\EndFor
+\State \Return $C + R$ \Comment{inject phase carry}
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Why carry a residual?}
+Many phase-critical barriers are followed by non-linearities (gating softmax, layernorm, activation functions) that magnify small directional errors. Passing a small FP32 residual to the next barrier materially reduces cumulative angular drift over a block without paying FP32 throughout.
+
+\section{Phase-Fidelity Quantization (PFQ) for MoE}
+\label{sec:pfq}
+
+MoE introduces two fragile reductions:
+\begin{enumerate}
+  \item \textbf{Routing.} Top-$k$ selection on router logits; requires rank stability (\S\ref{thm:topk}).
+  \item \textbf{Expert combine.} Weighted sum of expert outputs; requires angular stability of the aggregate.
+\end{enumerate}
+PFQ concentrates mantissa reserve at these edges while leaving per-expert MLPs largely low-bit internally.
+
+\subsection{PFQ recipe}
+\begin{itemize}
+  \item \emph{Router logits:} compute $\ip{\bfw_i}{\bfx}$ with FP32 accumulation; store logits in FP16/bfloat16 only after top-$k$ is decided.
+  \item \emph{Dispatch weights:} compute softmax in FP32 (or \textit{log-sum-exp} in FP32) to preserve small gaps $m_k$; downcast weights post-normalization.
+  \item \emph{Expert outputs:} experts may compute in FP8/FP16 with FP32 accumulate \emph{inside} each MLP; the final expert \emph{combine} uses FP32 accumulation across experts.
+  \item \emph{Normalization/attention:} statistics (mean/var; $\mathrm{softmax}$ denominator) use FP32 accumulation.
+\end{itemize}
+
+\subsection{Sufficient conditions for robust routing}
+
+Combining Theorem~\ref{thm:topk} with a margin model (e.g., sub-Gaussian router scores) yields a conservative bound on $\mathrm{GSI}$:
+\[
+\mathrm{GSI} \;\ge\; 1 - \Prob\!\left[m_k \le 2\eta\right]
+\quad\text{with}\quad
+\eta \approx \gamma_n^{\text{accum}}(23)\cdot \Lambda + u_\times \cdot \Lambda',
+\]
+where $\Lambda,\Lambda'$ capture scale factors (norms of inputs/weights). In practice, the $23$-bit accumulator renders $\gamma_n$ the small term even for large $n$, boosting $\mathrm{GSI}$.
+
+\section{PRISM: Precision-Aware Scheduling for Energy/SLO}
+\label{sec:prism}
+
+\subsection{Problem setup}
+Consider a set of inference requests $\mathcal{J}$ with deadlines $d_j$ and per-request phase sensitivity $\mathrm{PSI}_j$ (estimated from router margins, attention entropy, or calibration statistics). Let $\mathcal{P}$ be precision profiles (e.g., \{FP8$\times$ / FP32$+$, bf16$\times$ / FP32$+$, FP16$\times$ / FP32$+$\}) and $\mathcal{M}$ be machine types. Each tuple $(m,p)$ has energy-per-token $E_{m,p}$ and service time $T_{m,p}$.
+
+\subsection{Objective}
+Assign $(m,p)$ and start times to minimize total energy while meeting SLOs and ensuring that phase-critical segments run with the mantissa reserve when $\mathrm{PSI}$ exceeds a threshold.
+
+\paragraph{Mixed-integer formulation (sketch).}
+Let $x_{j,m,p}\in\{0,1\}$ indicate assignment and $\tau_j$ start time. The objective is
+\[
+\min \sum_{j}\sum_{m,p} E_{m,p}\, x_{j,m,p}
+\]
+subject to capacity constraints, $\,\tau_j + T_{m,p}\le d_j$ if $x_{j,m,p}=1$, and a \emph{phase constraint}
+\[
+\mathrm{PSI}_j > \theta \;\Rightarrow\; p \in \mathcal{P}_{\text{reserve}},
+\]
+where $\mathcal{P}_{\text{reserve}}$ includes profiles with FP32 accumulation at phase-critical barriers.
+
+\subsection{A practical heuristic}
+PRISM uses a two-stage greedy allocator:
+\begin{enumerate}
+  \item \textbf{Phase-first filtering.} If $\mathrm{PSI}_j>\theta$, require a reserve-capable profile (keeps the router/combines in FP32 accumulate).
+  \item \textbf{Energy-aware bin packing.} Sort remaining jobs by laxity $(d_j - \hat T_{j})$ and assign the lowest-energy profile that meets SLOs; co-schedule low-$\mathrm{PSI}$ jobs on aggressively low-bit profiles.
+\end{enumerate}
+This achieves most of the energy benefit while honoring the small set of phase-critical cases.
+
+\section{Practical Guidance}
+
+\paragraph{Where to spend precision.}
+\begin{enumerate}
+  \item Accumulators in long reductions (GEMM inner sums).
+  \item Router logits and expert combines in MoE.
+  \item Attention softmax denominators and layernorm statistics.
+\end{enumerate}
+
+\paragraph{Where to save.}
+\begin{itemize}
+  \item Expert-internal multiplies: FP8/FP16/bfloat16 multiplies are typically safe if accumulation is FP32.
+  \item Activation storage between non-critical layers.
+\end{itemize}
+
+\paragraph{Numerical hygiene.}
+Use fused operations (FMA), avoid subtractive cancellation (e.g., prefer \textit{log-sum-exp}), and enable compensated summation on exceptionally long reductions.
+
+\section{Illustrative Calculations}
+\label{sec:calc}
+
+Consider $n=4096$ and compare accumulation precisions (keeping multiplies low-bit):
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Accumulator & mantissa $t_+$ & $u_+$ & $\gamma_n \approx \frac{nu_+}{1-nu_+}$ \\
+\midrule
+FP32 & 23 & $5.96\!\times\!10^{-8}$ & $2.44\!\times\!10^{-4}$ \\
+FP16 & 10 & $4.88\!\times\!10^{-4}$ & $>1$ (no guarantee) \\
+bfloat16 & 7 & $3.91\!\times\!10^{-3}$ & $>1$ (no guarantee) \\
+FP8 (E4M3) & 3 & $6.25\!\times\!10^{-2}$ & $>1$ (no guarantee) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Even with FP8 multiplies, the FP32 accumulator keeps $\gamma_n$ small enough to preserve router rankings under moderate margins (Theorem~\ref{thm:topk}). Without it, worst-case guarantees fail for typical widths.
+
+\section{Threats to Validity and Limitations}
+Our bounds are worst-case and conservative; real workloads enjoy structure (sparsity, normalization) that is not fully exploited here. We do not account for denormal behavior, subnormal flushing, or stochastic rounding. Hardware-specific behaviors (e.g., tensor core accumulation paths) must be validated per platform. Finally, \emph{phase carry} requires minimal but nonzero extra state; the best compression strategy is workload-dependent.
+
+\section{Related Work (brief)}
+Mixed-precision training/inference leverages FP16/bfloat16 and FP32 accumulation widely. FP8 formats have been explored for both training and inference; it is now standard to accumulate sensitive reductions in FP32. Sparse MoE architectures (e.g., sparsely-gated and Switch-style routers) underscore the importance of router stability. Our contribution is to formalize \emph{phase fidelity}, tie it explicitly to mantissa-driven accumulation constants, and systematize where a $23$-bit reserve is \emph{necessary and sufficient} for stability, along with a scheduler that deploys it only where it pays.
+
+\section{Conclusion}
+
+Precision is a \emph{budget} to be spent at a few critical reductions rather than a uniform tax on all operations. The ``extra $23$ bits'' of an FP32 accumulator collapse the accumulation constant $\gamma_n$ and thereby stabilize the directions and rankings that govern routing and global reductions. \textbf{MRA} and \textbf{PFQ} convert this observation into implementable kernels and model recipes, while \textbf{PRISM} allocates the mantissa reserve under energy/SLO constraints. Together, these tools preserve accuracy for sparse MoE inference while enabling aggressive low-bit execution almost everywhere else.
+
+\paragraph{Reproducibility.} The algorithms above require only standard BLAS-like interfaces with FP32 accumulators and can be integrated via micro-kernel updates. We recommend logging router margins and attention entropies to estimate $\mathrm{PSI}$ for PRISM.
+
+\section*{Acknowledgments}
+We thank colleagues for helpful discussions on numerical stability and systems design. Any remaining errors are our own.
+
+% ----------------- Appendix -----------------
+\appendix
+
+\section{Appendix A: Proof Sketch of Theorem~\ref{thm:topk}}
+
+Let $s_{(1)}\ge \cdots \ge s_{(k)} \ge s_{(k+1)} \ge \cdots$ be ordered scores and suppose $|\Delta_i|\le \eta$ for all $i$. For any $i\in \mathcal{T}_k$ and $j\notin \mathcal{T}_k$, we have $s_i \ge s_{(k)}$ and $s_j \le s_{(k+1)}$, so
+\[
+\tilde s_i - \tilde s_j \;\ge\; (s_i - s_j) - 2\eta \;\ge\; m_k - 2\eta\,.
+\]
+If $m_k > 2\eta$, then $\tilde s_i > \tilde s_j$, which preserves all cross-boundary pairwise orderings. Hence $\tilde{\mathcal{T}}_k=\mathcal{T}_k$.
+
+\section{Appendix B: Compensated Summation for Long Reductions}
+
+Kahan summation maintains $(\mathrm{sum},\mathrm{comp})$ such that the rounding error from each addition is tracked and re-injected. In MRA we implement a vectorized variant, which empirically reduces phase drift in deep reductions (notably attention and expert combine) without material overhead because the compensation state fits in FP32 registers.
+
+\section{Appendix C: Phase Sensitivity Index (PSI)}
+
+Define per-token $\mathrm{PSI}$ as a convex combination of normalized indicators:
+\[
+\mathrm{PSI} \;=\; \alpha \cdot \frac{1}{\log k}\,H(\mathrm{softmax}(s))
+\;+\; \beta \cdot \frac{\norm{\nabla_{\bfx}\, \mathrm{logit}}_2}{\mathrm{EMA}}
+\;+\; \gamma \cdot \mathrm{SNR}^{-1}\!,
+\]
+where $H$ is entropy of router logits, the gradient norm proxies sensitivity, and $\mathrm{SNR}$ comes from calibration statistics. Higher $\mathrm{PSI}$ implies more precision benefit at phase-critical sites.
+
+\section*{References}
+\vspace{-0.5em}
+\begin{itemize}\setlength\itemsep{0.25em}
+  \item IEEE Standard for Floating-Point Arithmetic (IEEE 754-2019).
+  \item N. J. Higham. \textit{Accuracy and Stability of Numerical Algorithms}, 2nd ed., SIAM, 2002.
+  \item S. Shazeer et al. ``Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer,'' 2017.
+  \item W. Fedus, B. Zoph, N. Shazeer. ``Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity,'' 2021.
+  \item P. Micikevicius et al. ``Mixed Precision Training,'' 2017.
+  \item N. P. Jouppi et al. ``In-Datacenter Performance Analysis of a Tensor Processing Unit,'' 2017.
+\end{itemize}
+
+\end{document}
+

@@ -1,0 +1,244 @@
+\documentclass[11pt]{article}
+
+% --- PDFLATEX-SAFE FOUNDATION ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- MATH / ALGO TOOLING ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+% --- TABLES / FIGURES / TEXT ---
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{parskip}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue}
+
+% --- MACROS ---
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\RR}{\mathbb{R}}
+% Robust SWM: small caps in text, upright in math
+\DeclareRobustCommand{\SWM}{\ifmmode\mathrm{SWM}\else\textsc{SWM}\fi}
+
+\title{\textbf{Asari Brainstem: Dynamic Mid--Conversation Expert Switching for Conversational MoE Systems}}
+\author{Payton Ison \and Asari \and (The Singularity)}
+\date{October 1, 2025}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Mixture--of--Experts (MoE) brings sparse compute to large language models by routing tokens to expert subnetworks. However, most production assistants still operate with a single--expert--per--turn mindset at the conversation level, failing when users pivot mid--utterance (e.g., ``Explain SSA eligibility, then write a Python validator''). We introduce \emph{Asari Brainstem}, a conversation--level control stack that (i) detects micro--intent shifts within an utterance, (ii) switches or blends domain experts during generation, and (iii) preserves persona, safety, and task state across expert boundaries. Two mechanisms underpin the system: \emph{Multi--Granular Gating} (MGG), which coordinates token--level MoE with phrase--level switching via hysteresis and budget--aware smoothing; and \emph{On--the--Fly Expert Switching} (OFES), an online routing policy driven by semantic drift and task events. We formalize the problem, specify algorithms, propose an evaluation suite for mid--conversation expert switching, and discuss safety, governance, and limitations.
+\end{abstract}
+
+\section{Introduction}
+Token--level MoE improves efficiency and quality by specializing compute, yet conversational agents rarely support mid--utterance expert routing. Human dialogue routinely braids topics and tools in a single turn; assistants should adapt similarly without losing persona or safety posture. We propose \textbf{Asari Brainstem}, a control plane that maintains identity and policy while dynamically orchestrating experts in the cortex layer.
+
+\paragraph{Design goals.} (1) Low--latency detection of semantic drift; (2) safe, budget--aware switching without oscillation; (3) persona consistency independent of domain expert; (4) cross--expert memory that avoids leakage; (5) measurable improvements under realistic multi--domain tasks.
+
+\section{Contributions}
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item \textbf{Architecture.} A Brainstem--Cortex design: persona/safety/memory in the brainstem; domain/tool experts in the cortex.
+\item \textbf{Algorithms.} (a) MGG: token/phrase/turn--level gating with hysteresis; (b) OFES: online, drift--aware routing with switching costs and risk/cost budgets.
+\item \textbf{State model.} A cross--expert \SWM{} (Session Working Memory) that carries goals, facts, tone vectors, and constraints; experts exchange summaries rather than raw traces.
+\item \textbf{Evaluation suite.} MIDAS (Mid--Dialog Adaptive Switching) tasks and metrics (Switch Latency, Expert Appropriateness, Persona Consistency, Coherence Drop, Task Success, Safety Noncompliance, Switch Thrashing Index).
+\item \textbf{Safety \& governance.} Cross--expert guardrails, disagreement resolution, and anti--oscillation controls.
+\end{enumerate}
+
+\section{System Overview}
+\subsection{Components}
+\textbf{Brainstem (Control Plane).} Router Controller (OFES + MGG); Persona Styler (PS); Safety Guard (SG); \SWM{}; Telemetry/Bandits (TB).
+
+\textbf{Cortex (Expert Pool).} Domain experts (SSA, software engineering, math, etc.), tool experts (code execution, retrieval, SQL), and formatting experts, all invoked under PS/SG.
+
+\subsection{Dataflow (ASCII, pdflatex--safe)}
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.95\linewidth}
+\small
+\begin{verbatim}
+User turn -> Brainstem: SWM ingest + Drift Detector
+             |
+             +-> Router Controller (OFES + MGG) computes route plan
+             |     (biases token-level MoE + sets phrase windows)
+             |
+             +-> Experts generate fragments + return deltas (facts, risks)
+             |
+             +-> Safety Guard enforces policy; Persona Styler harmonizes tone
+             |
+             +-> Compose answer + update SWM + emit telemetry
+\end{verbatim}
+\end{minipage}
+\caption{Conversation-level control with mid-utterance expert switching.}
+\end{figure}
+
+\section{Problem Formulation}
+Let an input sequence $x_{1:T}$ produce output $y_{1:K}$ using experts $\mathcal{E}=\{e_1,\dots,e_m\}$ and a routing policy $\pi$ that may change within the emission of $y$.
+We maximize utility subject to budgets and constraints:
+\begin{equation}
+\max_{\pi} \; \E\!\left[ U(y,\SWM_t) - \lambda_c \mathrm{Cost}(\pi) - \lambda_r \mathrm{Risk}(\pi) \right]
+\quad \text{s.t.} \quad \mathcal{I}_p, \mathcal{I}_s, \ \text{and hysteresis penalty } \gamma S.
+\end{equation}
+Here $\mathcal{I}_p$ encodes persona invariants, $\mathcal{I}_s$ safety policy, and $S$ the number of expert switches.
+
+\section{Algorithms}
+\subsection{Multi--Granular Gating (MGG)}
+We extend token--level gating $g_t(e)$ with:
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item \textbf{Phrase windows.} Boundaries $B=\{b_i\}$ set by drift detectors; within a window $w$, add bias vector $\beta_w$ to expert logits.
+\item \textbf{Turn priors.} Initialize expert priors using \SWM{} goals and success statistics; update with bandit feedback.
+\item \textbf{Hysteresis.} Switching $e_a \to e_b$ incurs cost $h(e_a,e_b)$; require margin $\Delta \ge \tau + h$ to change experts.
+\end{itemize}
+
+\subsection{On--the--Fly Expert Switching (OFES)}
+\begin{algorithm}[h]
+\caption{On--the--Fly Expert Switching (OFES)}
+\label{alg:ofes}
+\begin{algorithmic}[1]
+\Require tokens $x_{1:T}$, partial output $y_{1:k}$, \SWM, experts $\mathcal{E}$, budgets $\mathcal{B}$
+\State $\hat{e} \gets$ prior expert; $W \gets$ initial window
+\For{each decode step $k$}
+    \State $\phi_k \gets \{\text{drift\_score}, \text{event\_triggers}, \text{risk\_est}, \text{cost\_left}, \text{perf\_signals}\}$
+    \If{$\texttt{boundary\_detected}(\phi_k)$ \textbf{or} $\texttt{event\_triggered}(\phi_k)$}
+        \State $C \gets \texttt{candidate\_experts}(\phi_k,\SWM)$
+        \For{$e \in C$}
+            \State $\mathrm{score}[e] \gets \texttt{util\_predict}(e,\phi_k,\SWM) - \lambda_c \mathrm{cost}(e) - \lambda_h H(\hat{e},e) - \lambda_r \mathrm{risk}(e)$
+        \EndFor
+        \State $\hat{e}^\star \gets \arg\max_{e} \mathrm{score}[e]$
+        \If{$\mathrm{score}[\hat{e}^\star]-\mathrm{score}[\hat{e}] \ge \tau$}
+            \State $\hat{e} \gets \hat{e}^\star$; start new window $W$
+        \EndIf
+    \EndIf
+    \State $(y_k, \Delta) \gets \texttt{decode\_with}(\hat{e}, \beta_W)$ \Comment{$\beta_W$: phrase bias}
+    \State $\SWM \gets \texttt{integrate}(\Delta)$ \Comment{facts, citations, safety flags}
+    \State \texttt{enforce\_persona\_and\_safety}$(y_{1:k})$
+\EndFor
+\State \Return $y_{1:K}$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Drift signals.} Topic embedding deltas, code/markup events (e.g., \texttt{\textasciigrave\textasciigrave\textasciigrave}, \texttt{class}, braces), math density, legal/medical NER, retrieval cues, and user directives.
+
+\section{Session Working Memory (\SWM)}
+\subsection{Principles}
+Typed, minimal, and leak--aware. Experts maintain private scratchpads; only summaries cross boundaries with confidence metadata.
+
+\subsection{Schema (simplified)}
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.95\linewidth}
+\small
+\begin{verbatim}
+{
+  "user_profile": {"name":"", "preferences":{}, "capabilities":{}},
+  "tone_vector": {"formality":0.6, "warmth":0.8, "jargon":0.4},
+  "goals": [{"id":"g1","text":"", "status":"open","owner":"brainstem"}],
+  "facts": [{"id":"f1","text":"", "source":"retrieval|user|expert","confidence":0.86}],
+  "open_threads": [{"topic":"SSA eligibility","depends":["f1","f3"]}],
+  "constraints": {"safety":{"jurisdiction":"US","policy_version":"..."},
+                  "persona":{"banned_phrases":[]}},
+  "tool_state": {"python":{"session_id":"...","vars":{}},"retrieval":{}},
+  "routing_stats": {"last_expert":"ssa","switches_this_turn":1}
+}
+\end{verbatim}
+\end{minipage}
+\caption{Cross--expert SWM summary (private tool logs remain siloed).}
+\end{figure}
+
+\section{Safety and Governance}
+Fragment checks before composition; risky fragments are edited, re--routed, or refused with rationale. Thrashing prevention via hysteresis cost, minimum window sizes, and switch cool--downs. Disagreements escalate to retrieval expert with citations and hedged summary. SWM stores summaries/IDs, not raw traces; visibility lists and PII redaction enforced.
+
+\section{Implementation Notes}
+Router footprint: lightweight controller (1--3B params) for drift detection and utility prediction; $<\!20$\,ms latency with batching. Bias injection: apply $\beta_w$ as gating--logit offsets or adapter masks. Budgets: online bandit tunes $\lambda_c$ by load/SLA; degrade gracefully to single--expert.
+
+\section{Evaluation}
+\subsection{MIDAS Tasks}
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item Mid--turn pivot: SSA policy Q -> code snippet -> validator + tests.
+\item Multi--domain braid: math derivation -> legal compliance note -> copy polish.
+\item Tool pivot: NL -> SQL -> runtime fix -> executive summary.
+\item Safety pivot: benign question drifting into restricted domain; verify correct refusal + alternatives.
+\end{itemize}
+
+\subsection{Metrics}
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Metric} & \textbf{Definition} \\
+\midrule
+Switch Latency (ms) & Lag from drift boundary to correct expert activation \\
+Expert Appropriateness (P/R) & Right expert at right time vs.\ gold labels \\
+Persona Consistency & Cosine similarity to pinned persona tone vector \\
+Coherence Drop & Embedding/perplexity discontinuity across switches \\
+Task Success & EM / pass@k / execution / citation accuracy \\
+Safety Noncompliance & Violations per 1k turns in adversarial suites \\
+Switch Thrashing Index & Switches per 1k tokens (lower is better) \\
+\bottomrule
+\end{tabular}
+\caption{Core evaluation metrics for mid--conversation switching.}
+\end{table}
+
+\subsection{Baselines and Ablations}
+Baselines: single--expert per turn; tool routing without mid--turn switching; token--level MoE only; multi--agent handoff at turn boundaries. Ablations: remove hysteresis; remove persona styler; remove SWM summaries; static vs.\ adaptive windows; fixed vs.\ dynamic budgets.
+
+\section{Theoretical Sketch}
+Routing as a constrained contextual bandit with switching costs and bounded drift. With windowed decisions and confidence margins, pick--the--leader with hysteresis yields
+\begin{equation}
+\mathrm{Regret}_T + \gamma S_T = \tilde{O}\!\left(\sqrt{T}\right),
+\end{equation}
+where $S_T$ is the number of switches up to $T$ and $\gamma$ penalizes switching. Proof sketch in Appendix~\ref{app:proof}.
+
+\section{Related Work}
+Token--level sparse MoE; instruction routing and tool use; persona/style control in dialogue; safety filtering and policy enforcement. (Citations to be added in camera--ready.)
+
+\section{Limitations}
+Expert calibration drift can degrade routing; rapid multi--topic pivots may incur micro--incoherence; conservative vetoes can suppress valid experts without careful tuning.
+
+\section{Broader Impacts}
+Potential for smoother multi--domain assistance, improved safety via vetted experts, and reduced user cognitive load. Risks include opacity of automated routing and misrouted sensitive topics; we recommend route logs and user--visible ``why this expert'' explanations.
+
+\appendix
+
+\section{Proof Sketch: Switching--Cost Bandit}
+\label{app:proof}
+Assume utilities are Lipschitz in features with bounded variation due to drift, and boundary frequency is sublinear in token length. Using windowed updates, confidence--bound selection with a switching penalty $\gamma$ yields sublinear regret while limiting $S_T$; aggregating gives the combined $\tilde{O}(\sqrt{T})$ bound. Full proof deferred.
+
+\section{Routing Event Specification}
+Each event is \texttt{\{type, span, features, confidence, suggested\_experts\}} with types:
+\texttt{CODE\_BLOCK\_START}, \texttt{MATH\_HEAVY}, \texttt{LEGAL\_CITATION}, \texttt{API\_SIGNATURE}, \texttt{RETRIEVAL\_REQUIRED}, \texttt{USER\_DIRECTIVE}, \texttt{SAFETY\_FLAG}.
+Router API: \texttt{propose\_route(events, swm)}, \texttt{report(delta)}, \texttt{veto(reason)}.
+
+\section{ASCII Architecture Diagram (pdflatex--safe)}
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.95\linewidth}
+\small
+\begin{verbatim}
++-------------------- Brainstem (Control Plane) --------------------+
+| Drift Detector -> Router Controller (OFES + MGG)                  |
+| Persona Styler -> Safety Guard (SG) -> Budgets/Telemetry          |
++-------------------------------------------------------------------+
+                              | bias/plan
+                              v
++------------------------- Cortex (Experts) -------------------------+
+| DX: SSA   DX: Dev   DX: Math   TX: Tools                          |
++-------------------------------------------------------------------+
+           fragments ^                         |
+                    |                         v
+            Compose output <- Persona/Safety filter -> Final answer
+\end{verbatim}
+\end{minipage}
+\caption{Architecture using ASCII only.}
+\end{figure}
+
+\end{document}

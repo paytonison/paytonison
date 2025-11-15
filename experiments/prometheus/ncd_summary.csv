@@ -1,0 +1,4 @@
+metric,value
+within_mean_NCD,0.8530550210587183
+across_mean_NCD,0.8789038019989429
+difference_(across - within),0.02584878094022458

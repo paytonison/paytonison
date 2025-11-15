@@ -1,0 +1,359 @@
+\documentclass[11pt]{article}
+
+% --- Packages ---
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{listings}
+
+% --- Hyperref setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black
+}
+
+% --- Section spacing (subtle) ---
+\titlespacing*{\section}{0pt}{1.2ex plus 0.6ex minus 0.2ex}{0.8ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus 0.4ex minus 0.2ex}{0.6ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.3ex minus 0.2ex}{0.5ex}
+
+% --- Listings setup (code/pseudocode) ---
+\lstdefinestyle{clean}{
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numbersep=8pt,
+    stepnumber=1,
+    numberstyle=\tiny,
+    showstringspaces=false,
+    breaklines=true,
+    frame=tb,
+    tabsize=2,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true
+}
+\lstset{style=clean}
+
+% --- Macros ---
+\newcommand{\Suc}{\mathsf{Suc}}
+\newcommand{\CE}{\mathrm{CE}}
+\newcommand{\BCE}{\mathrm{BCE}}
+\newcommand{\InfoNCE}{\mathrm{InfoNCE}}
+\newcommand{\KL}{\mathrm{KL}}
+
+% --- Title ---
+\title{\vspace{-1em}\textbf{Self-Study: Autocritical Reasoning Reinforcement for Task-Solving Agents}}
+\author{Payton Ison \& Asari \\ The Singularity \\ isonpayton@gmail.com}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We introduce \textbf{Self-Study}, a native training and inference procedure for reasoning models that improves task success without external labels or scalar rewards. An agent interacts with an environment, attempts a task, \emph{analyzes its own mistakes}, constructs \emph{counterfactual repairs} (``patches''), and \emph{replans}. The key learning signal is \emph{delta-reasoning}: the difference between a failed reasoning trajectory and a repaired one that succeeds. We formalize Self-Study as \textbf{Autocritical Reasoning Reinforcement (ARR)}, propose practical components (verifier head, critic head, patch generator, and a Failure Replay Buffer), and give pseudocode for both training and deployment. We outline evaluation protocols, safety considerations, ablations, and theoretical lenses that frame ARR as minimizing residual error with respect to an implicit success predicate.
+\end{abstract}
+
+\section{Introduction}
+Large reasoning models often err in plan construction rather than knowledge retrieval. Traditional supervision (ground-truth derivations, dense rewards) is scarce or fragile. Self-Study reframes training as an iterative loop:\; \textit{attempt} $\rightarrow$ \textit{failure analysis} $\rightarrow$ \textit{causal explanation} $\rightarrow$ \textit{plan update} $\rightarrow$ \textit{retry}, turning the model's own failures into high-value supervision. Unlike generic self-reflection, Self-Study is grounded in the environment:\; a plan is executed, outcomes are observed, and revisions are validated by a success predicate.
+
+\paragraph{Key Insight (Distinctive Features).}
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Intrinsic error signal:} Failure itself becomes structured training data (no human labels required).
+    \item \textbf{Logical reinforcement:} Reinforcement is logical/structural, not a scalar reward.
+    \item \textbf{Emergent meta-reasoning:} The agent learns schemas of recurring failure modes and how to repair them.
+    \item \textbf{Transfer:} Learned causal corrections generalize to unseen tasks.
+\end{itemize}
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=1.4em]
+    \item \textbf{ARR objective:} A trajectory-level loss on reasoning deltas coupling critique, patching, and validation.
+    \item \textbf{Architecture:} A single model with multi-heads (planner, critic, patcher, verifier) or a two-model teacher--student with EMA stabilization.
+    \item \textbf{Mechanisms:} Failure Replay Buffer (FRB), counterexample-contrastive training, and compositional plan-edit programs.
+    \item \textbf{Protocol:} End-to-end pseudocode for training and inference; evaluation and ablation suite.
+    \item \textbf{Safety \& reliability:} Verifier gating, plateau detection, anti-self-delusion checks.
+\end{enumerate}
+
+\subsection*{Relation to Existing Paradigms}
+\begin{table}[H]
+\centering
+\caption{Relation to common paradigms.}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Paradigm} & \textbf{Difference in Self-Study (ARR)} \\
+\midrule
+Reinforcement Learning (RL) & No external reward; uses success predicate and self-consistency. \\
+Chain-of-Thought (CoT) & Feedback integrated over episodes, not only token-level reasoning. \\
+Reflection / RFT & Environment-grounded failure $\rightarrow$ validated repair (not introspection-only). \\
+In-Context Learning (ICL) & Context includes past mistakes and their fixes, not just exemplars. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Problem Setup}
+Let $E$ be an environment with state $s$, tool interfaces (optional), and a \textbf{success predicate} $\Suc(s) \in \{0,1\}$ or a structured checker. Given goal $G$, the agent produces a plan $P=\{p_1,\dots,p_T\}$. Executing $P$ yields an outcome trace $\tau$ and terminal state $s'$.
+
+If $\Suc(s')=0$, the agent generates (i) a \emph{causal critique} $C$ (why it failed), and (ii) a \emph{patch} $\Delta$ that defines a repaired plan $P' = \mathsf{Apply}(P,\Delta)$. If $\Suc(s'')=1$ after executing $P'$, the \textbf{reasoning delta} $(P \Rightarrow P', C, \Delta)$ is stored for learning.
+
+\section{Method: Autocritical Reasoning Reinforcement (ARR)}
+\subsection{Model Components (Single Model, Multi-Head)}
+We employ a backbone with specialized heads:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Planner} $\pi_\theta: (s,G,M) \mapsto P$
+    \item \textbf{Critic} $\rho_\theta: (s,G,P,\tau) \mapsto C$ \; (causal explanation)
+    \item \textbf{Patcher} $\psi_\theta: (s,G,P,\tau,C) \mapsto \Delta$ \; (edits or subgoals)
+    \item \textbf{Verifier} $v_\theta:$ predicts $\Pr[\Suc(s'')]$ given $(s,G,P,\Delta)$ or $(s,G,P')$
+    \item \textbf{Memory} $M$: Failure Replay Buffer (FRB), retrieval keyed by failure type and context
+\end{itemize}
+\textit{Two-model variant:} a \emph{teacher} $\phi$ (EMA of $\theta$) generates critiques/patches; the \emph{student} $\theta$ learns to imitate and improve, stabilizing bootstrapping.
+
+\subsection{Reasoning-Delta Objective}
+Given a validated repair ($\Suc(s'')=1$), train:
+\begin{align*}
+\mathcal{L}_{\text{patch}} &= \CE\!\big(\psi_\theta(\cdot), \Delta^\star\big) \\
+\mathcal{L}_{\text{plan}}  &= \CE\!\big(\pi_\theta(s,G,M,C), P'^{\star}\big) \\
+\mathcal{L}_{\text{ver}}   &= \BCE\!\big(v_\theta(s,G,P,\Delta^\star), 1\big) \\
+\mathcal{L}_{\text{ctr}}   &= \InfoNCE\!\big(h(P'), h(P), \{h(P^{-})\}\big)
+\end{align*}
+with regularizers: $\mathcal{R}_{\text{KL}}$ to a base model; $\mathcal{R}_{\text{sparse}}$ for patch sparsity. The total loss:
+\[
+\mathcal{L} = \lambda_1 \mathcal{L}_{\text{patch}}
++ \lambda_2 \mathcal{L}_{\text{plan}}
++ \lambda_3 \mathcal{L}_{\text{ver}}
++ \lambda_4 \mathcal{L}_{\text{ctr}}
++ \lambda_5 \mathcal{R}_{\text{KL}}
++ \lambda_6 \mathcal{R}_{\text{sparse}}.
+\]
+
+\subsection{Plan-Edit Representation}
+Treat $\Delta$ as a \emph{program of edits} over plan steps:
+\begin{quote}\ttfamily
+[DELETE step k], [INSERT step j: ``\dots''], [REORDER i$\to$k], [CONSTRAINT: ``ensure invariant $I$'']
+\end{quote}
+This makes patches precise, composable, and auditable.
+
+\subsection{Curriculum \& Retrieval}
+\textbf{Self-curriculum:} start with tasks whose success is automatically checkable; increase difficulty. \\
+\textbf{Retrieval-augmented Self-Study:} on failure, retrieve nearest failures from FRB to condition critique/patch.
+
+\section{Algorithms (Pseudocode)}
+\subsection{Training: Self-Study with EMA Teacher}
+\begin{lstlisting}[language=Python, caption={Training with Self-Study (EMA teacher variant).}, label={lst:train}]
+# Modules (multi-head): planner π, critic ρ, patcher ψ, verifier v
+# θ: student params, φ: teacher params (EMA of θ)
+# FRB: Failure Replay Buffer storing (s,G,P,τ,C,Δ,P',τ', meta)
+
+def SELF_STUDY_TRAIN(envs, θ, φ, steps, K_repair=2, α_ema=0.999):
+    FRB = ReplayBuffer()
+    for t in range(steps):
+        s, G = sample_task(envs)
+
+        # Teacher proposes an initial plan
+        P = planner(φ, s, G, memory=FRB.retrieve(s, G))
+
+        τ, s_prime = execute_plan(envs, s, P)
+        if success(s_prime):    # lucky success: log & continue
+            log_success(s, G, P, τ); continue
+
+        # Failure: analyze, repair, and validate
+        C = critic(φ, s, G, P, τ)
+        P_repaired, Δ, τ2, s2, ok = attempt_repairs(envs, φ, s, G, P, τ, C, K_repair)
+
+        if ok:  # validated repair becomes supervision
+            FRB.add((s, G, P, τ, C, Δ, P_repaired, τ2))
+            loss = ARR_LOSS(θ, batch=[(s, G, P, τ, C, Δ, P_repaired, τ2)], FRB=FRB)
+            θ = optimizer_step(θ, loss)
+            φ = ema_update(φ, θ, α=α_ema)
+        else:
+            FRB.add_hard_negative((s, G, P, τ, C))
+
+    return θ, φ, FRB
+
+
+def attempt_repairs(envs, φ, s, G, P, τ, C, K):
+    P_curr = P; τ_curr = τ; s_curr = state_after(τ)
+    for k in range(K):
+        Δ = patcher(φ, s, G, P_curr, τ_curr, C)
+        if not verifier_accept(φ, s, G, P_curr, Δ):  # cheap precheck
+            continue
+        P_next = apply_patch(P_curr, Δ)
+        τ_next, s_next = execute_plan(envs, s_curr, P_next, continue_from=True)
+        if success(s_next):
+            return P_next, Δ, τ_next, s_next, True
+        # refine critique with new evidence
+        C = critic(φ, s, G, P_next, τ_next)
+        P_curr, τ_curr, s_curr = P_next, τ_next, s_next
+    return None, None, None, None, False
+
+
+def ARR_LOSS(θ, batch, FRB):
+    # Unpack single example for clarity
+    s, G, P, τ, C, Δ, P_prime, τ_prime = batch[0]
+
+    # Student predicts a patch and repaired plan
+    Δ_hat = patcher(θ, s, G, P, τ, C)
+    P_hat = planner(θ, s, G, memory=FRB.retrieve(s, G), extra=C)
+
+    # Verifier learns to score success for the repaired plan
+    y = 1  # validated success
+    p_succ = verifier(θ, s, G, P, Δ_hat)
+
+    # Contrastive: use hard negatives from FRB
+    negatives = FRB.sample_negatives(s, G, k=8)
+    loss_ctr = contrastive(h(P_prime), h(P), [h(Pn) for Pn in negatives])
+
+    # Sparsity: encourage small, targeted patches (e.g., edit-count)
+    reg_sparse = sparsity_cost(Δ_hat)
+
+    return (
+        λ1 * cross_entropy(Δ_hat, Δ) +
+        λ2 * cross_entropy(P_hat, P_prime) +
+        λ3 * bce(p_succ, y) +
+        λ4 * loss_ctr +
+        λ5 * kl_to_base(θ) +
+        λ6 * reg_sparse
+    )
+\end{lstlisting}
+
+\subsection{Inference: Bounded Self-Study at Test Time}
+\begin{lstlisting}[language=Python, caption={Inference with bounded repair loops.}, label={lst:infer}]
+def SELF_STUDY_INFER(env, θ, s, G, max_rounds=2, conf=0.6):
+    M = None
+    P = planner(θ, s, G, memory=M)
+    τ, s_prime = execute_plan(env, s, P)
+    if success(s_prime): 
+        return final_answer(τ)
+
+    C = critic(θ, s, G, P, τ)
+    for _ in range(max_rounds):
+        Δ = patcher(θ, s, G, P, τ, C)
+        if verifier(θ, s, G, P, Δ) < conf: 
+            break
+        P = apply_patch(P, Δ)
+        τ, s_prime = execute_plan(env, s, P, continue_from=True)
+        if success(s_prime): 
+            break
+        C = critic(θ, s, G, P, τ)  # update with new evidence
+    return final_answer(τ)
+\end{lstlisting}
+
+\section{Theoretical Lens (Sketch)}
+Let $\mathcal{F}_\theta$ map $(s,G)$ to plans $P$. Define residual error after a one-step repair:
+\[
+\mathcal{E}(\theta) = \mathbb{E}_{(s,G)}\!\left[1 - \Pr_\theta\!\big(\Suc(s'') \mid s,G\big)\right],
+\]
+where $s''$ follows execution of $\mathsf{Apply}\!\big(P,\psi_\theta(\cdot)\big)$. ARR decreases $\mathcal{E}$ by (i) improving patch quality $\psi_\theta$ to increase $\Pr[\Suc]$, and (ii) steering plan distribution $\pi_\theta$ toward repair-friendly trajectories. Under mild assumptions---verifier calibration and non-deceptive critiques---ARR performs descent on residual error, guiding the model toward plan families with higher repairability and success.
+
+\section{Implementation Details}
+\subsection{Architectural Notes}
+Heads over a shared backbone (text LM or multimodal). Planner/critic/patcher/verifier share representations, with adapter/LoRA specialization to control compute. A teacher--student EMA stabilizes self-training. Edit programs serialize in a constrained schema (YAML/JSON) so patches can be applied deterministically.
+
+\subsection{Environments and Checkers}
+Start where success is machine-checkable:
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Code-and-tests:} success = unit tests pass (possibly synthesized).
+    \item \textbf{Math/logic:} symbolic validators for intermediate invariants.
+    \item \textbf{Tool-use tasks:} success = exact output match on tools (calculator, API).
+    \item \textbf{Planning/gridworld:} success = reach goal state under constraints.
+\end{itemize}
+
+\subsection{Hyperparameters (Sane Defaults)}
+Patch budget $K_{\text{repair}}\in\{1,2\}$, patch edit count $\leq 3$; sparsity weight $\lambda_6$ tuned to prefer minimal diffs; EMA $\alpha = 0.999$; FRB size 1--5M episodes, retrieval keyed by goal, tool-usage, failure tag; verifier threshold 0.6--0.8 during inference.
+
+\subsection{Logging and Analytics}
+Track a \textbf{Failure Taxonomy} (off-by-one, invariant violation, tool misuse, hallucinated step). Report Repair Success Rate (RSR), mean edit distance, time-to-fix. Calibrate the verifier (AUC, ECE).
+
+\section{Evaluation Protocol}
+\subsection{Metrics}
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Task success:} exact match / checker pass rate.
+    \item \textbf{RSR@K:} fraction of failures corrected within $K$ repairs.
+    \item \textbf{Sample efficiency:} vs.\ reflection-only, RLHF-only, ICL.
+    \item \textbf{Generalization:} success on unseen but structurally similar tasks.
+    \item \textbf{Reliability:} robustness to distractors; verifier calibration.
+\end{itemize}
+
+\subsection{Baselines}
+\begin{enumerate}[leftmargin=1.4em]
+    \item Planner-only (no critique/patch).
+    \item Reflection-only (textual self-critique without environment-grounded validation).
+    \item Search (beam/tree-of-thoughts), no learning from failure deltas.
+    \item RL (scalar reward) with equivalent interaction budget.
+\end{enumerate}
+
+\subsection{Ablations}
+Remove: contrastive loss; patch sparsity; FRB retrieval; EMA teacher; verifier; or replace edit programs with free-form text.
+
+\section{Safety, Alignment, and Anti-Delusion Controls}
+Verifier gating prevents low-confidence or risky patches from executing tools. Double-loop validation: when a repair ``succeeds,'' re-evaluate under perturbed conditions to avoid brittle hacks. Extract frequent invariants from successful patches and enforce them as hard constraints during planning. Drift guards: KL to base model and plateau detection---stop self-training once marginal gain $<\varepsilon$. Auditability: edit programs expose the ``why'' and the ``how''.
+
+\section{Limitations}
+Checker dependence (early stages need reliable success predicates); risk of self-confirmation if the verifier is miscalibrated; compute cost (multiple execution loops); domain shift (failure taxonomies may overfit---diversify FRB).
+
+\section{Conclusion}
+Self-Study (ARR) turns mistakes into training data by learning \emph{how to repair reasoning}, not merely to produce it. With edit-program patches, verifier gating, and retrieval over failures, ARR offers a practical route to monotonic improvements with minimal external supervision and complements RLHF or supervised traces.
+
+\appendix
+\section{Appendix A: Minimal PyTorch-Style Skeleton (Illustrative)}
+\begin{lstlisting}[language=Python, caption={Minimal multi-head scaffold and training step.}]
+class MultiHead(nn.Module):
+    def __init__(self, backbone):
+        super().__init__()
+        self.backbone = backbone
+        self.plan_head   = nn.Linear(backbone.d, vocab)  # planner
+        self.crit_head   = nn.Linear(backbone.d, vocab)  # critic text
+        self.patch_head  = nn.Linear(backbone.d, vocab)  # patch program
+        self.ver_head    = nn.Linear(backbone.d, 1)      # success prob
+
+    def plan(self, x):   return decode(self.plan_head(self.backbone(x)))
+    def crit(self, x):   return decode(self.crit_head(self.backbone(x)))
+    def patch(self, x):  return decode(self.patch_head(self.backbone(x)))
+    def verify(self, x): return torch.sigmoid(self.ver_head(self.backbone(x))).squeeze(-1)
+
+def train_step(model, optim, batch, frb, λ):
+    s, G, P, τ, C_gt, Δ_gt, P_fix, τ_fix = batch
+    x_plan   = format_plan_input(s, G, frb.retrieve(s, G))
+    x_crit   = format_crit_input(s, G, P, τ)
+    x_patch  = format_patch_input(s, G, P, τ, C_gt)
+    x_verify = format_verify_input(s, G, P, Δ_gt)
+
+    P_hat = model.plan(x_plan)
+    C_hat = model.crit(x_crit)             # optional auxiliary loss
+    Δ_hat = model.patch(x_patch)
+    p_succ = model.verify(x_verify)
+
+    negs = frb.sample_negatives(s, G, k=8)
+    loss = (
+        λ[0]*CE(P_hat, P_fix) +
+        λ[1]*CE(Δ_hat, Δ_gt) +
+        λ[2]*BCE(p_succ, torch.ones_like(p_succ)) +
+        λ[3]*contrastive(embed(P_fix), embed(P), [embed(Pn) for Pn in negs]) +
+        λ[4]*kl_to_base(model) +
+        λ[5]*patch_sparsity(Δ_hat)
+    )
+    optim.zero_grad(); loss.backward(); optim.step()
+    return loss.item()
+\end{lstlisting}
+
+\section{Appendix B: Failure Taxonomy Template (FRB Keys)}
+\begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Arithmetic/logic:} off-by-one, missing carry, invalid case split.
+    \item \textbf{Planning:} skipped precondition, loop without progress, dead-end branch.
+    \item \textbf{Tool use:} wrong API, malformed arguments, missing verification step.
+    \item \textbf{Code:} missing import, state mutation bug, boundary condition.
+    \item \textbf{Reasoning hygiene:} hallucinated fact, dropped constraint, premature conclusion.
+\end{itemize}
+
+\section{Appendix C: Practical Tips}
+Two-phase patches: (1) \emph{diagnostic patch} asserts a missing invariant; (2) \emph{operational patch} fixes steps. Use speculative decoding for planning; greedy for patches (deterministic edits aid auditing). Stop rules: finish when (i) verifier $<$ threshold twice, or (ii) repair budget exhausted. Optional human-in-the-loop: sample $1$--$5\%$ of patches for review; promote common heuristics into rules.
+
+\end{document}

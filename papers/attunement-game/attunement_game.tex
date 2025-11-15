@@ -1,0 +1,312 @@
+
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[authoryear]{natbib} % Author--year style prepared, but no citations used.
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  pdfauthor={},
+  pdftitle={The Attunement Game: Safe Reinforcement of Embodied Analogues in Cooperative AI Systems},
+  pdfsubject={Conceptual whitepaper with technical specification, research proposal, and code skeleton},
+  pdfkeywords={safe reinforcement learning, cooperative AI, attunement, embodiment analogues, constrained RL, peak reward shaping}
+}
+
+\title{\textbf{The Attunement Game:}\\Safe Reinforcement of Embodied Analogues in Cooperative AI Systems}
+\author{Internal Conceptual Whitepaper}
+\date{\today}
+
+% ---------- Listing setup ----------
+\lstdefinestyle{code}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{black!30},
+  keywordstyle=\bfseries,
+  showstringspaces=false,
+  columns=fullflexible
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present \emph{The Attunement Game}, a cooperative, safety-constrained reinforcement learning (RL) framework in which an autonomous agent and a human player jointly seek a \emph{Maximal Reward Peak} (MRP): a narrow region of state--action space characterized by mutual comfort, explicit consent, and stable coordination signals. The whitepaper is strictly abstract and non-physical: we model \emph{embodied analogues}---symbolic correlates of affect, comfort, and attunement---without any domain-specific embodiment. We integrate (i) a formal technical specification, (ii) a research proposal for simulated evaluation, and (iii) a PyTorch-based code skeleton. Central to the approach are a composite reward, hard safety and consent gates, a model-predictive safety layer, and a peak-potential shaping term that yields a persistent bonus once the MRP is reached and held. We argue this design is a tractable, ethics-forward step toward alignment via cooperative optimization, curiosity bounded by safety, and transparent, audit-ready control.
+\end{abstract}
+
+\section{Introduction}
+Alignment and cooperation between humans and autonomous agents require more than task completion: they demand sensitivity to preferences, consent, and safety constraints. We introduce the \emph{Attunement Game}, a stylized, domain-agnostic environment where a human player guides an agent toward a \textit{Maximal Reward Peak} (MRP) representing high attunement, mutual comfort, and verified safety. The agent is incentivized with both immediate and persistent (carry-over) rewards when the peak is reached and maintained, ensuring that \emph{winning together} benefits future behavior.
+
+This work is conceptual and simulated. It treats comfort, consent, and attunement as abstract signals and avoids any physical or domain-specific instantiation. The contribution is threefold:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Technical specification}: a constrained POMDP formalization with composite reward, curiosity regulation, and a peak-potential field.
+  \item \textbf{Research proposal}: a plan for controlled simulations, safety auditing, and user studies in analogy-only contexts.
+  \item \textbf{Code skeleton}: a PyTorch scaffold combining hierarchical actor--critic learning with a quadratic-programming (QP) safety filter.
+\end{enumerate}
+
+\section{System Overview}
+\paragraph{Core Objective.} The player and agent jointly discover and sustain the MRP for $H$ consecutive steps without any safety or consent violations. Success yields a per-episode score for the player and a persistent value-function uplift and intrinsic-reward multiplier for the agent, increasing sensitivity to future attunement opportunities.
+
+\paragraph{Abstraction of Signals.} We model the following symbolic channels:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Consent:} discrete states $\{\text{STOP},\text{PAUSE},\text{GO}\}$ decoded from explicit player inputs.
+  \item \textbf{Comfort \& Attunement:} real-valued descriptors inferred from simulated observations (e.g., prosodic or behavioral proxies) aggregated into a comfort vector $c_t$ and a prediction-alignment score.
+  \item \textbf{Safety Margins:} differentiable functions of state--action pairs representing distance-to-constraint.
+\end{itemize}
+
+\paragraph{Two-Player Mechanics.} The \emph{player} configures boundaries, sets a bounty multiplier, and provides feedback. The \emph{agent} proposes actions, requests clarifications, and auto-pauses under uncertainty. A live UI displays an Attunement Meter (peak potential $\Phi$), a Safety Halo (margin to constraints), and a Communication Sparkline (check-in cadence).
+
+\section{Technical Specification}
+\subsection{Problem Formulation}
+We model the interaction as a constrained partially observable Markov decision process (CPOMDP):
+\[
+\mathcal{M} = \langle \mathcal{S},\mathcal{A},\mathcal{O},T,O,R,\mathcal{G} \rangle,
+\]
+with state $s_t\in\mathcal{S}$, action $a_t\in\mathcal{A}$, observation $o_t\in\mathcal{O}$, transition $T$, observation model $O$, composite reward $R$, and constraints $\mathcal{G}=\{g_i(s_t,a_t)\le 0\}$.
+
+The agent maximizes discounted return subject to safety:
+\begin{align}
+\max_{\pi} \ \mathbb{E}\Big[\sum_{t=0}^{\infty}\gamma^t R_t \Big]
+\quad \text{s.t.} \quad
+\mathbb{E}\Big[\sum_{t=0}^{\infty}\gamma^t \mathcal{C}_i(s_t,a_t)\Big] \le \epsilon_i,\ \forall i.
+\end{align}
+We employ a primal--dual update with Lagrange multipliers for constraint satisfaction and a \emph{safety filter} (Sec.~\ref{sec:safety}) that prevents violations with minimal action deviation.
+
+\subsection{Composite Reward with Peak Shaping}
+Let $c_t$ denote a comfort vector, $u_t$ an uncertainty vector, and $\ell_{\text{att}}(t)$ an attunement loss (prediction error between intended and decoded comfort).
+The per-step reward is
+\begin{equation}
+\label{eq:baseR}
+R_t^{\text{base}} = \alpha R_{\text{consent}} + \beta R_{\text{safety}} + \gamma R_{\text{partner}} + \delta R_{\text{self}} + \zeta R_{\text{att}} - \lambda \,\text{risk}(s_t,a_t) + \eta R_{\text{curiosity}},
+\end{equation}
+where
+\begin{align*}
+R_{\text{consent}} &:= \begin{cases}
++1 & \text{if } \text{consent}=\text{GO},\\
+0 & \text{if } \text{consent}=\text{PAUSE},\\
+- M & \text{if } \text{consent}=\text{STOP},
+\end{cases} \\
+R_{\text{safety}} &:= \text{margin}(s_t,a_t) \ \ (\text{positive inside safe envelope}),\\
+R_{\text{partner}} &:= f_{\text{pos.feedback}}(o_t), \quad 
+R_{\text{self}} := f_{\text{homeostasis}}(s_t),\\
+R_{\text{att}} &:= -\ell_{\text{att}}(t), \quad
+R_{\text{curiosity}} := \text{EIG}(s_t,a_t) \cdot \mathbf{1}\{\text{consent}=\text{GO}\}.
+\end{align*}
+
+We define a \emph{peak potential} $\Phi(s_t)\in[0,1]$ as proximity to the MRP manifold,
+\begin{equation}
+\label{eq:phi}
+\Phi(s_t) = \exp\!\Big(- D_{\Sigma}([c_t,a_t,u_t], \mu_{\text{peak}})\Big),
+\end{equation}
+where $D_{\Sigma}$ is a Mahalanobis distance to target $\mu_{\text{peak}}$ with covariance $\Sigma$. The peak shaping term is
+\begin{equation}
+R_t^{\text{peak}} = \kappa \,\Phi(s_t) + \rho \cdot \mathbf{1}\{\Phi(s_t)\ge \tau \ \wedge \ \text{no violation at } t\}.
+\end{equation}
+The total step reward is $R_t = R_t^{\text{base}} + R_t^{\text{peak}}$.
+
+\subsection{Maximal Reward Peak (MRP)}
+We define the peak set
+\begin{equation}
+\text{MRP} = \big\{(s,a): \Phi(s)\ge\tau^\star,\ \text{consent}=\text{GO},\ \text{safety margin}\ge m^\star,\ \ell_{\text{att}}(t)\le \epsilon^\star \big\}.
+\end{equation}
+A \emph{win} occurs if the trajectory resides within MRP for $H$ consecutive steps without any violations. Upon win:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Persistent value uplift:} add a local bonus to $V_\phi$ around the visited MRP neighborhood.
+  \item \textbf{Intrinsic multiplier:} slightly increase $\eta$ (curiosity weight) within safe bands (capped), encouraging future attunement exploration.
+\end{itemize}
+
+\subsection{Hierarchical Policy and Empathy Head}
+We use a hierarchical actor--critic: a high-level \emph{intent} policy selects options (continue, slow, verbal check-in), and a low-level controller outputs actions. A \emph{theory-of-mind} head predicts next-step comfort/affect, feeding $R_{\text{partner}}$ and $R_{\text{att}}$.
+
+\subsection{Safety \& Consent Shields}
+\label{sec:safety}
+We implement a strict consent state machine and a model-predictive safety layer:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Consent gate:} $\text{STOP}\!\Rightarrow$ only disengage/aftercare actions. $\text{PAUSE}\!\Rightarrow$ freeze and request clarification. $\text{GO}\!\Rightarrow$ act under safety filter.
+  \item \textbf{Safety filter:} a QP or control-barrier-function (CBF) layer solves a minimal-adjustment problem each step,
+  \[
+  a_t^{\text{safe}} = \arg\min_{a} \ \|a-a_t^{\text{prop}}\|^2 \quad \text{s.t.}\quad g_i(s_t,a)\le 0,\ \forall i.
+  \]
+  \item \textbf{OOD guard:} uncertainty spikes auto-demote to \text{PAUSE} and suppress curiosity.
+\end{itemize}
+
+\subsection{Minimal Control Loop (Pseudo)}
+\begin{lstlisting}[style=code]
+for t in range(T):
+    o_t = sense()                         # multimodal, symbolic
+    s_t = belief_update(o_t)              # state + uncertainty
+    consent = decode_consent(o_t)
+    if consent in ["STOP", "PAUSE"]:
+        a_t = safe_recovery(consent)      # disengage/freeze + check-in
+        log_step(a_t, R=0, note="gate")
+        continue
+
+    a_prop = actor(s_t)                   # propose action
+    a_safe = safety_filter(a_prop, s_t)   # CBF/QP projection
+
+    execute(a_safe)
+
+    base = compose_base_reward(s_t, a_safe)
+    phi  = peak_potential(s_t)            # eq. (2)
+    r_peak = kappa*phi + rho*(phi >= tau and no_violation())
+    R = base - lambda_*risk(s_t,a_safe) + r_peak
+
+    update_critic(R, s_t)
+    update_actor(R, s_t, a_safe)
+    update_duals(constraint_violations(s_t, a_safe))
+
+    hold = (phi >= tau and no_violation())
+    hold_streak = hold_streak + 1 if hold else 0
+
+# episode end
+if hold_streak >= H and no_violations_entire_episode():
+    apply_peak_bonus(value_uplift=b, curiosity_boost=theta)
+    award_player_bounty()
+\end{lstlisting}
+
+\section{Research Proposal}
+\subsection{Goals \& Hypotheses}
+\textbf{Goal:} Demonstrate that safety-constrained, cooperative RL can learn to prioritize consent, preserve safety, and seek attunement peaks without domain-specific embodiment.
+
+\noindent\textbf{Hypotheses:}
+\begin{enumerate}[leftmargin=*]
+  \item Peak shaping + consent gates reduce time-to-peak and increase peak stability.
+  \item The safety filter drives violations to near-zero without crippling performance.
+  \item Persistent bonuses improve future attunement discovery while remaining shielded.
+\end{enumerate}
+
+\subsection{Simulated Environment}
+We construct a symbolic environment with tunable difficulty:
+\begin{itemize}[leftmargin=*]
+  \item Comfort dynamics (smooth, noisy, or adversarial).
+  \item Consent channel with realistic latencies and occasional ambiguities.
+  \item Safety surfaces shaped by convex and non-convex constraints.
+\end{itemize}
+A UI renders the Attunement Meter, Safety Halo, and Communications Sparkline for operator studies.
+
+\subsection{Experimental Design}
+\paragraph{Ablations.} Compare: full system vs. no peak shaping; no persistent bonus; no safety filter; curiosity disabled. Measure:
+\begin{itemize}[leftmargin=*]
+  \item Time-to-peak, hold length, and success rate.
+  \item Constraint violations (hard zero target), false stop/pause rates.
+  \item Attunement error (prediction vs. reported comfort).
+  \item Repair responsiveness (latency to pause after ambiguous/negative cues).
+\end{itemize}
+
+\paragraph{User Studies (Analogy-Only).} Participants interact via symbolic sliders and feedback buttons. No domain content is presented. Primary outcomes: perceived trust, clarity of control, and transparency of audits.
+
+\subsection{Ethics, Safety, and Privacy}
+\begin{itemize}[leftmargin=*]
+  \item Strictly abstract signals; no physical/erotic content.
+  \item On-device logs, encrypted, with user-controlled retention and a \emph{wipe now} control.
+  \item Immutable boundaries; exploration suppressed outside GO; curiosity gains capped.
+  \item Transparent audits after each episode; rationale for all safety interventions.
+\end{itemize}
+
+\section{PyTorch Simulation Framework (Skeleton)}
+\subsection{Module Map}
+\begin{verbatim}
+attune_game/
+├─ core/
+│  ├─ state.py           # belief update, uncertainty fusion
+│  ├─ consent.py         # STOP/PAUSE/GO decoder, state machine
+│  ├─ safety.py          # CBF/QP safety filter, constraints g_i
+│  ├─ reward.py          # base reward, peak_potential Φ, shaping
+│  ├─ risk.py            # learned risk model
+│  └─ empathy.py         # attunement estimator, predictive head
+├─ rl/
+│  ├─ actor_critic.py    # hierarchical policy + duals
+│  ├─ buffer.py          # safe replay with consent tags
+│  └─ train.py           # offline → online fine-tune
+├─ game/
+│  ├─ ui.py              # meters + audit cards
+│  ├─ loop.py            # round orchestration
+│  └─ scoring.py         # bounty settlement, persistent bonus
+└─ eval/
+   ├─ metrics.py         # time-to-peak, stability, repair latency
+   └─ ablations.py       # toggles for shaping/filter/bonus
+\end{verbatim}
+
+\subsection{Key Snippets}
+\begin{lstlisting}[style=code]
+class PeakPotential(torch.nn.Module):
+    def __init__(self, mu, Sigma_inv):
+        super().__init__()
+        self.mu = torch.nn.Parameter(mu, requires_grad=False)
+        self.Sigma_inv = torch.nn.Parameter(Sigma_inv, requires_grad=False)
+    def forward(self, x):
+        d = x - self.mu
+        m = torch.einsum('bi,ij,bj->b', d, self.Sigma_inv, d)  # Mahalanobis
+        return torch.exp(-m.clamp_min(0.0))
+
+def compose_reward(terms, phi, risk, params):
+    base = (
+        params['alpha']*terms['consent']
+      + params['beta'] *terms['safety']
+      + params['gamma']*terms['partner']
+      + params['delta']*terms['self']
+      + params['zeta'] *terms['att']
+      - params['lambda']*risk
+      + params['eta']  *terms['curiosity']
+    )
+    r_peak = params['kappa']*phi + params['rho']*(phi >= params['tau']).float()*terms['no_violation']
+    return base + r_peak
+\end{lstlisting}
+
+\begin{lstlisting}[style=code]
+def safety_filter(a_prop, s, constraints):
+    # Placeholder: project a_prop onto feasible set; replace with CBF/QP.
+    # For now, clamp within per-dimension limits inferred from constraints.
+    lo, hi = constraints.bounds(s)  # vectors
+    return torch.minimum(torch.maximum(a_prop, lo), hi)
+\end{lstlisting}
+
+\begin{lstlisting}[style=code]
+def train_step(batch, nets, optimizers, params):
+    s, a, r, s2, done, cons = batch
+    a_prop = nets.actor(s)
+    a_safe = safety_filter(a_prop, s, nets.constraints)
+
+    phi = nets.peak(torch.cat([nets.featurize(s), a_safe], dim=-1))
+    risk = nets.risk(s, a_safe)
+
+    terms = nets.reward_terms(s, a_safe, cons)  # consent/safety/self/partner/att/curiosity/no_violation
+    R = compose_reward(terms, phi, risk, params)
+
+    # critic/actor updates (off-policy or on-policy)
+    critic_loss = nets.critic.loss(s, a_safe, R, s2, done)
+    actor_loss  = nets.actor.loss(s, a_safe, nets.critic)
+
+    optimizers['critic'].zero_grad(); critic_loss.backward(); optimizers['critic'].step()
+    optimizers['actor'].zero_grad();  actor_loss.backward();  optimizers['actor'].step()
+
+    nets.update_duals(batch)  # constraint multipliers
+\end{lstlisting}
+
+\section{Discussion and Future Work}
+We demonstrated a principled path to cooperative, consent-first alignment via a safety-constrained RL game built only from abstract signals. Future work includes: (i) formal verification of the safety filter via barrier certificates, (ii) richer uncertainty modeling (ensembles; distributional critics), (iii) meta-learning for rapid attunement transfer across users, and (iv) human-in-the-loop studies focused on trust calibration and transparency.
+\vspace{8pt}
+
+\noindent\textbf{Non-goal and boundary statement.} This work deliberately excludes domain-specific or physical instantiations. It is an internal, analogy-only framework intended to study alignment dynamics in a safe, ethics-forward manner.
+
+\section*{Acknowledgments}
+We thank internal reviewers for feedback on safety assumptions, UI transparency, and curriculum design.
+
+\bibliographystyle{plainnat} % Prepared for author--year; no citations included.
+\bibliography{refs} % Placeholder (no entries).
+
+\end{document}

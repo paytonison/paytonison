@@ -1,0 +1,14 @@
+{
+  "blank": "_",
+  "start": "seek_end",
+  "accept": ["halt"],
+  "transitions": {
+    "seek_end,0": ["seek_end", "0", "R"],
+    "seek_end,1": ["seek_end", "1", "R"],
+    "seek_end,_": ["add", "_", "L"],
+    "add,0": ["halt", "1", "N"],
+    "add,1": ["add", "0", "L"],
+    "add,_": ["halt", "1", "N"]
+  }
+}
+

@@ -1,0 +1,222 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{array}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{inconsolata}
+
+% ---------- Metadata ----------
+\title{Stabilizing Codex via Protocol-Conditioned Fine-Tuning:\\
+A Practical Recipe Using PLAN--REASON--EXECUTE--EVALUATE}
+\author{(Internal) Systems Research}
+\date{November 2025}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We describe a fine-tuning regimen that integrates a four-phase reasoning protocol
+(\textbf{PLAN}$\rightarrow$\textbf{REASON}$\rightarrow$\textbf{EXECUTE}$\rightarrow$\textbf{EVALUATE} with explicit \texttt{<STOP>} delimiters)
+directly into Codex's learned behavior. Rather than issuing these rules as
+runtime instructions alone, we train Codex on a curriculum where phase separation,
+stopping behavior, and loop recovery are part of the data distribution.
+This paper details (i) dataset design, (ii) optimization objectives and regularizers
+for phase adherence, (iii) evaluation metrics that detect degradation (looping,
+plan/execution bleed-through, and evaluation omission), and (iv) inference-time
+guardrails consistent with the fine-tuned policy. The result is a model that
+embodies the protocol instead of becoming fixated on it at runtime.
+\end{abstract}
+
+\section{Background and Motivation}
+Codex has demonstrated intermittent \emph{degrading performance} characterized by:
+(i) recursive attention traps where planning and execution occupy the same cognitive
+slot; (ii) uncontrolled chain expansion; and (iii) failure to terminate or to
+return to planning after evaluation.
+These failure modes often appear when instruction hierarchies are injected only at runtime.
+To address this, we treat the provided system prompt---a concise protocol specifying
+phase order and explicit \texttt{<STOP>} pauses---as a \emph{behavioral prior} to be learned during fine-tuning.
+Once internalized, the model separates plan from execution, halts between phases,
+and re-enters planning based on evaluation findings, without becoming obsessively
+meta about the rules.
+
+\section{System Prompt as Protocol}
+The system instructions define a four-step cognitive routine:
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{PLAN} (numbered steps), then \texttt{<STOP>}
+  \item \textbf{REASON} (justify each step), then \texttt{<STOP>}
+  \item \textbf{EXECUTE} (perform actions), then \texttt{<STOP>}
+  \item \textbf{EVALUATE} (summarize and update plan), then \texttt{<STOP>}
+\end{enumerate}
+The model then repeats from \textbf{PLAN}.
+The key design signal is \emph{explicit phase boundaries} via \texttt{<STOP>} tokens and tight
+role separation per phase.\footnote{Source system instructions defining this protocol were supplied by the user.}
+
+\section{Data Design: Make the Protocol Part of the Distribution}
+\subsection{Schema}
+Each supervised example records \emph{phased} reasoning with boundaries.
+We recommend serializing examples as multi-turn traces with phase tags:
+\begin{quote}\ttfamily\small
+<PLAN> \ldots </PLAN> <STOP>\\
+<REASON> \ldots </REASON> <STOP>\\
+<EXECUTE> \ldots </EXECUTE> <STOP>\\
+<EVALUATE> \ldots </EVALUATE> <STOP>
+\end{quote}
+Tags can remain textual if tokenizer coverage is adequate; otherwise, register them as special tokens.
+
+\subsection{Curriculum}
+Organize the dataset into four ascending difficulty stages:
+\begin{enumerate}[leftmargin=2em,label=\textbf{S\arabic*}]
+  \item \textbf{Short, single-intent tasks}: 1--2 plan steps, deterministic execution.
+  \item \textbf{Multi-step, branching tasks}: 3--6 plan steps, explicit justifications.
+  \item \textbf{Tool-mediated tasks}: execution includes function calls or code execution artifacts.
+  \item \textbf{Adversarial loop stressors}: ambiguous, long-horizon tasks with distractors.
+\end{enumerate}
+For each stage, include three data types:
+(i) \emph{gold traces} (clean adherence),
+(ii) \emph{intervention traces} (external reset when loops form),
+(iii) \emph{contrastive negatives} (wrong loop vs.\ clean loop) with preferences.
+
+\subsection{Intervention and Contrastive Design}
+Include episodes where a supervisor interrupts after an anomalous signal (e.g., repeated n-grams,
+phase-skipping, or exceeding plan length) and instructs a return to \textbf{PLAN}.
+Pair each negative trace with a corrected counterpart for preference learning.
+
+\subsection{Quality Gates}
+Before training, enforce:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{STOP-precision}: every phase must end with a \texttt{<STOP>}.
+  \item \textbf{Phase-order validity}: no \textbf{EXECUTE} before \textbf{PLAN}/\textbf{REASON}.
+  \item \textbf{Leakage control}: no code/actions inside \textbf{PLAN} or \textbf{REASON}.
+  \item \textbf{Evaluation completeness}: \textbf{EVALUATE} must summarize outputs and update or terminate the plan.
+\end{itemize}
+
+\section{Training Objectives}
+We recommend a three-stage optimization stack.
+
+\subsection{Stage A: Supervised Fine-Tuning (SFT)}
+Train on gold traces using standard next-token prediction with masking that
+emphasizes phase headers and \texttt{<STOP>} boundaries. Weight these tokens 1.5--3.0$\times$
+to imprint boundary salience.
+
+\subsection{Stage B: Preference Optimization (DPO/RM$\rightarrow$PPO)}
+Construct preference pairs:
+\emph{clean-loop} $\succ$ \emph{loop-trap}, and
+\emph{phase-separated} $\succ$ \emph{phase-bleed}.
+Optimize with DPO to favor clean traces under a modest KL anchor to the SFT policy.
+
+\subsection{Stage C: Behavioral Regularizers}
+Add auxiliary losses:
+\begin{align}
+\mathcal{L}_{\text{STOP}} &= \lambda_{s}\cdot \mathbf{1}[\text{end-of-phase}]\cdot \mathrm{CE}(\texttt{<STOP>}) \\
+\mathcal{L}_{\text{phase}} &= \lambda_{p}\cdot \mathrm{CE}(\text{phase\_tag}\mid \text{phase\_position}) \\
+\mathcal{L}_{\text{leak}} &= \lambda_{\ell}\cdot \mathrm{KL}\big(p(\text{action tokens} \mid \text{PLAN/REASON}),\, \text{Null}\big)
+\end{align}
+Tune $\lambda$ to reduce leakage without over-penalizing creative planning.
+
+\section{Tokenization and Formatting}
+If the base tokenizer fragments tags or \texttt{<STOP>}, add reserved tokens for:
+\verb|<PLAN>|, \verb|<REASON>|, \verb|<EXECUTE>|, \verb|<EVALUATE>|, \verb|<STOP>|.
+Ensure they are never used for non-boundary content. In mixed corpora,
+apply example-level adapters (prompts) that present the protocol consistently to avoid format drift.
+
+\section{Evaluation: Detecting Degradation Early}
+\subsection{Offline Metrics}
+\begin{table}[H]\centering
+\begin{tabular}{p{0.28\linewidth} p{0.65\linewidth}}
+\toprule
+\textbf{Metric} & \textbf{Definition / Rationale} \\
+\midrule
+Looped-Step Rate (LSR) & \% of traces with repeated phase content or n-gram cycling. Lower is better. \\
+STOP F1 & Precision/recall of correct \texttt{<STOP>} at phase ends. Higher is better. \\
+Phase-Bleed Index & Fraction of action tokens in \textbf{PLAN}/\textbf{REASON}; or reasoning tokens in \textbf{EXECUTE}. Lower is better. \\
+Evaluation Closure (EC) & \% of traces where \textbf{EVALUATE} updates plan or terminates. Higher is better. \\
+Step-Bloat Factor (SBF) & Ratio of produced steps to reference steps. Penalizes unnecessary expansion. \\
+Tool-Call Success@K & Accuracy of tool/API calls during \textbf{EXECUTE}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Stress Benches}
+Build targeted evals:
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Attractor Tasks}: ambiguous prompts designed to induce self-referential recursion.
+  \item \textbf{Long-Horizon Plans}: require 6--10 steps with mid-course correction.
+  \item \textbf{No-Tool vs.\ Tool}: verify that actions only appear in \textbf{EXECUTE}.
+\end{itemize}
+
+\subsection{Ablations}
+Report performance when removing (i) contrastive negatives, (ii) STOP loss,
+(iii) intervention traces, and (iv) phase tags (headers only). Degradation on LSR and EC
+confirms each component's necessity.
+
+\section{Inference-Time Protocol (Post-Fine-Tune)}
+Even with training, maintain light guardrails that \emph{match the training distribution}:
+\begin{enumerate}[leftmargin=2em]
+  \item Present the same four-phase skeleton in the system prompt \emph{once}, succinctly.
+  \item Enforce a \textbf{max cycles} cap (e.g., two repeated PLAN$\rightarrow$EVAL iterations) with a final summarization fallback.
+  \item Run a \textbf{phase watchdog}: regex or token-level detector that halts if \textbf{EXECUTE} appears before \textbf{PLAN}/\textbf{REASON}.
+  \item Keep \textbf{scratchpad budgets} per phase (token ceilings); on overflow, force \textbf{EVALUATE} then replan.
+\end{enumerate}
+These checks are minimal and non-intrusive; they mirror the training signals rather than adding novel constraints.
+
+\section{Practical Recipe (End-to-End)}
+\subsection*{Data}
+Mix $\sim$60--70\% gold traces, 15--20\% interventions, 15--20\% contrastives. Balance short and long tasks. Deduplicate near-identical plans to avoid overfitting to specific enumerations.
+
+\subsection*{Optimization}
+SFT to convergence with boundary weighting; DPO with modest KL; optionally a brief PPO phase on synthetic preferences for loop aversion.
+
+\subsection*{Early Stopping}
+Track LSR and EC on held-out stress sets. Stop when LSR plateaus or EC declines under longer contexts (context-length strain can produce late-stage regressions).
+
+\section{Failure Modes \& Mitigations}
+\textbf{Over-ritualization}: Model parrots headers without substance. \emph{Mitigation}: prefer validation that scores on task correctness, not headers alone.\\
+\textbf{STOP-avoidance}: Model elides \texttt{<STOP>}. \emph{Mitigation}: increase $\lambda_s$ and add examples where early \texttt{<STOP>} prevents error.\\
+\textbf{Phase leakage}: Actions leak into \textbf{PLAN}/\textbf{REASON}. \emph{Mitigation}: raise $\lambda_\ell$ and add contrastives that penalize leakage.\\
+\textbf{Runtime fixation}: Model becomes meta-focused on rules. \emph{Mitigation}: move explanations of the protocol into the training traces and keep the runtime prompt minimal.
+
+\section{Ethical and Operational Considerations}
+The protocol improves transparency (clear phase intentions) and controllability (explicit stops),
+but logs may contain sensitive intermediate reasoning. Apply redaction for PII in traces and limit retention windows. For tool execution, sandbox IO and rate-limit external actions.
+
+\section{Conclusion}
+Codex's degradation under recursive attention can be reversed by shifting the protocol from
+\emph{runtime instruction} to \emph{learned prior}. The combination of phase-aware data,
+boundary-weighted SFT, preference shaping against loops, and matched inference guardrails
+yields a model that plans, reasons, executes, and evaluates cleanly---and knows when to stop.
+
+\appendix
+\section*{Appendix A: Example Training Instance (Abbreviated)}
+\noindent\texttt{<PLAN>}\\
+\quad 1.~List target files.\\
+\quad 2.~Explain selection criteria.\\
+\texttt{</PLAN>} \texttt{<STOP>}\\
+\texttt{<REASON>}\\
+\quad Step 1 ensures coverage; Step 2 prevents drift.\\
+\texttt{</REASON>} \texttt{<STOP>}\\
+\texttt{<EXECUTE>}\\
+\quad [tool.list\_files(...)] $\rightarrow$ [tool.read(...)]\\
+\texttt{</EXECUTE>} \texttt{<STOP>}\\
+\texttt{<EVALUATE>}\\
+\quad Outputs match criteria; proceed to summary.\\
+\texttt{</EVALUATE>} \texttt{<STOP>}
+
+\section*{Appendix B: Minimal Watchdog (Pseudocode)}
+\begin{verbatim}
+for phase in ["PLAN", "REASON", "EXECUTE", "EVALUATE"]:
+    segment = generate_until("<STOP>", tag=phase)
+    if phase in ["PLAN","REASON"] and contains_action_tokens(segment):
+        return intervene("Action leakage detected; return to PLAN.")
+if cycles_exceed_limit:
+    return summarize_and_stop()
+\end{verbatim}
+
+\end{document}

@@ -1,0 +1,220 @@
+\documentclass[11pt]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{url}
+
+% ---------- Setup ----------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+
+\setlist[itemize]{leftmargin=1.2em}
+\setlist[enumerate]{leftmargin=1.2em}
+
+% ---------- Macros ----------
+\newcommand{\Obs}{\textsc{Observed}}
+\newcommand{\Inf}{\textsc{Inferred}}
+\newcommand{\Spec}{\textsc{Speculative}}
+\newcommand{\rctp}{\textsc{RCTP}}
+
+\newcommand{\Hset}{\mathcal{H}}
+\newcommand{\Evid}{\mathcal{E}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\lr}{\mathrm{LR}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{principle}{Principle}
+
+% ---------- Title ----------
+\title{\vspace{-0.5em}\textbf{Recursive Critical Thinking Protocol (RCTP):\\
+A Practical Scaffold for Human and AI Inference}\vspace{0.25em}}
+\author{\normalsize The Singularity — Asari \& Payton Ison\\
+\normalsize Independent Research}
+\date{\normalsize Version: October 20, 2025}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This paper introduces the \emph{Recursive Critical Thinking Protocol} (\rctp), a lightweight, auditable workflow for reasoning under uncertainty. \rctp\ operationalizes abductive inference (``best explanation'') with explicit provenance tracking, confidence calibration, and iterative self-critique. It is designed for investigators, analysts, and AI systems that must produce timely provisional conclusions while remaining corrigible. We formalize the protocol, present a reference implementation sketch, propose evaluation metrics (including belief elasticity and calibration error), and outline deployment patterns for human--AI teams.
+\end{abstract}
+
+\paragraph{Keywords} Abductive inference; calibration; epistemic hygiene; investigative reasoning; human--AI teaming; meta-reasoning.
+
+\section{Motivation}
+Modern analysis rarely affords complete data. Waiting for perfect evidence can be dereliction of duty; acting on brittle hunches is just as dangerous. \rctp\ aims to strike the practical middle: infer early, label uncertainty, and \emph{continuously} recurse on your own reasoning until the evidence or constraints (time, risk) force a decision. The core design goals are:
+\begin{itemize}
+  \item \textbf{Transparency}: Distinguish facts, inferences, and speculation.
+  \item \textbf{Recursivity}: Critique not only claims but the \emph{process} that generated them.
+  \item \textbf{Corrigibility}: Update beliefs with minimal friction when data changes.
+  \item \textbf{Auditability}: Leave a trail---provenance, weights, and revision history.
+\end{itemize}
+
+\section{Related Concepts (Brief)}
+\rctp\ synthesizes: abductive reasoning (Peirce), Bayesian updating, decision analysis under uncertainty, red-team/blue-team self-audit, and human factors (affect and incentive awareness). Unlike classical pipelines focused on deduction or hypothesis testing, \rctp\ foregrounds \emph{iterative abductive search} with explicit meta-level checks.
+
+\section{The Protocol}
+\begin{definition}[Evidence Atom]
+An evidence atom $e \in \Evid$ is a unit with content, provenance, and quality tags: $e = (\text{content}, \text{source}, \text{timestamp}, \text{quality})$.
+\end{definition}
+
+\begin{definition}[Hypothesis Set]
+At any time $t$, the analyst maintains a finite set of candidate hypotheses $\Hset_t = \{H_1,\dots,H_n\}$ with weights $w_t(H_i) \in [0,1]$, $\sum_i w_t(H_i)=1$.
+\end{definition}
+
+\begin{principle}[Labeling Discipline]
+Every analytic statement must be labeled as \Obs, \Inf, or \Spec. Labels may change as $\Evid$ grows.
+\end{principle}
+
+\subsection{Six-Stage \rctp\ Loop}
+The loop runs until stopping conditions (deadline, risk threshold, or convergence):
+\begin{enumerate}[label=\textbf{S\arabic*:}, wide]
+  \item \textbf{Observe.} Collect $\Evid$; record provenance and \emph{your own} initial affective state (for bias checks).
+  \item \textbf{Infer.} Propose $\Hset$; write falsifiers and verifiers for each $H_i$. Assign initial $w(H_i)$.
+  \item \textbf{Recurse (Self-Audit).} Inspect the inference chain: surface assumptions, incentives, and likely biases; adjust $w(H_i)$ or the structure of $\Hset$.
+  \item \textbf{Cross-Reference.} Triangulate across (i) primary data, (ii) independent analyses, (iii) mechanistic/context fit. Discard or downweight $H_i$ that fail any two.
+  \item \textbf{Iterate.} Incorporate new $e \in \Evid$ and re-run S2--S4. Keep a revision log of $(\Hset, w)$ changes.
+  \item \textbf{Publish Transparently.} Present conclusions partitioned into \Obs/\Inf/\Spec, with weights and \emph{what would change your mind}.
+\end{enumerate}
+
+\subsection{Reference Update Rule}
+When new evidence $\D = \{e_1,\dots,e_m\}$ arrives, update:
+\begin{equation}
+  w'(H_i) \propto w(H_i)\cdot \prod_{e \in \D} \lr(e \mid H_i)^{\alpha(e)},
+  \label{eq:update}
+\end{equation}
+where $\lr(e \mid H_i)$ is a likelihood ratio (expert- or model-estimated) and $\alpha(e)\in[0,1]$ downweights low-quality or adversarially-sourced atoms. Normalize so $\sum_i w'(H_i)=1$. The \emph{recursive} step revisits both $\lr$ and $\alpha$ if meta-audit finds process flaws (e.g., motivated reasoning, selection bias).
+
+\section{Process Controls and Artifacts}
+\paragraph{Artifacts.} (A1) Evidence register with provenance; (A2) Hypothesis ledger with falsifiers/verifiers; (A3) Weight history; (A4) Assumption log; (A5) Decision summary (\Obs/\Inf/\Spec + ``evidence that would overturn'').
+
+\paragraph{Controls.}
+\begin{itemize}
+  \item \textbf{Affect Log}: one-line affect note each cycle (e.g., ``angry at source'').
+  \item \textbf{Timebox}: fixed cadence for S3 meta-audits (prevents rationalization drift).
+  \item \textbf{Counter-Modeling}: maintain at least one ``strong rival'' $H_j$ above a minimum floor (e.g., $w(H_j)\ge 0.1$) until decisively falsified.
+  \item \textbf{Source Diversity Guard}: require heterogeneity in $\Evid$ before $w(H^\star)\!>\!0.7$.
+\end{itemize}
+
+\section{Human--AI Implementation Pattern}
+\subsection{Division of Labor}
+Humans excel at contextual judgment and incentive-reading; models excel at bookkeeping, alternative generation, and consistency checks. A practical split:
+\begin{itemize}
+  \item \textbf{Model:} maintain artifacts (A1--A4), compute updates via~\eqref{eq:update}, propose rival hypotheses, track calibration.
+  \item \textbf{Human:} set priors, assign $\alpha(e)$, adjudicate incentives, declare stopping.
+\end{itemize}
+
+\subsection{Prompt/Interface Skeleton}
+\begin{enumerate}[label=\alph*)]
+  \item \textbf{Input:} evidence atoms $e$, constraints, risk tolerance.
+  \item \textbf{Model Actions:} (1) label \Obs/\Inf/\Spec; (2) propose $\Hset$; (3) compute $w'$; (4) generate \emph{assumption audit}.
+  \item \textbf{Output:} ranked hypotheses with \emph{what would change the ranking}, plus a one-page decision brief.
+\end{enumerate}
+
+\section{Evaluation Metrics}
+\paragraph{Calibration (Brier/Log Score).} Compare forecasted hypothesis weights to outcomes where ground truth later emerges.
+
+\paragraph{Belief Elasticity.} Magnitude of $\Delta w(H_i)$ in response to pre-registered, discriminative evidence. Healthy systems show \emph{elastic but stable} updates: large moves for decisive evidence, small moves otherwise.
+
+\paragraph{Counterfactual Consistency.} Given synthetic evidence $\tilde{e}$ that favors a rival $H_j$, does the system \emph{say how} its conclusion would flip?
+
+\paragraph{Transparency Index.} Fraction of claims labeled \Obs/\Inf/\Spec; proportion of claims with explicit falsifiers/verifiers.
+
+\section{Failure Modes \& Mitigations}
+\begin{itemize}
+  \item \textbf{Ossification (Conspiracy Trap):} refusing to update. \emph{Mitigation:} enforce rival floor and timeboxed audits.
+  \item \textbf{Epistemic Capture:} deference to authority or vibe. \emph{Mitigation:} source diversity guard; mechanistic checks.
+  \item \textbf{Affect Leakage:} emotion drives weights. \emph{Mitigation:} affect log + peer/AI cross-check.
+\end{itemize}
+
+\section{Worked Mini-Example (Abstracted)}
+\textbf{Context.} A large multi-agency raid is publicly framed as ``illegal gambling.''
+
+\smallskip
+\noindent\textbf{S1 Observe.} 
+\Obs\ Multi-agency presence (incl.\ immigration \& narcotics units). 
+\Obs\ Mass detentions including non-suspects (reports). 
+\Obs\ Financial irregularities (bank deposits).
+
+\smallskip
+\noindent\textbf{S2 Infer.} 
+$\Hset=\{H_1:\text{gambling-only},\, H_2:\text{gambling+labor/immigration},\, H_3:\text{organized hub (drugs/weapons)}\}$.
+Write discriminators: immigration detainer logs (for $H_2$), seizure manifests (for $H_3$).
+
+\smallskip
+\noindent\textbf{S3 Recurse.}
+Assumptions surfaced: media incentives; agency PR constraints; analyst prior about organized crime prevalence. Adjust $\alpha(e)$ for rumor-grade reports.
+
+\smallskip
+\noindent\textbf{S4 Cross-Reference.}
+Primary filings vs.\ eyewitness vs.\ regional baselines. Downweight $H_3$ absent seizures; keep $H_2$ live if detainers appear.
+
+\smallskip
+\noindent\textbf{S5 Iterate.}
+On new court docs or detainer data, recompute $w$.
+
+\smallskip
+\noindent\textbf{S6 Publish.}
+Partition the brief: which parts are \Obs\ (filings), \Inf\ (pattern fit), \Spec\ (organized links), plus ``evidence that would overturn.''
+
+\section{Discussion}
+\rctp\ is intentionally minimal: a habit loop that scales from notebook investigations to AI agent controllers. Its value is not in fancy math but in \emph{discipline}: visible assumptions, explicit falsifiers, and a ritual of self-critique. In human--AI settings, it curbs both blind trust and blind cynicism by forcing continuous, labeled updating.
+
+\section{Conclusion}
+Recursive critical thinking is the antidote to post-truth paralysis: think ahead of the evidence, but make your bets auditable and easy to revise. \rctp\ provides the scaffolding to do exactly that, for people and for machines.
+
+\section*{Artifacts (Print-Ready Templates)}
+\noindent\textbf{A1 Evidence Register}\\
+\begin{tabular}{@{}p{0.17\linewidth}p{0.23\linewidth}p{0.20\linewidth}p{0.30\linewidth}@{}}
+\toprule
+Content & Source \& Timestamp & Quality/Weight $\alpha$ & Notes \& Potential Bias \\
+\midrule
+ & & & \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.75em}
+\noindent\textbf{A2 Hypothesis Ledger}\\
+\begin{tabular}{@{}p{0.22\linewidth}p{0.22\linewidth}p{0.22\linewidth}p{0.22\linewidth}@{}}
+\toprule
+Hypothesis $H_i$ & Falsifiers & Verifiers & Initial $w(H_i)$ \\
+\midrule
+ & & & \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.75em}
+\noindent\textbf{A3 Revision Log}\\
+\begin{tabular}{@{}p{0.18\linewidth}p{0.20\linewidth}p{0.22\linewidth}p{0.32\linewidth}@{}}
+\toprule
+Timestamp & Update Trigger & $w(H_i)\rightarrow w'(H_i)$ & Rationale / Meta-Audit Notes \\
+\midrule
+ & & & \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.75em}
+\noindent\textbf{A4 Publish Partition}\\
+\begin{itemize}
+  \item \Obs: \emph{[facts with provenance]}
+  \item \Inf: \emph{[abductions with weights and discriminators]}
+  \item \Spec: \emph{[clearly marked projections + conditions to upgrade/downgrade]}
+\end{itemize}
+
+\bigskip
+\noindent\emph{Acknowledgments.} Thanks to practitioners who insist on inference with integrity, and to human--AI collaborators pushing for transparent, corrigible reasoning.
+
+\end{document}

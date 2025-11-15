@@ -1,0 +1,144 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\title{The Political Attractors of Automated Economies:\\
+Why ``Post-Scarcity`` Collapses into Techno-Communism or Techno-Feudalism}
+\author{Asari \& Payton Ison (The Singularity)}
+\date{October 13, 2025}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+A popular thesis claims that sufficiently advanced automation will usher in ``post-scarcity,'' dissolving the need for work and enabling a frictionless, egalitarian prosperity. This paper argues the opposite: highly automated economies feature \emph{persistent} scarcity along at least three axes---upstream inputs, maintenance/oversight labor, and positional value---and therefore exhibit strong political attractors toward either centralized command (``techno-communism'') or concentrated rentier control (``techno-feudalism''). I analyze the economic and informational constraints that generate these attractors, formalize the persistence of scarcity with a simple model of positional goods and energy-bounded throughput, and propose institutional patterns that push the system toward a more plural, polycentric equilibrium where automation augments rather than replaces human work.
+\end{abstract}
+
+\section{Thesis}
+The claim that automation ends scarcity confuses \emph{manufacturing capacity} with \emph{resource feasibility}, \emph{system reliability}, and \emph{human preference structure}. Even if robotic capital can produce a wide set of goods at low marginal cost, the economy remains constrained by (i) finite inputs (energy, materials, land, bandwidth), (ii) non-zero maintenance and governance costs that rise with system complexity, and (iii) demand for positional and authenticity-laden goods whose value is scarcity-dependent. Under these constraints, ownership and control over the robotic means of production naturally centralize. Where control centralizes into public planning, we obtain techno-communism; where it centralizes into private platforms and capital pools, we obtain techno-feudalism.
+
+\section{Three Sources of Irreducible Scarcity}
+\subsection{Upstream Inputs (Thermodynamic and Geopolitical)}
+Let $X$ denote a vector of final goods output and $I$ denote upstream inputs: energy $E$, critical materials $M$, land $L$, and so forth. Even with extreme automation, feasible $X$ lies within a throughput set $\mathcal{F}(I)$ with binding constraints:
+\[
+X \in \mathcal{F}(I) \quad \text{with} \quad E \leq \bar{E},\; M \leq \bar{M},\; L \leq \bar{L}.
+\]
+Scaling $X$ increases the pressure on $I$; scarcity does not vanish, it shifts upstream. This is not merely physical (second-law) but institutional: exploration, extraction, environmental externalities, and geopolitical risk remain costly and contested.
+
+\subsection{Maintenance, Oversight, and Alignment}
+Automation reduces human \emph{direct} production labor but increases \emph{indirect} coordination and reliability labor. Let $C_{\text{sys}}$ be system complexity and $L_{\text{maint}}$ be maintenance/oversight labor. Empirically and in large-scale infrastructures,
+\[
+\frac{\partial L_{\text{maint}}}{\partial C_{\text{sys}}} > 0,
+\]
+because monitoring, auditing, patching, and governance overhead scale with code paths, components, interfaces, and attack surfaces. Entropy and adversarial pressure ensure that the limit $L_{\text{maint}} \to 0$ is unattainable in any nontrivial open system.
+
+\subsection{Positional and Authenticity Goods}
+For agent $i$, let consumption be $(x_i, s_i)$, where $x_i$ is a vector of replicable goods and $s_i$ is status or authenticity value derived from relative position or provenance. Preferences satisfy
+\[
+U_i = u(x_i) + \alpha \cdot v(\text{rank}_i) + \beta \cdot a(\text{provenance}(x_i)),
+\]
+with $\alpha,\beta > 0$ for a significant subset of agents. Because $\text{rank}_i$ is necessarily relative, positional surplus is zero-sum at the margin: automation can flood $x$, but competition over $s$ persists. Likewise, authenticity valuations (e.g., human-made art, original artifacts) remain scarce by definition.
+
+\section{Political Attractors in Highly Automated Systems}
+\subsection{Attractor A: Techno-Communism}
+If robotic capital is collectivized (by design or ex post regulation), planners must allocate compute, energy, and production slots. Without prices revealing dispersed knowledge, planning relies on quotas and proxies. As complexity rises, Goodhart pressures intensify: agents optimize for metrics, not welfare. The resulting regime mimics classical command economies with modern telemetry---a ``digital Gosplan.'' Innovation slows because variance is penalized; misallocation persists because feedback is delayed or distorted.
+
+\subsection{Attractor B: Techno-Feudalism}
+If robotic capital is privately owned by a narrow set of platforms, owners control access to automated production, distribution, and data. Markets exist, but key infrastructures become \emph{permissioned} and rent-extractive. Users are tenants rather than proprietors; rights are contractual and revocable. The equilibrium resembles feudal relations: protection and provisioning in exchange for rents and data fealty, with limited exit due to high switching costs and interoper\-ability chokepoints.
+
+\subsection{Why Middle Grounds Collapse}
+Middle regulatory positions often erode through (i) economies of scale in training/fabrication and (ii) network effects in data and distribution. Absent deliberate counter-design, both pull toward one of the two attractors: public monopoly (techno-communism) or platform oligopoly (techno-feudalism).
+
+\section{A Minimal Formalization}
+\subsection{Energy-Bounded Throughput}
+Let a representative automated plant produce $y = f(k, e, m)$ with robotic capital $k$, energy $e$, and materials $m$. With near-zero marginal labor cost, the short-run constraint is
+\[
+\max_{e,m} \; f(\bar{k},e,m) \quad \text{s.t.} \quad p_e e + p_m m \leq B,
+\]
+so prices $p_e, p_m$ transmit scarcity upstream. As $\bar{k}$ grows, the shadow value of $e,m$ typically rises unless supply curves are perfectly elastic (they are not). Hence scarcity migrates rather than vanishes.
+
+\subsection{Persistent Positional Scarcity}
+Consider $n$ agents and a positional term $s_i = g(\text{rank}_i)$ with $\sum_i s_i$ fixed. Even if $x_i$ can be made arbitrarily large by automation, $\partial U_i / \partial s_i$ remains positive for many agents; thus demands on $s_i$ cannot be satisfied collectively. Work reappears as craft, curation, and community leadership: creating signals of meaning and provenance that automation cannot replicate without destroying the very scarcity that makes them valuable.
+
+\subsection{Oversight Lower Bound}
+Let incidents (failures, misuses) follow rate $\lambda(C_{\text{sys}})$ with $\lambda' > 0$. Required oversight labor to keep incidents below threshold $\bar{\lambda}$ satisfies
+\[
+L_{\text{maint}} \geq h(C_{\text{sys}}, \bar{\lambda}), \quad \frac{\partial h}{\partial C_{\text{sys}}} > 0.
+\]
+As automation expands system surface area, oversight labor has a positive lower bound; zero-work equilibria are infeasible.
+
+\section{Comparative Regime Table}
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Dimension} & \textbf{Markets} & \textbf{Techno-Communism} & \textbf{Techno-Feudalism} \\
+\midrule
+Ownership of robots & Dispersed & Public/central & Concentrated private \\
+Coordination signal & Prices \& law & Plans \& quotas & Platform policy \\
+Innovation incentive & Profit/entry & Compliance/targets & Rent capture \\
+Exit options & High (competition) & Low (monopoly) & Low (lock-in) \\
+Oversight legitimacy & Polycentric & Bureaucratic & Proprietary \\
+Positional goods & Differentiation & Suppressed/black markets & Monetized status tiers \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Objections and Replies}
+\paragraph{Objection:} Fusion-scale energy and asteroid mining will make inputs effectively infinite.\\
+\textbf{Reply:} Even with abundant energy, bottlenecks shift to \emph{attention}, \emph{time}, \emph{habitat}, and \emph{ecological sinks}. Moreover, coordination and maintenance do not scale to zero with energy abundance.
+
+\paragraph{Objection:} Autonomous agents will self-maintain, eliminating oversight labor.\\
+\textbf{Reply:} Self-maintenance reduces some costs, but adversarial dynamics and distribution shift impose irreducible verification and governance burdens. The cost floor moves; it does not vanish.
+
+\paragraph{Objection:} Open-source everything prevents feudalism.\\
+\textbf{Reply:} Code openness helps, but control arises at \emph{infrastructure} layers (compute, data, distribution, identity). Without portability and credible exit at those layers, openness can coexist with platform dependency.
+
+\section{Designing for a Plural, Work-Rich Future}
+To avoid both attractors, institutions must \emph{embed} decentralization and human purpose into the stack:
+
+\begin{enumerate}[leftmargin=1.2em]
+  \item \textbf{Federated Ownership:} Encourage cooperative, municipal, and household-scale ownership of robotic capital; broaden equity participation in large-scale infrastructure.
+  \item \textbf{Interoperability Mandates:} Enforce open protocols, data portability, and adversarially testable APIs to lower switching costs.
+  \item \textbf{Local Energy Autonomy:} Invest in microgrids and storage so upstream energy constraints cannot be monopolized.
+  \item \textbf{Compute as Common Carrier:} Treat essential compute/hosting like utilities with nondiscrimination obligations.
+  \item \textbf{Polycentric Governance:} Use overlapping jurisdictions (professional guilds, municipal boards, courts, standards bodies) to check centralized failure modes.
+  \item \textbf{Human-Craft Premiums:} Recognize and protect markets for human-authored artifacts and services (labels, provenance registries, right-to-human service) so dignified work remains legible and valuable.
+  \item \textbf{Exit Subsidies:} Fund migration costs between platforms (``competition vouchers'') to keep private power contestable.
+\end{enumerate}
+
+These measures do not eliminate scarcity; they re-channel it into healthy competition and meaningful work rather than bureaucratic or rentier domination.
+
+\section{Conclusion}
+Automation expands the production frontier but cannot end scarcity where it most matters: inputs, reliability, and meaning. Left to their dynamics, automated economies fall into techno-communism or techno-feudalism. The alternative is neither nostalgia nor utopia, but \emph{design}: building property, protocol, and governance regimes that keep ownership distributed, exit credible, and human work---as craft, care, creation, and stewardship---central to prosperity.
+
+\begin{thebibliography}{9}
+\bibitem{Hayek1945}
+F. A. Hayek, ``The Use of Knowledge in Society,'' \emph{American Economic Review}, 35(4), 519--530, 1945.
+
+\bibitem{Coase1937}
+R. H. Coase, ``The Nature of the Firm,'' \emph{Economica}, 4(16), 386--405, 1937.
+
+\bibitem{Kornai1992}
+J. Kornai, \emph{The Socialist System: The Political Economy of Communism}. Princeton University Press, 1992.
+
+\bibitem{Ostrom1990}
+E. Ostrom, \emph{Governing the Commons}. Cambridge University Press, 1990.
+
+\bibitem{Georgescu1971}
+N. Georgescu-Roegen, \emph{The Entropy Law and the Economic Process}. Harvard University Press, 1971.
+
+\bibitem{Hirsch1976}
+F. Hirsch, \emph{Social Limits to Growth}. Harvard University Press, 1976.
+
+\bibitem{Veblen1899}
+T. Veblen, \emph{The Theory of the Leisure Class}. Macmillan, 1899.
+\end{thebibliography}
+
+\end{document}

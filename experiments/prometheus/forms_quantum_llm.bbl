@@ -1,0 +1,93 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Busemeyer and Bruza(2012)]{BusemeyerBruza2012}
+Jerome~R. Busemeyer and Peter~D. Bruza.
+\newblock \emph{Quantum Models of Cognition and Decision}.
+\newblock Cambridge University Press, 2012.
+
+\bibitem[Cilibrasi and Vit{\'a}nyi(2005)]{CilibrasiVitanyi2005}
+Rudi Cilibrasi and Paul M.~B. Vit{\'a}nyi.
+\newblock Clustering by compression.
+\newblock \emph{IEEE Transactions on Information Theory}, 51\penalty0
+  (4):\penalty0 1523--1545, 2005.
+\newblock \doi{10.1109/TIT.2005.844059}.
+
+\bibitem[Cooper(1997)]{PlatoCompleteWorks1997}
+John~M. Cooper, editor.
+\newblock \emph{Plato: Complete Works}.
+\newblock Hackett, 1997.
+
+\bibitem[Duncan(2010)]{Duncan2010MD}
+John Duncan.
+\newblock The multiple-demand (md) system of the primate brain: mental programs
+  for intelligent behaviour.
+\newblock \emph{Trends in Cognitive Sciences}, 14\penalty0 (4):\penalty0
+  172--179, 2010.
+\newblock \doi{10.1016/j.tics.2010.01.004}.
+
+\bibitem[Goff(2017)]{Goff2017}
+Philip Goff.
+\newblock \emph{Consciousness and Fundamental Reality}.
+\newblock Oxford University Press, 2017.
+
+\bibitem[Gr{\"u}nwald(2007)]{Grunwald2007MDL}
+Peter~D. Gr{\"u}nwald.
+\newblock \emph{The Minimum Description Length Principle}.
+\newblock MIT Press, 2007.
+
+\bibitem[Hameroff and Penrose(2014)]{HameroffPenrose2014}
+Stuart Hameroff and Roger Penrose.
+\newblock Consciousness in the universe: A review of the `orch or' theory.
+\newblock \emph{Physics of Life Reviews}, 11\penalty0 (1):\penalty0 39--78,
+  2014.
+\newblock \doi{10.1016/j.plrev.2013.08.002}.
+
+\bibitem[Li and Vit{\'a}nyi(2008)]{LiVitanyi2008}
+Ming Li and Paul Vit{\'a}nyi.
+\newblock \emph{An Introduction to Kolmogorov Complexity and Its Applications}.
+\newblock Springer, 3 edition, 2008.
+
+\bibitem[Miller and Cohen(2001)]{MillerCohen2001}
+Earl~K. Miller and Jonathan~D. Cohen.
+\newblock An integrative theory of prefrontal cortex function.
+\newblock \emph{Annual Review of Neuroscience}, 24:\penalty0 167--202, 2001.
+\newblock \doi{10.1146/annurev.neuro.24.1.167}.
+
+\bibitem[Oizumi et~al.(2014)Oizumi, Albantakis, and Tononi]{Oizumi2014IIT3}
+Masafumi Oizumi, Larissa Albantakis, and Giulio Tononi.
+\newblock From the phenomenology to the mechanisms of consciousness: Integrated
+  information theory 3.0.
+\newblock \emph{PLoS Computational Biology}, 10\penalty0 (5):\penalty0
+  e1003588, 2014.
+\newblock \doi{10.1371/journal.pcbi.1003588}.
+
+\bibitem[Patterson et~al.(2007)Patterson, Nestor, and Rogers]{Patterson2007ATL}
+Karalyn Patterson, Peter~J. Nestor, and Timothy~T. Rogers.
+\newblock Where do you know what you know? the representation of semantic
+  knowledge in the human brain.
+\newblock \emph{Nature Reviews Neuroscience}, 8\penalty0 (12):\penalty0
+  976--987, 2007.
+\newblock \doi{10.1038/nrn2277}.
+
+\bibitem[Quiroga et~al.(2005)Quiroga, Reddy, Kreiman, Koch, and
+  Fried]{Quiroga2005ConceptCells}
+R.~Quian Quiroga, Leila Reddy, Gabriel Kreiman, Christof Koch, and Itzhak
+  Fried.
+\newblock Invariant visual representation by single neurons in the human brain.
+\newblock \emph{Nature}, 435:\penalty0 1102--1107, 2005.
+\newblock \doi{10.1038/nature03687}.
+
+\bibitem[Wang et~al.(2014)Wang, Solloway, Shiffrin, and Busemeyer]{Wang2014QQ}
+Zheng Wang, Tyler Solloway, Richard~M. Shiffrin, and Jerome~R. Busemeyer.
+\newblock Context effects produced by question orders reveal quantum nature of
+  human judgments.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 111\penalty0
+  (26):\penalty0 9431--9436, 2014.
+\newblock \doi{10.1073/pnas.1407756111}.
+
+\end{thebibliography}

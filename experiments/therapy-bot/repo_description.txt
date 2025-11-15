@@ -1,0 +1,5 @@
+Therapy Bot demonstrates using the OpenAI API to craft a supportive chatbot.
+It acts as a small supplement when professional mental-health help isn't
+immediately available. The bot addresses only minor to moderate concerns and
+should never replace real therapy.
+

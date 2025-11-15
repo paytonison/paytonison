@@ -1,0 +1,6 @@
+# Sample words understood by the built-in Oxford-based dictionary dataset
+luminescence
+resilience
+catalyst
+melody
+ephemeral

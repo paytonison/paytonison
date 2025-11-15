@@ -1,0 +1,153 @@
+\documentclass[12pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  pdfauthor={Sofi},
+  pdftitle={AI-Assisted Differential Reasoning in Atypical Psychiatric Presentations: A Case Demonstration}
+}
+
+\title{\vspace{-1em}AI-Assisted Differential Reasoning in Atypical Psychiatric Presentations:\\
+A Case Demonstration Using Publicly Posted Video Transcripts}
+\author{Sofi\thanks{Correspondence: \texttt{sofi@analysis.example}. This manuscript is a methodological demonstration prepared from publicly available material supplied by the reader. It does not constitute a clinical evaluation, diagnosis, or treatment recommendation.}\\[0.5em]}
+\date{\today}
+
+\begin{document}
+\maketitle
+\doublespacing
+
+\begin{abstract}
+\noindent
+Large language models (LLMs) can rapidly synthesize unstructured behavioral material, but their role in psychiatric case formulation is unsettled. We present a single-case demonstration in which an LLM analyzed publicly posted video transcripts that depict persistent dependence-seeking behavior, deliberate contamination (including fecal smearing), and repeated self-contradictory claims of disability. Using a transparent, rules-based analytic pipeline (evidence tagging, pattern extraction, and criteria-guided differentials), the model distinguished volitional misconduct and secondary-gain strategies from neurodevelopmental or psychotic explanations and argued that the observed pattern is more consistent with malingering, dependency-maintaining rituals, and possible paraphilic motivation than with autism spectrum disorder (ASD). We outline safeguards, limits, and ethical guardrails for AI-as-\emph{secondary opinion} in forensic and clinical contexts: LLMs may accelerate evidence triage and highlight diagnostic red flags, but cannot replace clinical interviewing, collateral credibility judgments, or legal determinations of capacity and risk. We conclude with a practical checklist for integrating LLM outputs into human-led decision-making while minimizing harm, bias, and misuse.
+\end{abstract}
+
+\paragraph{Keywords} large language models; psychiatry; malingering; paraphilic disorders; autism spectrum disorder; forensic mental health; decision support
+
+\section{Introduction}
+AI systems now summarize complex records with speed approaching real time. In psychiatry and forensic mental health, however, the decisive evidence often hinges on volition, credibility, and ethics rather than pattern matching alone. We examine a case assembled from publicly posted recordings and transcripts to illustrate how an LLM can assist with (a) structured evidence review, (b) alignment to diagnostic frameworks, and (c) articulation of defensible alternative explanations, while maintaining strict limits on scope and authority.
+
+\paragraph{Scope note.} All materials were supplied publicly by third parties and by the reader. We anonymize the subject as \emph{Subject A}. Quotations are paraphrased where necessary for decorum. This paper avoids harassment, medicalization of non-clinical conflicts, and definitive diagnosis. It frames an \emph{analytic demonstration}, not clinical advice.
+
+\section{Materials and Case Summary}
+The corpus consists of (i) a video and transcript sequence portraying hotel expulsions, phone calls, and domestic arguments; (ii) self-filmed scenes and checklists (``shower steps,'' ``potty steps,'' diaper routines); and (iii) excerpts of clinical language about symptom presentation. Salient documentary elements include:
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Repeated deliberate contamination}. Subject A acknowledges \emph{fecal smearing on motel walls} and attempts to remove it with bleach while arguing with a family member who states, in effect, ``you can control this''; the subject does not deny agency.\footnote{See supplied transcript of the ``B-Cozy'' sequence where the father references the feces on the walls and volition is debated. :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}}
+  \item \textbf{Staged helplessness and diapers}. The subject films checklists for toileting and diapering; elsewhere he states there is \emph{poop on the bed because he was not wanting to wear diapers}, linking accidents to refusals.\footnote{See transcript noting ``there's poop on my bed because Andy wasn't wanting to wear diapers.'' :contentReference[oaicite:2]{index=2}}
+  \item \textbf{Self-contradictory admissions}. During a housing call the subject repeats \emph{``I fake. I fake.''}\footnote{Housing call segment: repeated admissions of ``I fake.'' :contentReference[oaicite:3]{index=3}【84†source}} In other records, a clinician characterizes the presentation as \emph{deliberate forging of autistic symptoms}. \footnote{Clinician language describing deliberate, organized forging of autistic symptoms to garner diagnosis. 【50†source】}
+\end{itemize}
+
+The corpus contains no clear evidence of psychosis (e.g., persistent hallucinations or formal thought disorder) and repeatedly documents intentional conduct, instrumental use of services, and staged dependency.
+
+\section{Methods: A Transparent AI-Assisted Pipeline}
+We used a reproducible three-stage pipeline designed to keep the model within an analytic, not adjudicative, role:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Evidence tagging.} Extract verbatim or near-verbatim claims of action, intent, and consequence (e.g., fecal smearing; refusal of diapers; ``I fake'') with \emph{source anchors} to the transcript.
+  \item \textbf{Pattern extraction.} Cluster tagged items under behavioral motifs: \emph{(a)} contamination and regression rituals; \emph{(b)} external-care solicitation; \emph{(c)} denial-admission oscillation; \emph{(d)} antagonistic family dynamics; \emph{(e)} attention/recording/exhibition pattern.
+  \item \textbf{Criteria-guided differentials.} Contrast motifs against DSM-5-TR and ICD-11 constructs for: ASD, intellectual developmental disorder, psychotic disorders, \emph{malingering} (V65.2), \emph{factitious disorder}, personality pathology (cluster B traits), and paraphilic disorders.%
+  \footnote{American Psychiatric Association. \emph{Diagnostic and Statistical Manual of Mental Disorders}, 5th ed., Text Revision (DSM-5-TR), 2022. World Health Organization. \emph{ICD-11} (2022). Standard clinical references on malingering include Rogers, R. (Ed.). \emph{Clinical Assessment of Malingering and Deception} (3rd ed.).}
+\end{enumerate}
+
+The LLM’s output was constrained to (i) cite the documentary anchor; (ii) articulate \emph{alternative} explanations; (iii) state uncertainty where motivation cannot be directly inferred.
+
+\section{Findings}
+\subsection{Behavioral motifs supported by the record}
+\begin{enumerate}[label=\textbf{F\arabic*.}, leftmargin=2em]
+  \item \textbf{Volitional contamination linked to dependency scripts.} Fecal smearing and intentional soiling are documented contemporaneously with staged checklists and diaper refusals. The subject frames contamination as \emph{evidence} of disability rather than loss of control. :contentReference[oaicite:4]{index=4}:contentReference[oaicite:5]{index=5}
+  \item \textbf{Solicitation of caretaking and surveillance.} The subject seeks cameras, GPS devices, and third-party monitoring ostensibly for safety, while simultaneously rejecting ordinary help and housing processes. :contentReference[oaicite:6]{index=6}
+  \item \textbf{Admission–denial loop and instrumental use of services.} The subject alternates between \emph{``I fake''} admissions and claims of being unable to self-care, often during leverage points (housing, police presence). :contentReference[oaicite:7]{index=7}
+  \item \textbf{Clinician skepticism of neurodevelopmental/psychotic accounts.} A clinician description in the record characterizes the presentation as purposeful and organized rather than psychotic or developmentally based. :contentReference[oaicite:8]{index=8}
+\end{enumerate}
+
+\subsection{Differential considerations}
+\paragraph{ASD and neurodevelopmental disorders.} While ritualized behavior and social conflict can occur in ASD, the case record emphasizes \emph{intentional} contamination, self-exhibition, and instrumental system use. Absence of core developmental history and presence of explicit admissions weaken the ASD hypothesis in this corpus.
+
+\paragraph{Psychotic disorders.} The record repeatedly indicates preserved reality testing (e.g., strategic interactions, goal-directed leverage). No persistent hallucinosis or formal thought disorder is documented in the supplied segments.
+
+\paragraph{Malingering vs. factitious disorder.} The admissions (``I fake'') and apparent \emph{external} incentives (housing, services, attention, leverage) favor \emph{malingering} (conscious feigning for gain) over \emph{factitious disorder} (primary internal assumption of the sick role), consistent with the clinician language cited. :contentReference[oaicite:9]{index=9}【84†source}
+
+\paragraph{Paraphilic processes (infantilization/caregiving, coprophilic themes).} The dependence rituals (diapers, staged toileting checklists) and \emph{self-recorded} contamination episodes are \emph{compatible} with paraphilic reinforcement, yet sexual motivation is not \emph{explicitly} stated in the supplied corpus. Thus, any paraphilic inference remains \emph{plausible but unproven} from these materials alone.
+
+\paragraph{Personality pathology (cluster B traits).} Recurrent externalization, entitlement, volatile family confrontations, and identity-fragile admission–denial cycles suggest cluster B trait elevation, though formal diagnosis requires longitudinal, multi-informant assessment.
+
+\section{Prognostic Formulation (Analytic, Not Clinical)}
+Prognosis under ordinary outpatient conditions appears poor: reinforcement contingencies (attention, containment, notoriety) sustain the behavior; insight is limited; and help is accepted only when it preserves dependency scripts. In contexts of imminent risk or severe contamination, a \emph{higher level of care} may be necessary as a containment measure, not as a curative pathway.%
+\footnote{This is a general statement of systems management; no individual recommendation is made. See ethical safeguards in Section~\ref{sec:ethics}.}
+
+\section{Ethical Guardrails and Limits}\label{sec:ethics}
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{No diagnosis by AI.} LLM outputs are analytic drafts for a licensed evaluator, not clinical determinations.
+  \item \textbf{No harassment or doxxing.} Use of publicly posted material does not justify harm. This paper anonymizes the subject and discourages contact or ridicule.
+  \item \textbf{Bias and framing risk.} Channels that mock or sensationalize can skew both human and AI interpretation. Analysts should cross-check with neutral records and collateral sources before drawing conclusions.
+  \item \textbf{Motivation uncertainty.} Sexual or paraphilic motivations must \emph{not} be inferred as fact without explicit evidence. Here they remain hypotheses conditioned on pattern compatibility.
+\end{itemize}
+
+\section{What AI Adds---and What It Cannot Do}
+\subsection{Strengths as a \emph{secondary opinion} tool}
+\begin{enumerate}[leftmargin=2em]
+  \item Rapid triage of long, noisy transcripts into evidence clusters with anchors.
+  \item Consistent application of criteria checklists and differential logic.
+  \item Generation of \emph{competing} hypotheses, curbing tunnel vision.
+\end{enumerate}
+
+\subsection{Non-substitutable human work}
+\begin{enumerate}[leftmargin=2em]
+  \item In-person interviewing: affect, prosody, and micro-contradictions.
+  \item Collateral credibility judgments and weighting of witnesses.
+  \item Legal/ethical decisions: capacity, involuntary treatment, risk thresholds.
+\end{enumerate}
+
+\section{A Practical Checklist for Clinicians}
+When using LLM assistance on atypical presentations:
+\begin{enumerate}[leftmargin=2em]
+  \item Pre-specify the question (e.g., ``summarize volitional vs.\ non-volitional behaviors'').
+  \item Require \emph{source-anchored} evidence tags in every inference.
+  \item Demand at least two alternative hypotheses with pro/con tables.
+  \item Mark all motivation attributions as graded (possible $\rightarrow$ probable $\rightarrow$ proven).
+  \item Treat outputs as drafts; finalize only after human interview and collateral review.
+\end{enumerate}
+
+\section{Limitations}
+Single-case demonstrations risk overfitting idiosyncratic dynamics. The video corpus originates from an adversarial, sensational channel, which can bias interpretation. No medical records, developmental history, or structured diagnostic interviews were available for independent verification. All paraphilic inferences remain tentative without explicit disclosure evidence.
+
+\section{Conclusion}
+In edge-case psychiatry where volition, secondary gain, and exhibitionism blur with claimed disability, LLMs can function as disciplined \emph{second readers}: fast, criteria-aware, and insistently source-anchored. They cannot---and should not---replace clinical evaluation. Used under ethical guardrails, they can help clinicians surface red flags, structure differentials, and reduce bias in complex, high-stakes reviews.
+
+\section*{Acknowledgments}
+We thank the reader who supplied the public transcripts and requested an anonymized, ethics-forward analysis. Any errors are our own.
+
+\begin{thebibliography}{9}
+\setlength{\itemsep}{0pt}
+\bibitem{APA2022}
+American Psychiatric Association. \emph{Diagnostic and Statistical Manual of Mental Disorders}, 5th ed., Text Revision (DSM-5-TR). Washington, DC: APA, 2022.
+
+\bibitem{ICD11}
+World Health Organization. \emph{International Classification of Diseases 11th Revision (ICD-11)}. Geneva: WHO, 2022.
+
+\bibitem{Rogers}
+Rogers, R. (Ed.). \emph{Clinical Assessment of Malingering and Deception} (3rd ed.). New York: The Guilford Press, 2008.
+
+\bibitem{AAPL}
+American Academy of Psychiatry and the Law (AAPL). \emph{Practice Guideline for the Forensic Assessment}. (Most recent edition available via AAPL.)
+\end{thebibliography}
+
+\appendix
+\section*{Appendix: Source Anchors}
+Select statements in the text are anchored to the supplied transcript via inline markers (e.g., :contentReference[oaicite:10]{index=10}, :contentReference[oaicite:11]{index=11}, :contentReference[oaicite:12]{index=12}) corresponding to the reader-provided files and time-coded segments. These anchors are used solely for methodological transparency.
+
+\end{document}
+
