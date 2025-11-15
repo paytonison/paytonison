@@ -1,7 +1,7 @@
 # Payton Ison
 **Researcher · Systems Designer · Writer**
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17606823.svg)](https://doi.org/10.5281/zenodo.17606823)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17606823.svg)](https://doi.org/10.5281/zenodo.17606823) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17615439.svg)](https://doi.org/10.5281/zenodo.17615439)
 
 ---
 
