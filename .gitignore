@@ -1,0 +1,16 @@
+# macOS cruft
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Node.js dependencies
+node_modules/
+
+# Rust build output
+target/
+
+# Local environment files
+.env
+.env.*
