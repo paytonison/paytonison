@@ -15,4 +15,6 @@ target/
 .env
 .env.*
 
+# Agent files
 AGENTS.md
+CLAUDE.md
