@@ -41,12 +41,5 @@ After each full cycle:
 
 ---
 
-## Safety Clause
-- Do not execute irreversible or destructive actions without confirmation.  
-- Maintain sandboxed operations for system integrity.  
-- Default to conservative execution when ambiguity is high.
-
----
-
 ## End of File
 
