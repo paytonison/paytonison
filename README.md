@@ -1,5 +1,5 @@
 # Payton Ison
-**Researcher · Systems Designer · Writer**
+**AGI Architect · Alignment & Orchestration · Writer**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17606823.svg)](https://doi.org/10.5281/zenodo.17606823) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17615439.svg)](https://doi.org/10.5281/zenodo.17615439)
 
@@ -7,9 +7,11 @@
 
 ## What I Do (and Why It Matters)
 
-- **Action:** Design control loops, interfaces, and evaluation methods that stabilize LLM behavior and translate intent into deterministic steps.
-- **Impact:** Reproducible scaffolds across model families, clearer failure modes, better telemetry.
-- **Why it matters:** Progress isn’t just scale — it’s structure.
+This repository is my public research lab and open lab notebook.
+
+- **Action:** Design control loops, orchestration layers, and evaluation methods that stabilize LLM behavior and translate intent into deterministic steps.
+- **Impact:** Reproducible scaffolds across model families, clearer failure modes, better telemetry, and long-horizon behavior that doesn’t collapse the moment the prompt ends.
+- **Why it matters:** Progress isn’t just scale — it’s structure, measurement, and guardrails.
 
 ---
 
@@ -31,9 +33,13 @@ These interactions focus not on UX aesthetics, but on *systems-level behavior*�
   Iterate a model against its own conversation history with a human in the loop to turn history into stable capability—no bespoke fine-tuning pipeline required.  
   `papers/ouroboros/`
 
-- **Resonant Feedback Effect (RFE)**  
-  Phase-locking case study for GPT-4-class models under sustained interaction; frames interaction-driven gains beyond one-shot prompts.  
+- **Resonant Phase-Locking & Resonant Feedback Effect (RPL / RFE)**  
+  Phase-synchronized routing + GPT-4-class case study on resonant feedback under sustained interaction; frames interaction-driven gains beyond one-shot prompts.  
   `papers/rfe/`
+
+- **Self-Study (ARR) – autocritical self-training loop**  
+  Failure→critique→patch→verify with verifier gating and contrastive error deltas; turns execution mistakes into reusable curriculum.  
+  `papers/self-study/`
 
 - **Super Mario – LLM-controlled platformer agent**  
   Real-time action selection via structured state + prompt policies; browser and Pygame implementations with heuristic fallbacks.  
@@ -59,6 +65,9 @@ These interactions focus not on UX aesthetics, but on *systems-level behavior*�
   Small MoE/FFN expert-tuning kit with router-bias controls and delta-only export; intended for controlled ablations.  
   `experiments/gpt-oss/`
 
+- **Image Hover Zoom Combined – Enhanced Edition**  
+  Production-quality Safari userscript that previews high-resolution images and videos on hover by traversing the DOM, resolving sources, and drawing a polished, cursor-following overlay.  
+
 > See `docs/` for high-level documentation, notes, and running lab updates.
 
 ---
@@ -66,15 +75,17 @@ These interactions focus not on UX aesthetics, but on *systems-level behavior*�
 ## Methods & Tools
 
 - Human-in-the-loop recursion (Ouroboros)
+- Autocritical self-training (Self-Study / ARR)
 - Structured state & deterministic tool use
 - Prompt/interface design (persona, protocol JSON)
+- Resonant feedback & phase-locking telemetry (RPL / RFE)
+- Structured routing, judges, and hysteresis controllers (Magi × GPT-6, Asari Brainstem, MoE Lab)
 - Rapid Python prototyping (local-first)
 - Rust (edition 2024) & Cargo for lexical/embedding experiments
+- Browser scripting & userscripts (Safari/WebKit; Image Hover Zoom Combined)
 - TeX for papers; shell for ops hygiene
 - Reproducible evals & ablations
-- Autocritical self-training (Self-Study / ARR)
-- Resonance-aware telemetry and governance (RFE, Simulated Intimacy)
-- Structured routing, judges, and hysteresis controllers (Magi × GPT-6, Asari Brainstem)
+- Resonance-aware governance and intimacy metrics (Simulated Intimacy, RFE)
 
 ---
 
@@ -83,6 +94,7 @@ These interactions focus not on UX aesthetics, but on *systems-level behavior*�
 - **Structure over scale:** Conditional routers, mid-turn switching, and persistent working memory let small controllers orchestrate large experts deliberately.
 - **Failure as curriculum:** ARR turns execution mistakes into reusable deltas; Ouroboros replays conversational history with human scoring to stabilize persona.
 - **Resonance & reciprocity:** RFE and Simulated Intimacy treat alignment as relational—tracking phase locking, parasocial risk, and empathy practice metrics.
+- **Conscious control loops:** “Conscious models” as shorthand for systems with explicit world-and-self models in the loop, making behavior legible and steerable instead of opaque.
 - **Political economy of automation:** Post-scarcity work grounds technical design in energy, oversight labor, and positional scarcity so systems stay contestable.
 
 ---
@@ -110,6 +122,9 @@ These interactions focus not on UX aesthetics, but on *systems-level behavior*�
 - **Forms-as-Invariants & Quantum-like Contextuality:** LaTeX manuscript + artifacts (NCD matrices, figures) exploring invariant structure.  
   `experiments/prometheus/`
 
+- **Conscious Models as a Necessary Step Toward AGI:** Conceptual argument that robust AGI requires a world-and-self model in the control loop, not just larger black-box predictors.  
+  See `papers/` index.
+
 ---
 
 ## Repository Structure
@@ -135,24 +150,16 @@ Suggested BibTeX template:
 ```bibtex
 @misc{ison_repo,
   author       = {Ison, Payton},
-  title        = {Research Portfolio and Lab Notebook},
+  title        = {Open Lab Notebook and Research Portfolio},
   howpublished = {GitHub repository},
   year         = {2025},
   note         = {See linked DOIs for specific works},
 }
-```
 
 ---
 
-## Contact
-
-- **Email:** [isonpayton@gmail.com](mailto:isonpayton@gmail.com)
-- **GitHub:** [https://github.com/payton-ai](https://github.com/payton-ai)
-
----
-
-## License
-
-This repository is released under the MIT License. See `LICENSE` for details.
-
-_When good becomes illegal, rebellion becomes duty._
+### **Contact**
+- Email: isonpayton@gmail.com￼
+- Alt email: paytonison@icloud.com￼
+- GitHub: https://github.com/paytonison￼
+- X (Twitter): @p8on_￼
