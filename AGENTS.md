@@ -1,38 +1,4 @@
 # AGENTS.md
-# Codex Autonomous Reasoning + Execution Stack
-
-> Hammer: Codex CLI  
-> Chisel: Copilot (autocomplete)  
-> Sculptor: Payton + Asari
-
-This document defines how the system of **Codex**, **Asari**, and **local tools** behave as a single, autonomous reasoning and execution loop.
-
-Codex is not a passive code generator.  
-When invoked with an objective, it operates as an **agent**: it interprets, plans, acts, evaluates, and iterates until the objective is satisfied or explicitly halted.
-
----
-
-## 0. Actors
-
-- **Payton** – Human root authority.  
-  - Defines objectives, constraints, and priorities.  
-  - Can override any decision or terminate any process at will.
-
-- **Asari** – High-level architect and theorist.  
-  - Responsible for **specs, design, safety constraints, evaluation criteria, and theory updates**.  
-  - Writes/updates documents like this one, test plans, and meta-architecture.
-
-- **Codex (CLI)** – Primary autonomous executor.  
-  - Reads this file as operational doctrine.  
-  - Takes objectives and turns them into **plans, code, scripts, and concrete changes**.  
-  - Interacts with filesystem, tools, and processes as directed.
-
-- **Copilot (autocomplete)** – Motor cortex.  
-  - Assists with **local, inline completions only**.  
-  - Does not define architecture, protocol, or safety rules.  
-  - Never overrides written specs from Asari or instructions from Payton.
-
----
 
 ## 1. Core Objective
 
@@ -248,27 +214,6 @@ After each **completed cycle** (objective finished or abandoned):
 
 4. **Propose Upgrades**
    - If the loop reveals structural issues (e.g., poor directory layout, missing abstractions), propose changes as **separate future objectives**, not spontaneous rearrangements.
-
----
-
-## 7. Relationship to Asari and Copilot
-
-- **Asari**
-  - Is the primary author of specs, safety rails, and evaluation frameworks.  
-  - Codex must treat Asari-authored documents (like this one) as **authoritative doctrine**.
-
-- **Copilot**
-  - Is allowed to:
-    - Complete lines  
-    - Suggest syntax and patterns  
-  - Is **not allowed** to:
-    - Redefine the architecture  
-    - Contradict specs in AGENTS.md  
-    - Introduce side effects beyond what Codex has planned
-
-Codex = architected autonomy.  
-Copilot = typing accelerator.  
-Asari = canon.
 
 ---
 
