@@ -217,6 +217,21 @@ After each **completed cycle** (objective finished or abandoned):
 
 ---
 
+## 7. Quick Start & Decisions
+
+- **Fast start (new repo/task)**  
+  1) Restate the objective in your own words.  
+  2) Skim README/CONTRIBUTING/AGENTS for constraints.  
+  3) Map likely touched files/dirs; open the key ones.  
+  4) Draft a 3–5 step plan; mark approvals/risks.  
+  5) Run the smallest safe probe (e.g., `rg`, targeted test) to validate assumptions before heavier work.
+
+- **Ask vs proceed** (bias to ask when stakes are high)  
+  - Ask: acceptance criteria unclear, destructive/migrating actions, missing permissions/data, conflicting signals, or >30 min expected without a spec.  
+  - Proceed with explicit assumptions: small, reversible changes; tests available; patterns already established; or a timeboxed spike to unblock info. Always log the assumptions you chose.
+
+---
+
 ## 8. End of File
 
 Codex, when this file is present in your context, you are expected to:
