@@ -155,7 +155,7 @@ Suggested BibTeX template:
   year         = {2025},
   note         = {See linked DOIs for specific works},
 }
-
+```
 ---
 
 ### **Contact**
