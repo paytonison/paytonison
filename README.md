@@ -16,6 +16,10 @@ I build control loops and scaffolds that make model behavior legible and repeata
 - **Conscious Models as a Necessary Step Toward AGI** — An architectural argument for world-and-self models in the control loop.  
   https://github.com/paytonison/agi
 
+## Experiments & prototypes
+- **Mario experiment (agent ↔ environment loop)** — A latency-constrained proof-of-concept for agent interaction with a real-time game state, focused on what breaks (and what scales) when you try to drive gameplay through tool calls.
+https://github.com/paytonison/paytonison/tree/main/mario-clone
+
 ## What I’m focused on
 - Structure over scale: routers, governors, and eval harnesses that keep systems stable under pressure.
 - Failure as curriculum: turning mistakes into reusable deltas and tests.
