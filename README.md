@@ -17,8 +17,8 @@ I build control loops and scaffolds that make model behavior legible and repeata
   https://github.com/paytonison/agi
 
 ## Experiments & prototypes
-- **Mario experiment (agent ↔ environment loop)** — A latency-constrained proof-of-concept for agent interaction with a real-time game state, focused on what breaks (and what scales) when you try to drive gameplay through tool calls.
-https://github.com/paytonison/paytonison/tree/main/mario-clone
+- **Mario experiment (agent ↔ environment loop)** — A latency-constrained proof-of-concept for agent interaction with a real-time game state, focused on what breaks (and what scales) when you try to drive gameplay through tool calls.  
+  https://github.com/paytonison/paytonison/tree/main/mario-clone
 
 ## What I’m focused on
 - Structure over scale: routers, governors, and eval harnesses that keep systems stable under pressure.
