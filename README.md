@@ -1,8 +1,8 @@
 # Payton Ison
 
-Relentless pursuit of excellence.
+_Relentless pursuit of excellence._
 
-AGI Architect • Alignment & Orchestration • Writer
+## AGI Architect • Alignment & Orchestration • Writer
 
 I build control loops and scaffolds that make model behavior legible and repeatable: routing, evaluation, tool-use protocols, and long-horizon stability.
 
@@ -26,7 +26,7 @@ I build control loops and scaffolds that make model behavior legible and repeata
 - If you’re looking for the best entry points, check the pinned repos first.
 
 ## Contact
-- X: https://x.com/p8on_
+- X: <https://x.com/p8on_>
 - Email: isonpayton@gmail.com
 
 ---
