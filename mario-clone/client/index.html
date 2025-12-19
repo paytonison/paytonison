@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mario Agent Console</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5efe6;
+        --panel: #fff7ea;
+        --accent: #d35400;
+        --text: #2d2a26;
+        --muted: #7d6f5c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Courier New", Courier, monospace;
+        background: radial-gradient(circle at top, #fef9f2, var(--bg));
+        color: var(--text);
+      }
+      header {
+        padding: 20px 24px 10px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.5px;
+      }
+      header p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 16px;
+        padding: 12px 24px 24px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 2px solid #eadbc8;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .panel h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        color: var(--accent);
+      }
+      .status {
+        display: grid;
+        gap: 8px;
+        font-size: 14px;
+      }
+      .status span {
+        color: var(--muted);
+      }
+      .controls {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .controls button {
+        padding: 8px 12px;
+        border: 2px solid var(--accent);
+        background: #fff;
+        color: var(--accent);
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .controls button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      pre {
+        margin: 0;
+        font-size: 12px;
+        max-height: 70vh;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Mario Agent Console</h1>
+      <p>Send actions to the running game and inspect live state.</p>
+    </header>
+    <main>
+      <section class="panel">
+        <h2>Status</h2>
+        <div class="status">
+          <div><span>Game:</span> <strong id="status">-</strong></div>
+          <div><span>Action:</span> <strong id="action">noop</strong></div>
+          <div><span>Tick:</span> <strong id="tick">0</strong></div>
+        </div>
+        <div class="controls">
+          <button id="left-btn">Left</button>
+          <button id="right-btn">Right</button>
+          <button id="jump-btn">Jump</button>
+          <button id="noop-btn">Noop</button>
+        </div>
+        <div class="hint">Keyboard: A/D or arrows, Space to jump.</div>
+      </section>
+      <section class="panel">
+        <h2>State</h2>
+        <pre id="state">Loading...</pre>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
