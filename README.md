@@ -1,37 +1,54 @@
-# Payton Ison
+# Minimal Mario Clone with Async LLM Controller
 
-_Relentless pursuit of excellence._
+A tiny Pygame side-scroller with a non-blocking, latest-only agent controller. The main loop stays at 60 FPS while model inference runs on a background thread.
 
-## AGI Architect • Alignment & Orchestration • Writer
+## Setup
 
-I build control loops and scaffolds that make model behavior legible and repeatable: routing, evaluation, tool-use protocols, and long-horizon stability.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Featured work
-- **Resonant Phase-Locking (RPL)** — Stabilizing long-horizon reasoning and continual adaptation via phase-synchronized feature routing.  
-  https://github.com/paytonison/resonant-phase-locking
+## Run
 
-- **Ouroboros** — Human-led recursive reinforcement: turning conversation history into stable capability with a human in the loop.  
-  https://github.com/paytonison/ouroboros
+Keyboard (default):
+```bash
+python src/main.py --agent keyboard
+```
 
-- **Conscious Models as a Necessary Step Toward AGI** — An architectural argument for world-and-self models in the control loop.  
-  https://github.com/paytonison/agi
+Random agent (async):
+```bash
+python src/main.py --agent random
+```
 
-## Experiments & prototypes
-- **Mario experiment (agent ↔ environment loop)** — A latency-constrained proof-of-concept for agent interaction with a real-time game state, focused on what breaks (and what scales) when you try to drive gameplay through tool calls.  
-  https://github.com/paytonison/paytonison/tree/main/mario-clone
+Model agent (async):
+```bash
+python src/main.py --agent model --model gpt2
+```
 
-## What I’m focused on
-- Structure over scale: routers, governors, and eval harnesses that keep systems stable under pressure.
-- Failure as curriculum: turning mistakes into reusable deltas and tests.
-- Guardrails that preserve “otherness”: agents that help without becoming reality-distorting.
+Useful flags:
+- `--decision-hz 20` throttles inference rate (0 = no throttle)
+- `--fps 60` game loop target FPS
+- `--width 800 --height 480` window size
 
-## How to navigate this account
-- Most repos are either (1) publication-ready LaTeX sources, or (2) small “reference implementations” meant to clarify an idea.
-- If you’re looking for the best entry points, check the pinned repos first.
+## Async agent contract (short)
+- The game loop never calls model tokenization or generation.
+- Inference runs in a background thread and never blocks rendering/physics.
+- State submission is latest-only (no backlog).
+- The model returns a single word: `left`, `right`, or `jump`.
+- Invalid output falls back safely (last action or `right`).
+- Jump is edge-triggered (fires once on transition to `jump`).
 
-## Contact
-- X: <https://x.com/p8on_>
-- Email: isonpayton@gmail.com
+## Sanity check
 
----
-If you’re building tools for alignment, routing, or long-horizon agent behavior and want a collaborator, reach out.
+Run a slow fake agent to prove the loop still hits 60 FPS:
+```bash
+python scripts/slow_agent_sanity.py
+```
+
+## Tests
+
+```bash
+python -m unittest
+```
