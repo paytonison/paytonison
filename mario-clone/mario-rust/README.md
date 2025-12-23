@@ -14,11 +14,42 @@ cargo run
 
 ## Controls
 
+- Enter: start
 - Arrow keys or A/D to move
 - Space/Up/W to jump
-- R to restart after win or game over
+- R to restart level
+- Esc to quit to title
 
 ## Notes
 
-- Coins add to score; every 10 coins grants an extra life.
+- Score: coin = 200, stomp enemy = 100, flagpole = 500, mushroom = 1000.
+- Mushroom power-up turns the player blue and grants one extra hit (the hit removes the power-up instead of resetting the level).
 - Stomp goombas by landing on them.
+
+## Level Format
+
+The level is an ASCII grid in `assets/levels/level1.txt`:
+
+- `#` = solid tile
+- `.` = empty
+- `P` = player spawn (exactly one)
+- `G` = goal / flagpole (exactly one)
+- `E` = enemy spawn
+- `C` = coin
+- `M` = mushroom power-up
+
+## Audio
+
+The game generates simple procedural sound effects + a looping chiptune track by default (no files required).
+
+To override them, add WAV files under `assets/`:
+
+- `music.wav` (looping background track)
+
+And WAV files under `assets/sfx/`:
+
+- `jump.wav`, `coin.wav`, `stomp.wav`, `powerup.wav`, `hurt.wav`, `win.wav`
+
+## Art
+
+All visuals are placeholder shapes or tiny original pixel sprites generated in code. This project does not include any copyrighted Nintendo / Mario assets.
