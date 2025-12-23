@@ -182,3 +182,9 @@ Shipping is mostly checklist work:
             ├── sprites.rs
             └── background.rs
 ```
+
+### Appendix
+
+- During the process of development, the agent exhibited emergent behaviors, such as including invincibility frames after taking damage, which were not explicitly requested but improved gameplay.
+- The agent also designed the power-up player sprite to look like Luigi instead of Mario, showcasing creativity within the constraints provided.
+- All assets used are original, produced by the agent.
