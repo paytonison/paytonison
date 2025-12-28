@@ -1,1 +1,21 @@
 AGENTS.md
+
+# CMake build outputs
+build/
+build-*/
+build*/
+
+# CMake in-source build artifacts (repo root)
+/CMakeCache.txt
+/CMakeFiles/
+/cmake_install.cmake
+/Makefile
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/Testing/
+/_deps/
+/bin/
+/lib/
+/app/
+/core/
+/tests/
