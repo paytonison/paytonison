@@ -1,6 +1,6 @@
-# Agentic Coding, End-to-End (Rust Mario Clone Example)
+# Agentic Coding, End-to-End (Rust Jumpman Clone Example)
 
-This repo contains a small Rust + Macroquad “Mario-style” platformer in `mario-rust/`. This README uses that codebase as a concrete example of **agentic coding**: a workflow where an AI agent plans work, makes changes with tools, evaluates results, and iterates until the software is ready to ship.
+This repo contains a small Rust + Macroquad “Jumpman-style” platformer in `mario-rust/`. This README uses that codebase as a concrete example of **agentic coding**: a workflow where an AI agent plans work, makes changes with tools, evaluates results, and iterates until the software is ready to ship.
 
 ## Quickstart (the example project)
 
@@ -25,7 +25,7 @@ The key difference vs. “chatting about code”: every step is anchored in the 
 
 Start by writing a tight objective and boundaries.
 
-**Example (Rust Mario clone):**
+**Example (Rust Jumpman clone):**
 
 - **Objective:** a playable 1-level platformer with a title screen, a goal condition, scoring, enemies, and a restart loop.
 - **Constraints:** Rust stable; no copyrighted Nintendo assets; keep dependencies minimal (this project uses `macroquad`).
@@ -72,7 +72,7 @@ This repo already has `AGENTS.md` at the root. In general, a strong `AGENTS.md` 
 - Ask clarifying questions when behavior is underspecified.
 - For `mario-rust/`: keep tuning constants in `src/game/mod.rs:Config`.
 - Validate with: `cargo fmt`, `cargo test`, `cargo run` (as applicable).
-- Do not add copyrighted Mario assets.
+- Do not add copyrighted Jumpman assets.
 ```
 
 ---
@@ -130,7 +130,7 @@ The agent should propose a plan, implement the smallest working slice, and only 
 
 Agentic iteration is: **one hypothesis → one diff → one verification → repeat**.
 
-**A practical iteration sequence for the Mario clone**
+**A practical iteration sequence for the Jumpman clone**
 
 1. **Make it run:** window + main loop (`mario-rust/src/main.rs`).
 2. **Make it playable:** player movement + collisions (`mario-rust/src/game/player.rs`, `mario-rust/src/game/physics.rs`).
@@ -186,5 +186,5 @@ Shipping is mostly checklist work:
 ### Appendix
 
 - During the process of development, the agent exhibited emergent behaviors, such as including invincibility frames after taking damage, which were not explicitly requested but improved gameplay.
-- The agent also designed the power-up player sprite to look like Luigi instead of Mario, showcasing creativity within the constraints provided.
+- The agent also designed the power-up player sprite to look like Luigi instead of Jumpman, showcasing creativity within the constraints provided.
 - All assets used are original, produced by the agent.

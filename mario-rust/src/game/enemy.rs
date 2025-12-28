@@ -94,7 +94,7 @@ impl Enemy {
         }
 
         draw_texture_ex(
-            sprites.goomba(),
+            sprites.chestnut_guy(),
             self.pos.x,
             self.pos.y,
             WHITE,

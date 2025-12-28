@@ -4,7 +4,7 @@ use macroquad::prelude::*;
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Mario Rust".to_string(),
+        window_title: "Jumpman Rust".to_string(),
         window_width: 960,
         window_height: 540,
         window_resizable: true,

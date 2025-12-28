@@ -3,7 +3,7 @@ use macroquad::prelude::*;
 pub struct Sprites {
     player_base: Texture2D,
     player_powered: Texture2D,
-    goomba: Texture2D,
+    chestnut_guy: Texture2D,
 }
 
 impl Sprites {
@@ -16,12 +16,12 @@ impl Sprites {
             Color::new(0.18, 0.62, 0.35, 1.0),
             Color::new(0.2, 0.6, 0.86, 1.0),
         );
-        let goomba = goomba_texture();
+        let chestnut_guy = chestnut_guy_texture();
 
         Self {
             player_base,
             player_powered,
-            goomba,
+            chestnut_guy,
         }
     }
 
@@ -33,8 +33,8 @@ impl Sprites {
         }
     }
 
-    pub fn goomba(&self) -> &Texture2D {
-        &self.goomba
+    pub fn chestnut_guy(&self) -> &Texture2D {
+        &self.chestnut_guy
     }
 }
 
@@ -72,7 +72,7 @@ fn player_texture(shirt: Color, overalls: Color) -> Texture2D {
     })
 }
 
-fn goomba_texture() -> Texture2D {
+fn chestnut_guy_texture() -> Texture2D {
     // 12x10 pixels, scaled 2x to match the default 24x20 enemy hitbox.
     let pixels: [&str; 10] = [
         "...BBBBBB...",

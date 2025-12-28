@@ -1,43 +1,11 @@
 import argparse
-import json
 import math
-import os
 from array import array
 
 import pygame
 
-from agents import HeuristicAgent, KeyboardAgent, ResponsesAgent
-from browser_client import ActionStore, BrowserAgent, StateStore, start_browser_server
 from game import Game, SCREEN_HEIGHT, SCREEN_WIDTH
-
-
-def parse_action(action):
-    if not action:
-        return False, False, False
-    action = action.lower().strip()
-    if action in {"noop", "none"}:
-        return False, False, False
-    tokens = action.replace("+", " ").replace(",", " ").split()
-    left = "left" in tokens
-    right = "right" in tokens
-    jump = "jump" in tokens
-    if left and right:
-        left = right = False
-    return left, right, jump
-
-
-class AgentController:
-    def __init__(self, agent, min_interval):
-        self.agent = agent
-        self.min_interval = min_interval
-        self.last_time = 0.0
-        self.last_action = "noop"
-
-    def get_action(self, now, state):
-        if self.min_interval <= 0 or now - self.last_time >= self.min_interval:
-            self.last_action = self.agent.decide(state)
-            self.last_time = now
-        return self.last_action
+from sprites import Sprites
 
 
 def make_beep(freq_hz, duration_s, volume=0.4, sample_rate=44100):
@@ -51,65 +19,90 @@ def make_beep(freq_hz, duration_s, volume=0.4, sample_rate=44100):
     return pygame.mixer.Sound(buffer=buf.tobytes())
 
 
+def _midi_to_freq_hz(midi_note):
+    return 440.0 * (2.0 ** ((midi_note - 69) / 12))
+
+
+def make_music_loop(volume=0.18, tempo_bpm=120, sample_rate=44100):
+    step_duration = 60.0 / float(tempo_bpm) / 2.0
+    melody = [
+        72, 76, 79, 76, 72, 76, 79, 84,
+        77, 81, 84, 81, 77, 81, 84, 86,
+        79, 83, 86, 83, 79, 83, 86, 88,
+        72, 76, 79, 84, 79, 76, 72, None,
+    ]
+    bass = [
+        48, 48, 48, 48, 48, 48, 48, 48,
+        41, 41, 41, 41, 41, 41, 41, 41,
+        43, 43, 43, 43, 43, 43, 43, 43,
+        48, 48, 48, 48, 48, 48, 48, 48,
+    ]
+
+    fade_len = 256
+    fade_curve = [i for i in range(fade_len)]
+    max_amp = int(32767 * max(0.0, min(volume, 1.0)) * 0.5)
+    phase_mel = 0
+    phase_bass = 0
+    buf = array("h")
+
+    for melody_note, bass_note in zip(melody, bass):
+        seg_len = int(sample_rate * step_duration)
+        seg_fade = min(fade_len, max(0, seg_len // 2))
+
+        inc_mel = (
+            int(_midi_to_freq_hz(melody_note) * (1 << 32) / sample_rate)
+            if melody_note
+            else 0
+        )
+        inc_bass = (
+            int(_midi_to_freq_hz(bass_note) * (1 << 32) / sample_rate) if bass_note else 0
+        )
+
+        for i in range(seg_len):
+            sample = 0
+            if inc_bass:
+                phase_bass = (phase_bass + inc_bass) & 0xFFFFFFFF
+                sample += 1 if phase_bass < 0x80000000 else -1
+            if inc_mel:
+                phase_mel = (phase_mel + inc_mel) & 0xFFFFFFFF
+                sample += 1 if phase_mel < 0x80000000 else -1
+
+            amp = max_amp
+            if seg_fade:
+                if i < seg_fade:
+                    amp = max_amp * fade_curve[i] // seg_fade
+                elif i >= seg_len - seg_fade:
+                    amp = max_amp * fade_curve[seg_len - i - 1] // seg_fade
+
+            buf.append(int(sample * amp))
+
+    return pygame.mixer.Sound(buffer=buf.tobytes())
+
+
 def init_audio():
     try:
         if not pygame.mixer.get_init():
             pygame.mixer.init()
     except pygame.error:
         return {}
+    try:
+        pygame.mixer.set_num_channels(16)
+        pygame.mixer.set_reserved(1)
+    except pygame.error:
+        pass
     return {
         "coin": make_beep(880, 0.08, 0.35),
         "jump": make_beep(660, 0.06, 0.25),
         "stomp": make_beep(220, 0.08, 0.4),
         "hurt": make_beep(120, 0.14, 0.4),
+        "powerup": make_beep(1046, 0.12, 0.35),
+        "powerdown": make_beep(196, 0.16, 0.35),
         "win": make_beep(990, 0.2, 0.4),
     }
 
 
-def build_agent(args):
-    if args.agent == "keyboard":
-        return KeyboardAgent()
-    if args.agent == "heuristic":
-        return HeuristicAgent()
-    if args.agent == "responses":
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            print("OPENAI_API_KEY is not set; using heuristic agent instead.")
-            return HeuristicAgent()
-        return ResponsesAgent(api_key, model=args.model)
-    return KeyboardAgent()
-
-
 def parse_args():
-    parser = argparse.ArgumentParser(description="Mario clone with optional agent control.")
-    parser.add_argument(
-        "--agent",
-        choices=["keyboard", "heuristic", "responses", "browser"],
-        default="keyboard",
-        help="Control mode for Mario.",
-    )
-    parser.add_argument(
-        "--agent-rate",
-        type=float,
-        default=0.2,
-        help="Seconds between agent decisions.",
-    )
-    parser.add_argument(
-        "--model",
-        default="gpt-5.2",
-        help="Responses API model to use when --agent responses is selected.",
-    )
-    parser.add_argument(
-        "--state-file",
-        default="",
-        help="Optional path to write the latest game state JSON.",
-    )
-    parser.add_argument(
-        "--browser-port",
-        type=int,
-        default=8765,
-        help="Port for the browser client when --agent browser is selected.",
-    )
+    parser = argparse.ArgumentParser(description="Jumpman clone (player-controlled).")
     parser.add_argument(
         "--fps",
         type=int,
@@ -119,46 +112,45 @@ def parse_args():
     return parser.parse_args()
 
 
+def read_player_input(jump_pressed):
+    keys = pygame.key.get_pressed()
+    left = keys[pygame.K_LEFT] or keys[pygame.K_a]
+    right = keys[pygame.K_RIGHT] or keys[pygame.K_d]
+    if left and right:
+        left = right = False
+    jump = bool(jump_pressed)
+    return left, right, jump
+
+
 def main():
     args = parse_args()
     pygame.mixer.pre_init(44100, -16, 1, 512)
     pygame.init()
-    pygame.display.set_caption("Mario Clone")
+    pygame.display.set_caption("Jumpman Clone")
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     fonts = {
         "small": pygame.font.Font(None, 24),
         "large": pygame.font.Font(None, 36),
     }
+    sprites = Sprites()
     sfx = init_audio()
-    game = Game(sfx=sfx)
-
-    state_store = None
-    server = None
-    if args.agent == "browser":
-        action_store = ActionStore()
-        state_store = StateStore()
+    music_channel = None
+    music_paused = False
+    if pygame.mixer.get_init():
         try:
-            server = start_browser_server(
-                state_store, action_store, port=args.browser_port
-            )
-            print(f"Browser client available at http://127.0.0.1:{args.browser_port}/")
-            agent = BrowserAgent(action_store)
-        except OSError as exc:
-            print(f"Failed to start browser client: {exc}. Falling back to keyboard.")
-            agent = KeyboardAgent()
-    else:
-        agent = build_agent(args)
+            music_channel = pygame.mixer.Channel(0)
+            music_channel.set_volume(0.35)
+            music_channel.play(make_music_loop(), loops=-1)
+        except pygame.error:
+            music_channel = None
 
-    agent_interval = 0 if args.agent in {"keyboard", "browser"} else args.agent_rate
-    controller = AgentController(agent, agent_interval)
-    state_dump_interval = max(args.agent_rate, 0.2) if args.state_file else 0
-    last_state_dump = 0.0
+    game = Game(sfx=sfx, sprites=sprites)
 
     clock = pygame.time.Clock()
     running = True
     while running:
-        now = pygame.time.get_ticks() / 1000.0
+        jump_pressed = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -166,29 +158,23 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if event.key == pygame.K_r and game.state != "playing":
-                    game = Game(sfx=sfx)
+                    game = Game(sfx=sfx, sprites=sprites)
+                if event.key in {pygame.K_SPACE, pygame.K_w, pygame.K_UP}:
+                    jump_pressed = True
+                if event.key == pygame.K_m and music_channel:
+                    if music_paused:
+                        music_channel.unpause()
+                    else:
+                        music_channel.pause()
+                    music_paused = not music_paused
 
-        state_before = game.get_state()
-        action_str = controller.get_action(now, state_before)
-        action = parse_action(action_str)
+        action = read_player_input(jump_pressed)
         game.update(action)
-        state_after = game.get_state()
-
-        if state_store:
-            state_store.set(state_after)
-
-        if args.state_file and now - last_state_dump >= state_dump_interval:
-            with open(args.state_file, "w", encoding="utf-8") as handle:
-                json.dump(state_after, handle)
-            last_state_dump = now
 
         game.draw(screen, fonts)
         pygame.display.flip()
         clock.tick(args.fps)
 
-    if server:
-        server.shutdown()
-        server.server_close()
     pygame.quit()
 
 

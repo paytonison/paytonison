@@ -1,6 +1,6 @@
-# Mario Clone (Rust + Macroquad)
+# Jumpman Clone (Rust + Macroquad)
 
-A compact Mario-style platformer written in Rust using Macroquad. It uses simple shapes for sprites and a tiny tile map for the level.
+A compact Jumpman-style platformer written in Rust using Macroquad. It uses simple shapes for sprites and a tiny tile map for the level.
 
 ## Requirements
 
@@ -24,7 +24,7 @@ cargo run
 
 - Score: coin = 200, stomp enemy = 100, flagpole = 500, mushroom = 1000.
 - Mushroom power-up turns the player blue and grants one extra hit (the hit removes the power-up instead of resetting the level).
-- Stomp goombas by landing on them.
+- Stomp chestnut guys by landing on them.
 
 ## Level Format
 
@@ -52,4 +52,4 @@ And WAV files under `assets/sfx/`:
 
 ## Art
 
-All visuals are placeholder shapes or tiny original pixel sprites generated in code. This project does not include any copyrighted Nintendo / Mario assets.
+All visuals are placeholder shapes or tiny original pixel sprites generated in code. This project does not include any copyrighted Nintendo / Jumpman assets.
