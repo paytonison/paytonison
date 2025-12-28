@@ -1,11 +1,19 @@
 # Agentic Coding, End-to-End (Rust Jumpman Clone Example)
 
-This repo contains a small Rust + Macroquad “Jumpman-style” platformer in `mario-rust/`. This README uses that codebase as a concrete example of **agentic coding**: a workflow where an AI agent plans work, makes changes with tools, evaluates results, and iterates until the software is ready to ship.
+`Rust: cargo run`
 
-## Quickstart (the example project)
+This repo contains a small Jumpman-style platformer with a primary Rust + Macroquad implementation in `mario-rust/`. It also includes a deterministic C++ port in `mario-cpp/` and a Python/Pygame version in `mario-python/`. This README uses the Rust codebase as a concrete example of **agentic coding**: a workflow where an AI agent plans work, makes changes with tools, evaluates results, and iterates until the software is ready to ship.
 
-- Run: `cd mario-rust && cargo run`
+## Quickstart (Rust)
+
+```bash
+cd mario-rust
+cargo run
+```
+
 - Controls + level format: see `mario-rust/README.md`
+- C++ port: see `mario-cpp/README.md`
+- Python version: see `mario-python/README.md`
 
 ## What “agentic coding” means
 
@@ -165,9 +173,19 @@ Shipping is mostly checklist work:
 ```text
 .
 ├── AGENTS.md
+├── mario-cpp/
+│   ├── CMakeLists.txt
+│   ├── README.md
+│   ├── assets/
+│   ├── core/
+│   ├── app/
+│   └── tests/
 ├── mario-python/
+│   ├── README.md
+│   └── src/
 └── mario-rust/
     ├── Cargo.toml
+    ├── README.md
     ├── assets/
     │   └── levels/level1.txt
     └── src/
