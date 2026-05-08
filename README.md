@@ -1,12 +1,12 @@
 # Personal Engineering Repository
 
-This repository is a record of my AI-assisted engineering workflow: not "vibe coding," not passive prompting, and not outsourcing understanding to a model. It is a practical archive of how I design, direct, test, refine, and evaluate software projects using frontier language models as collaborators and implementation agents.
+This repository is a record of my AI-assisted software development workflow: not "vibe coding," not passive prompting, and not outsourcing understanding to a model. It is a practical archive of how I design, direct, test, refine, and evaluate software projects using frontier language models as collaborators and implementation agents.
 
 The central idea is simple: AI can write code, but it cannot own a project. Project ownership still requires taste, judgment, specification, testing, debugging, architectural understanding, and the ability to decide whether the output actually satisfies the intended behavior. That is the role I occupy in this workflow.
 
 ## What This Repository Represents
 
-This repo documents a development process built around human-directed AI execution.
+This repo documents a development process built around human-directed AI-assisted software development.
 
 My process usually works like this:
 
@@ -20,13 +20,21 @@ My process usually works like this:
 
 That loop is the important part. The code is not treated as magic output. It is reviewed, tested, revised, and judged against a concrete design goal.
 
+## AI-Assisted Software Development
+
+The best description for this workflow is **AI-assisted software development**.
+
+That means I use AI systems as collaborators and implementation accelerators while retaining responsibility for the project itself. I define the desired behavior, identify the constraints, decide what counts as correct, test the result in the target environment, and accept or reject changes based on whether they satisfy the project requirements.
+
+This is different from treating AI output as finished software. The model can propose or implement a change, but the change still has to survive human review, live testing, and project-level judgment. In this workflow, AI is part of the development toolchain; it is not a replacement for ownership.
+
 ## Why This Is Not Vibe Coding
 
 "Vibe coding" implies a lack of structure: asking an AI for code, accepting whatever it produces, and moving forward without understanding the system or its failure modes.
 
 That is not what is happening here.
 
-The workflow represented in this repo is closer to a distributed engineering loop:
+The workflow represented in this repo is closer to an AI-assisted software development loop:
 
 - I define the product behavior.
 - I reason through implementation strategy with an AI collaborator.
@@ -46,7 +54,7 @@ That is the standard I use.
 
 The purpose of using AI here is not to skip understanding. It is to accelerate execution.
 
-A good AI-assisted workflow lets me operate at a higher level of abstraction while still remaining responsible for the final system. Instead of spending all of my energy on syntax, boilerplate, and repetitive implementation work, I can focus more attention on:
+A good AI-assisted software development workflow lets me operate at a higher level of abstraction while still remaining responsible for the final system. Instead of spending all of my energy on syntax, boilerplate, and repetitive implementation work, I can focus more attention on:
 
 - product behavior
 - architecture
@@ -175,7 +183,7 @@ I do not claim that every line originated from my hands. I claim responsibility 
 
 ## The Skill Being Demonstrated
 
-The skill demonstrated here is not simply "coding with AI." It is AI-mediated engineering direction.
+The skill demonstrated here is not simply "coding with AI." It is AI-assisted software development: a workflow where the human remains responsible for direction, specification, review, testing, and final judgment.
 
 That includes:
 
@@ -213,15 +221,15 @@ The purpose is to show that the work was directed, not merely generated.
 
 When reviewing this repository, do not read it as a claim that I manually typed every line without assistance. That is not the point.
 
-Read it as evidence of a modern AI-assisted development process where the human role is architectural, editorial, evaluative, and strategic.
+Read it as evidence of a modern AI-assisted software development process where the human role is architectural, editorial, evaluative, and strategic.
 
-The projects here are artifacts of an iterative loop between human intent and AI execution. The value is in the loop: the specification, the judgment, the testing, the corrections, and the ability to explain the finished system.
+The projects here are artifacts of an iterative loop between human intent and AI-assisted execution. The value is in the loop: the specification, the judgment, the testing, the corrections, and the ability to explain the finished system.
 
 ## Working Definition
 
 My preferred framing is this:
 
-> I use AI as an implementation accelerator while retaining project ownership. I define the goals, shape the architecture, specify the changes, test the behavior, evaluate the output, and learn the system deeply enough to explain and modify it. The AI helps execute the work, but the project direction and final judgment are mine.
+> I practice AI-assisted software development: I use AI as an implementation accelerator while retaining project ownership. I define the goals, shape the architecture, specify the changes, test the behavior, evaluate the output, and learn the system deeply enough to explain and modify it. The AI helps execute the work, but the project direction and final judgment are mine.
 
 That is the principle behind this repository.
 
@@ -235,7 +243,7 @@ That means taking projects that began as live AI-assisted development loops and 
 - clearer architecture notes
 - better issue histories
 - stronger project summaries
-- explicit explanations of the AI-assisted workflow
+- explicit explanations of the AI-assisted software development workflow
 - evidence that I understand the systems I am building
 
 The final goal is not just to have code that works. The goal is to have code, documentation, and development history that demonstrate technical judgment.
