@@ -126,6 +126,10 @@ This is the kind of project where AI assistance is extremely useful but also dan
 
 The userscript went through multiple model generations. GPT-5.3 and GPT-5.4 helped move the project forward, but GPT-5.5 is the first model that felt stable enough to execute the broader vision with confidence. It could better preserve the project shape while making changes, which is the key capability needed for this kind of iterative browser tool.
 
+A concrete anti-vibe-coding example: during one refactor, Codex produced changes that looked structurally useful, but testing did not give me enough confidence to accept the refactor as-is. I later realized that one of the relevant site paths had not actually been enabled during the test, which meant the result could not honestly be described as a confirmed regression. That distinction matters. Rather than laundering uncertainty into a stronger claim, the right engineering move is to treat the test as inconclusive, discard or defer the change, and preserve the known-good implementation until the behavior can be verified properly.
+
+This matters because AI-assisted coding becomes dangerous when uncertainty gets papered over. A model can make a change that improves organization, style, or generality while quietly damaging an edge case that the project specifically needs to support. Human project ownership means recognizing that "cleaner" is not the same as "correct," and that the final authority is observed behavior under valid test conditions.
+
 ## Example: Tater Tot
 
 Tater Tot is my tiny language-model project. It exists partly as a learning artifact, partly as a portfolio artifact, and partly as a way to understand language-model internals from the implementation side.
